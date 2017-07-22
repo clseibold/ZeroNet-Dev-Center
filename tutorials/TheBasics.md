@@ -8,9 +8,9 @@ Since ZeroNet makes no use of a server - everything is downloaded to you compute
 
 ## Creating A Zite
 
-There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many, you can choose from, including ... However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover.
+There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many you can choose from, including ... However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover.
 
-In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to [ZeroHello](zero://1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D/) and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
+In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to [ZeroHello](/1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D/) and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
 
 ## The Sidebar
 
