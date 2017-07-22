@@ -25,6 +25,7 @@
         },
         "tutorials": {
             "cols": [
+                ["slug", "TEXT NOT NULL"],
                 ["file", "TEXT NOT NULL"],
                 ["title", "TEXT NOT NULL"],
                 ["description", "TEXT"],
@@ -32,7 +33,7 @@
                 ["tags", "TEXT"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
-            "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(json_id, file)", "CREATE INDEX tutorial_file ON tutorials(file)", "CREATE INDEX tutorial_title ON tutorials(title)"],
+            "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(json_id, slug)", "CREATE INDEX tutorial_file ON tutorials(slug)", "CREATE INDEX tutorial_title ON tutorials(title)"],
             "schema_changed": 10
         }
     }
