@@ -164,11 +164,13 @@
 						for (var i in tutorials) {
 							app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
 						}
+						page.cmd('wrapperPushState', [null, '', '']);
 					});
 				} else {
 					//console.log("using cached tutorials");
 					for (var i in app.tutorials) {
 						app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
+						page.cmd('wrapperPushState', [null, '', '']);
 					}
 				}
 			} else {
@@ -187,6 +189,7 @@
 								app.mdContent = md.render(content);
 								app.title = tutorial.title;
 								app.author = 'By ' + tutorial.author;
+								page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
 							});
 						} else {
 							app.mdContent = "";
@@ -207,6 +210,7 @@
 							app.mdContent = md.render(content);
 							app.title = tutorial.title;
 							app.author = 'By ' + tutorial.author;
+							page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
 						});
 					} else {
 						app.mdContent = "";
