@@ -52,6 +52,7 @@
 			      <h1 class="title">
 			        {{ title }}
 			      </h1>
+			      <h2 class="subtitle is-4">By {{ author }}</h2>
 			    </div>
 			</div>
 		</section>
@@ -100,7 +101,8 @@
 			el: '#app',
 			data: {
 				title: 'Tutorial',
-				mdContent: 'Loading ...'
+				mdContent: 'Loading ...',
+				author: 'Author'
 			}
 		});
 
@@ -125,6 +127,8 @@
 
 					this.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
 						app.mdContent = md.render(content);
+						app.title = tutorial.title;
+						app.author = tutorial.author;
 					});
 				});
 
