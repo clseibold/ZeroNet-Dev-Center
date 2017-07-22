@@ -40,7 +40,7 @@
 	    				<!-- Add the modifier "is-active" to display it on mobile -->
 	    				<div id="nav-menu" class="nav-right nav-menu">
 	    					<a href="../" class="nav-item">Home</a>
-	    					<a href="./" class="nav-item is-active">Tutorials</a>
+	    					<a class="nav-item is-active" onclick="loadTutorial('');">Tutorials</a>
 	    					<!--<a class="nav-item">Questions</a>-->
 	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
 	    				</div>
@@ -115,36 +115,8 @@
 				});
 				var slug = getParameterByName('t');
 				var tutorial;
-
-				if (!slug || slug == "") {
-					app.title = "Tutorials";
-					app.mdContent = "";
-					this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-						for (var i in tutorials) {
-							app.mdContent += "<a href='./?t=" + tutorials[i].slug + "'>" + tutorials[i].title + "</a><br>";
-						}
-					});
-				} else {
-					this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-						for (var i in tutorials) {
-							if (tutorials[i].slug == slug) {
-								tutorial = tutorials[i];
-							}
-						}
-
-						if (tutorial) {
-							this.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-								app.mdContent = md.render(content);
-								app.title = tutorial.title;
-								app.author = 'By ' + tutorial.author;
-							});
-						} else {
-							app.mdContent = "";
-							app.title = 'Not Found';
-							app.author = 'This page was not found!';
-						}
-					});
-				}
+				loadTutorial(slug);
+				
 			}
 
 			selectUser () {
@@ -176,6 +148,39 @@
 		    if (!results) return null;
 		    if (!results[2]) return '';
 		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+
+		function loadTutorial(slug) {
+			var tutorial;
+			if (!slug || slug == "") {
+				app.title = "Tutorials";
+				app.mdContent = "";
+				page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+					for (var i in tutorials) {
+						app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
+					}
+				});
+			} else {
+				page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+					for (var i in tutorials) {
+						if (tutorials[i].slug == slug) {
+							tutorial = tutorials[i];
+						}
+					}
+
+					if (tutorial) {
+						page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+							app.mdContent = md.render(content);
+							app.title = tutorial.title;
+							app.author = 'By ' + tutorial.author;
+						});
+					} else {
+						app.mdContent = "";
+						app.title = 'Not Found';
+						app.author = 'This page was not found!';
+					}
+				});
+			}
 		}
 	</script>
 
