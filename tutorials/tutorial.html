@@ -111,7 +111,7 @@
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
 				});
-				this.cmd('fileGet', ['tutorials/TheBasics.md'], (content) => {
+				this.cmd('fileGet', ['tutorials/' + getParameterByName('t') + '.md'], (content) => {
 					app.mdContent = md.render(content);
 				});
 			}
@@ -136,6 +136,16 @@
 		}
 
 		page = new ZeroChat()
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
 	</script>
 
 	<!--<script>

@@ -14,3 +14,4 @@ In order to clone a zite, find a zite you want to clone, visit the zite so that 
 
 ## The Sidebar
 
+## How Does ZeroNet Know Who Owns A Zite?
