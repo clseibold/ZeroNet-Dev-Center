@@ -35,3 +35,5 @@ The List-part **This is my site**:
 2. **Site Description**: Input to change the description of the zite
 3. **Save site settings**: A button, to save the last two inputs to the zites `content.json`-File
 4. **Content Publishing**: A list of files you can sign (click them to insert them into the input below), an input to input the file you want to sign/publish, a button to sign the selected file, and another one, to publish it to connected peers
+
+## Content.json File, What is It?
