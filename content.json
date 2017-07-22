@@ -115,7 +115,7 @@
    "size": 7305
   }
  },
- "ignore": "",
+ "ignore": "(data/.*db|data/users/.*/.*|admin|.git)",
  "inner_path": "content.json",
  "modified": 1500031130,
  "postmessage_nonce_security": true,
