@@ -114,7 +114,6 @@
             }
         });
 
-<<<<<<< HEAD
         class ZeroChat extends ZeroFrame {
             onOpenWebsocket() {
                 this.cmd("siteInfo", {}, (site_info) => {
@@ -148,78 +147,6 @@
                 }
             }
         }
-=======
-		function loadTutorial(slug) {
-			var tutorial;
-			if (!slug || slug == "") {
-				app.title = "Tutorials";
-				app.mdContent = "";
-				app.author = "";
-				if (app.tutorials.length == 0) {
-					//console.log("setting tutorials cache");
-					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-						app.tutorials = tutorials;
-						for (var i in tutorials) {
-							app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
-						}
-						page.cmd('wrapperPushState', [null, '', '']);
-					});
-				} else {
-					//console.log("using cached tutorials");
-					for (var i in app.tutorials) {
-						app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
-						page.cmd('wrapperPushState', [null, '', '']);
-					}
-				}
-			} else {
-				if (app.tutorials.length == 0) {
-					//console.log("setting tutorials cache");
-					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-						app.tutorials = tutorials;
-						for (var i in tutorials) {
-							if (tutorials[i].slug == slug) {
-								tutorial = tutorials[i];
-							}
-						}
-
-						if (tutorial) {
-							page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-								app.mdContent = md.render(content);
-								app.title = tutorial.title;
-								app.author = 'By ' + tutorial.author;
-								page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
-							});
-						} else {
-							app.mdContent = "";
-							app.title = 'Not Found';
-							app.author = 'This page was not found!';
-						}
-					});
-				} else {
-					//console.log("using cached tutorials");
-					for (var i in app.tutorials) {
-						if (app.tutorials[i].slug == slug) {
-							tutorial = app.tutorials[i];
-						}
-					}
-
-					if (tutorial) {
-						page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-							app.mdContent = md.render(content);
-							app.title = tutorial.title;
-							app.author = 'By ' + tutorial.author;
-							page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
-						});
-					} else {
-						app.mdContent = "";
-						app.title = 'Not Found';
-						app.author = 'This page was not found!';
-					}
-				}
-			}
-		}
-	</script>
->>>>>>> refs/remotes/krixano/master
 
         page = new ZeroChat()
 
@@ -246,11 +173,13 @@
                         for (var i in tutorials) {
                             app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
                         }
+                        page.cmd('wrapperPushState', [null, '', '']);
                     });
                 } else {
                     //console.log("using cached tutorials");
                     for (var i in app.tutorials) {
                         app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
+                        page.cmd('wrapperPushState', [null, '', '']);
                     }
                 }
             } else {
@@ -269,6 +198,7 @@
                                 app.mdContent = md.render(content);
                                 app.title = tutorial.title;
                                 app.author = 'By ' + tutorial.author;
+                                page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
                             });
                         } else {
                             app.mdContent = "";
@@ -289,6 +219,7 @@
                             app.mdContent = md.render(content);
                             app.title = tutorial.title;
                             app.author = 'By ' + tutorial.author;
+                            page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
                         });
                     } else {
                         app.mdContent = "";
