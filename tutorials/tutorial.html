@@ -50,7 +50,7 @@
 	    	<div class="hero-body">
 			    <div class="container has-text-centered">
 			      <h1 class="title">
-			        Tutorials
+			        {{ title }}
 			      </h1>
 			    </div>
 			</div>
@@ -58,8 +58,8 @@
 
 		<section class="section">
 			<div class="columns">
-				<div class="column is-8 is-offset-2">
-					<div v-html="mdContent" class="content"></div>
+				<div class="column is-6 is-offset-3">
+					<div v-html="mdContent" class="custom-content"></div>
 				</div>
 			</div>
 		</section>
@@ -99,6 +99,7 @@
 		var app = new Vue({
 			el: '#app',
 			data: {
+				title: 'Tutorial',
 				mdContent: 'Loading ...'
 			}
 		});
@@ -110,7 +111,7 @@
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
 				});
-				this.cmd('fileGet', ['tutorials/myTest.txt'], (content) => {
+				this.cmd('fileGet', ['tutorials/myTest.md'], (content) => {
 					app.mdContent = md.render(content);
 				});
 			}
