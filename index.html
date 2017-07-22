@@ -1,136 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<title>ZeroNet Dev Center</title>
-	<meta charset="utf-8">
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
-	<base href="" target="_top" id="base">
-	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+    <title>ZeroNet Dev Center</title>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
+    <base href="" target="_top" id="base">
+    <script>
+        base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")
+    </script>
 
-	<link rel="stylesheet" href="css/buefy.css" />
-	<link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/buefy.css" />
+    <link rel="stylesheet" href="css/main.css" />
 
-	<style>
-	</style>
+    <style>
 
-	<script src="js/navToggle.js"></script>
+    </style>
+
+    <script src="js/navToggle.js"></script>
 </head>
+
 <body>
-	<div id="app">
-		<section class="hero is-dark is-bold is-medium">
-			<div class="hero-head">
-	    		<header class="nav">
-	    			<div class="container">
-	    				<div class="nav-left">
-	    					<a href="./" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</a>
-	    				</div>
+    <div id="app">
+        <section class="hero is-dark is-bold is-medium">
+            <div class="hero-head">
+                <header class="nav">
+                    <div class="container">
+                        <div class="nav-left">
+                            <a href="./" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</a>
+                        </div>
 
-	    				<!-- This "nav-toggle" hamburger menu is only visible on mobile -->
-	    				<!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->
-	    				<span id="nav-toggle" class="nav-toggle">
+                        <!-- This "nav-toggle" hamburger menu is only visible on mobile -->
+                        <!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->
+                        <span id="nav-toggle" class="nav-toggle">
 	    					<span></span>
-	    					<span></span>
-	    					<span></span>
-	    				</span>
+                        <span></span>
+                        <span></span>
+                        </span>
 
-	    				<!-- This "nav-menu" is hidden on mobile -->
-	    				<!-- Add the modifier "is-active" to display it on mobile -->
-	    				<div id="nav-menu" class="nav-right nav-menu">
-	    					<a href="./" class="nav-item is-active">Home</a>
-	    					<a href="./tutorials/" class="nav-item">Tutorials</a>
-	    					<!--<a class="nav-item">Questions</a>-->
-	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
-	    				</div>
-	    			</div>
-	    		</header>
-	    	</div>
-	    	<div class="hero-body">
-			    <div class="container has-text-centered">
-			      <h1 class="title">
-			        ZeroNet Dev Center
-			      </h1>
-			      <h2 class="subtitle">
-			        Tutorials, Questions, Collaboration
-			      </h2>
-			      <a href="tutorials/tutorial.html?t=TheBasics" class="button is-info">The Basics</a><br><br>
-			      <a href="tutorials/tutorial.html" class="button is-link">Goto Experimental Markdown Parser Page</a>
-			      <!--<a href="#" class="" style="margin-left: 10px;">Tutorial List</a>-->
-			    </div>
-			</div>
-		</section>
+                        <!-- This "nav-menu" is hidden on mobile -->
+                        <!-- Add the modifier "is-active" to display it on mobile -->
+                        <div id="nav-menu" class="nav-right nav-menu">
+                            <a href="./" class="nav-item is-active">Home</a>
+                            <a href="./tutorials/" class="nav-item">Tutorials</a>
+                            <!--<a class="nav-item">Questions</a>-->
+                            <span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <h1 class="title">
+                        ZeroNet Dev Center
+                    </h1>
+                    <h2 class="subtitle">
+                        Tutorials, Questions, Collaboration
+                    </h2>
+                    <a href="tutorials/?t=the_basics" class="button is-info">The Basics</a>
+                    <a href="tutorials/" class="button is-link">All Tutorials</a>
+                    <!--<a href="#" class="" style="margin-left: 10px;">Tutorial List</a>-->
+                </div>
+            </div>
+        </section>
 
-		<section class="section">
-			<div class="columns">
-				<div class="column is-8 is-offset-2">
-					<p class="title is-4">Our Goal</p>
-					<p>Our Goal is to provide useful information, tutorials, and help to those who want to develop Zites in order to inspire more development on the ZeroNet. This site will <em>not</em> teach the basics of front-end web development. You can go <a href="#">here</a> for that. This site only focuses on ZeroNet-specific development, including the ZeroFrame API. To get started developing a Zite for the ZeroNet, follow <a href="tutorials/TheBasics.html">this tutorial</a> to start learning to build basic zites. You can then move on to other tutorials on the <a href="#">tutorials page</a>.</p>
-				</div>
+        <section class="section">
+            <div class="columns">
+                <div class="column is-8 is-offset-2">
+                    <p class="title is-4">Our Goal</p>
+                    <p>Our Goal is to provide useful information, tutorials, and help to those who want to develop Zites in order to inspire more development on the ZeroNet. This site will <em>not</em> teach the basics of front-end web development. You can
+                        go <a href="#">here</a> for that. This site only focuses on ZeroNet-specific development, including the ZeroFrame API. To get started developing a Zite for the ZeroNet, follow <a href="tutorials/?t=the_basics">this tutorial</a>                        to start learning to build basic zites. You can then move on to other tutorials on the <a href="#">tutorials page</a>.</p>
+                </div>
 
-			</div>
-		</section>
+            </div>
+        </section>
 
-		<footer class="footer">
-			<div class="container">
-				<span style="text-align: center">
+        <footer class="footer">
+            <div class="container">
+                <span style="text-align: center">
 					<small>NOTE: This zite is still a work-in-progress.</small><br>
 					<small>Zite created on April 20th, 2017 by <a href="/Me.ZeroNetwork.bit/?Profile/12h51ug6CcntU2aiBjhP8Ns2e5VypbWWtv/12gAes6NzDS9E2q6Q1UXrpUdbPS6nvuBPu/krixano@zeroid.bit">krixano@zeroid.bit</a> (Christian Seibold)</small><br>
 					<small><a href="https://github.com/krixano/ZeroNet-Dev-Center">Github Link</a></small>
 				</span>
-			</div>
-		</footer>
-	</div>
+            </div>
+        </footer>
+    </div>
 
-	<script type="text/javascript" src="js/vue.min.js"></script>
-	<script type="text/javascript" src="js/buefy.js"></script>
-	<script type="text/javascript" src="js/ZeroFrame.js"></script>
-	<!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/buefy.js"></script>
+    <script type="text/javascript" src="js/ZeroFrame.js"></script>
+    <!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
 	<script type="text/javascript" src="js/gsap/plugins/CSSPlugin.min.js"></script>-->
 
-	<script>
-		Vue.use(Buefy);
+    <script>
+        Vue.use(Buefy);
 
-		var app = new Vue({
-			el: '#app',
-			data: {
-				message: 'Hello Vue!'
-			}
-		})
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!'
+            }
+        })
 
-		class ZeroChat extends ZeroFrame {
-			onOpenWebsocket () {
-				this.cmd("siteInfo", {}, (site_info) => {
-					if (site_info.cert_user_id)
-						document.getElementById("select_user").innerText = site_info.cert_user_id
-					this.site_info = site_info
-				})
-			}
+        class ZeroChat extends ZeroFrame {
+            onOpenWebsocket() {
+                this.cmd("siteInfo", {}, (site_info) => {
+                    if (site_info.cert_user_id)
+                        document.getElementById("select_user").innerText = site_info.cert_user_id
+                    this.site_info = site_info
+                })
+            }
 
-			selectUser () {
-				this.cmd("certSelect", {accepted_domains: ["zeroid.bit", "kaffie.bit"]})
-				return false
-			}
+            selectUser() {
+                this.cmd("certSelect", {
+                    accepted_domains: ["zeroid.bit", "kaffie.bit"]
+                })
+                return false
+            }
 
-			onRequest (cmd, message) {
-				if (cmd == "setSiteInfo") {
-					this.site_info = message.params  // Save site info data to allow access it later
-					if (message.params.cert_user_id){
-						document.getElementById("select_user").innerHTML = message.params.cert_user_id
-					} else if (!message.params.cert_user_id) {
-						document.getElementById("select_user").innerHTML = "Select user"
-					} else if (message.params.event && message.params.event[0] == "file_done") {
-						//this.loadZiteIndicator();
-					}
-				}
-			}
-		}
+            onRequest(cmd, message) {
+                if (cmd == "setSiteInfo") {
+                    this.site_info = message.params // Save site info data to allow access it later
+                    if (message.params.cert_user_id) {
+                        document.getElementById("select_user").innerHTML = message.params.cert_user_id
+                    } else if (!message.params.cert_user_id) {
+                        document.getElementById("select_user").innerHTML = "Select user"
+                    } else if (message.params.event && message.params.event[0] == "file_done") {
+                        //this.loadZiteIndicator();
+                    }
+                }
+            }
+        }
 
-		page = new ZeroChat()
-	</script>
+        page = new ZeroChat()
+    </script>
 
-	<!--<script>
+    <!--<script>
 
 	class Page extends ZeroFrame {
 		setSiteInfo(site_info) {
@@ -160,4 +168,5 @@
 </script>-->
 
 </body>
+
 </html>

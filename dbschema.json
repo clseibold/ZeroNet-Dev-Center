@@ -1,7 +1,7 @@
 {
     "db_name": "ZeroNetDevCenter",
     "db_file": "data/zeronetdevcenter.db",
-    "version": 1,
+    "version": 2,
     "maps": {
         "tutorials.json": {
             "to_table": [{
