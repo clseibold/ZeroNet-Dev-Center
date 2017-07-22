@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>ZeroNet Dev Center</title>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
+	<base href="" target="_top" id="base">
+	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+
+	<link rel="stylesheet" href="../css/buefy.css" />
+	<link rel="stylesheet" href="../css/main.css" />
+
+	<style>
+	</style>
+
+	<script src="../js/navToggle.js"></script>
+</head>
+<body>
+	<div id="app">
+		<section class="hero is-dark is-bold is-small">
+			<div class="hero-head">
+	    		<header class="nav">
+	    			<div class="container">
+	    				<div class="nav-left">
+	    					<a href="../" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</a>
+	    				</div>
+
+	    				<!-- This "nav-toggle" hamburger menu is only visible on mobile -->
+	    				<!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->
+	    				<span id="nav-toggle" class="nav-toggle">
+	    					<span></span>
+	    					<span></span>
+	    					<span></span>
+	    				</span>
+
+	    				<!-- This "nav-menu" is hidden on mobile -->
+	    				<!-- Add the modifier "is-active" to display it on mobile -->
+	    				<div id="nav-menu" class="nav-right nav-menu">
+	    					<a href="../" class="nav-item">Home</a>
+	    					<a href="./" class="nav-item is-active">Tutorials</a>
+	    					<!--<a class="nav-item">Questions</a>-->
+	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
+	    				</div>
+	    			</div>
+	    		</header>
+	    	</div>
+	    	<div class="hero-body">
+			    <div class="container has-text-centered">
+			      <h1 class="title">
+			        Tutorials
+			      </h1>
+			    </div>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="columns">
+				<div class="column is-8 is-offset-2">
+					<a href="TheBasics.html">The Basics</a>
+				</div>
+			</div>
+		</section>
+
+		<footer class="footer">
+			<div class="container">
+				<span style="text-align: center">
+					<small>NOTE: This zite is still a work-in-progress.</small><br>
+					<small>Zite created on April 20th, 2017 by <a href="/Me.ZeroNetwork.bit/?Profile/12h51ug6CcntU2aiBjhP8Ns2e5VypbWWtv/12gAes6NzDS9E2q6Q1UXrpUdbPS6nvuBPu/krixano@zeroid.bit">krixano@zeroid.bit</a> (Christian Seibold)</small><br>
+					<small><a href="https://github.com/krixano/ZeroNet-Dev-Center">Github Link</a></small>
+				</span>
+			</div>
+		</footer>
+	</div>
+
+	<script type="text/javascript" src="../js/vue.min.js"></script>
+	<script type="text/javascript" src="../js/buefy.js"></script>
+	<script type="text/javascript" src="../js/ZeroFrame.js"></script>
+	<!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
+	<script type="text/javascript" src="js/gsap/plugins/CSSPlugin.min.js"></script>-->
+
+	<script>
+		Vue.use(Buefy);
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				message: 'Hello Vue!'
+			}
+		})
+
+		class ZeroChat extends ZeroFrame {
+			onOpenWebsocket () {
+				this.cmd("siteInfo", {}, (site_info) => {
+					if (site_info.cert_user_id)
+						document.getElementById("select_user").innerText = site_info.cert_user_id
+					this.site_info = site_info
+				})
+			}
+
+			selectUser () {
+				this.cmd("certSelect", {accepted_domains: ["zeroid.bit", "kaffie.bit"]})
+				return false
+			}
+
+			onRequest (cmd, message) {
+				if (cmd == "setSiteInfo") {
+					this.site_info = message.params  // Save site info data to allow access it later
+					if (message.params.cert_user_id){
+						document.getElementById("select_user").innerHTML = message.params.cert_user_id
+					} else if (!message.params.cert_user_id) {
+						document.getElementById("select_user").innerHTML = "Select user"
+					} else if (message.params.event && message.params.event[0] == "file_done") {
+						//this.loadZiteIndicator();
+					}
+				}
+			}
+		}
+
+		page = new ZeroChat()
+	</script>
+
+	<!--<script>
+
+	class Page extends ZeroFrame {
+		setSiteInfo(site_info) {
+			var out = document.getElementById("out")
+			out.innerHTML =
+				"Page address: " + site_info.address +
+				"<br>- Peers: " + site_info.peers +
+				"<br>- Size: " + site_info.settings.size +
+				"<br>- Modified: " + (new Date(site_info.content.modified*1000))
+		}
+
+		onOpenWebsocket() {
+			this.cmd("siteInfo", [], function(site_info) {
+				page.setSiteInfo(site_info)
+			})
+		}
+
+		onRequest(cmd, message) {
+			if (cmd == "setSiteInfo")
+				this.setSiteInfo(message.params)
+			else
+				this.log("Unknown incoming message:", cmd)
+		}
+	}
+	page = new Page()
+
+</script>-->
+
+</body>
+</html>
