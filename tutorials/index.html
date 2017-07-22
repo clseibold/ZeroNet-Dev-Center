@@ -102,7 +102,8 @@
 			data: {
 				title: 'Tutorial',
 				mdContent: 'Loading ...',
-				author: ''
+				author: '',
+				tutorials: []
 			}
 		});
 
@@ -155,16 +156,48 @@
 			if (!slug || slug == "") {
 				app.title = "Tutorials";
 				app.mdContent = "";
-				page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-					for (var i in tutorials) {
-						app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
+				if (app.tutorials.length == 0) {
+					//console.log("setting tutorials cache");
+					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+						app.tutorials = tutorials;
+						for (var i in tutorials) {
+							app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
+						}
+					});
+				} else {
+					//console.log("using cached tutorials");
+					for (var i in app.tutorials) {
+						app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
 					}
-				});
+				}
 			} else {
-				page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-					for (var i in tutorials) {
-						if (tutorials[i].slug == slug) {
-							tutorial = tutorials[i];
+				if (app.tutorials.length == 0) {
+					//console.log("setting tutorials cache");
+					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+						app.tutorials = tutorials;
+						for (var i in tutorials) {
+							if (tutorials[i].slug == slug) {
+								tutorial = tutorials[i];
+							}
+						}
+
+						if (tutorial) {
+							page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+								app.mdContent = md.render(content);
+								app.title = tutorial.title;
+								app.author = 'By ' + tutorial.author;
+							});
+						} else {
+							app.mdContent = "";
+							app.title = 'Not Found';
+							app.author = 'This page was not found!';
+						}
+					});
+				} else {
+					//console.log("using cached tutorials");
+					for (var i in app.tutorials) {
+						if (app.tutorials[i].slug == slug) {
+							tutorial = app.tutorials[i];
 						}
 					}
 
@@ -179,7 +212,7 @@
 						app.title = 'Not Found';
 						app.author = 'This page was not found!';
 					}
-				});
+				}
 			}
 		}
 	</script>
