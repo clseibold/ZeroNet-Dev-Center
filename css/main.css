@@ -6,3 +6,61 @@ html {
 html, body, section {
 	background: #f8f8f8;
 }
+
+h1, h2, h3, h4, h5, h6 {
+	color: inherit;
+	word-break: break-word;
+
+	color: #363636;
+	font-size: 2rem;
+	font-weight: 300;
+	line-height: 1.125;
+}
+h1:not(:last-child), h2:not(:last-child),
+h3:not(:last-child), h4:not(:last-child),
+h5:not(:last-child), h6:not(:last-child) {
+	margin-bottom: 1.5rem;
+}
+h1 em, h2 em, h3 em, h4 em, h5 em, h6 em,
+h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
+	font-weight: 300;
+}
+h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong {
+	font-weight: 500;
+	color: inherit;
+}
+h1 .tag, h2 .tag, h3 .tag, h4 .tag, h5 .tag, h6 .tag {
+	vertical-align: middle;
+}
+h1 .highlight, h2 .highlight, h3 .highlight, h4 .highlight, h5 .highlight, h6 .highlight {
+	margin-top: -0.75rem;
+}
+h1:not(.is-spaced) + .subtitle, h2:not(.is-spaced) + .subtitle,
+h3:not(.is-spaced) + .subtitle, h4:not(.is-spaced) + .subtitle,
+h5:not(.is-spaced) + .subtitle, h6:not(.is-spaced) + .subtitle {
+	margin-top: -1.5rem;
+}
+
+/*.title.is-1 {
+  font-size: 3rem;
+}
+
+.title.is-2 {
+  font-size: 2.5rem;
+}*/
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+h4, h5, h6 {
+  font-size: 1rem;
+}
