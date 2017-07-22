@@ -1,0 +1,8 @@
+html {
+	text-rendering: optimizespeed;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+html, body, section {
+	background: #f8f8f8;
+}

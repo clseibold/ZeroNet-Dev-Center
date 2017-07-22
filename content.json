@@ -1,0 +1,131 @@
+{
+ "address": "14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt",
+ "address_index": 15061723,
+ "background-color": "#f8f8f8",
+ "clone_root": "template-new",
+ "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
+ "description": "Center for ZeroNet Zite Development",
+ "files": {
+  "css/bulma.css": {
+   "sha512": "65bcef3adc230e45c18b650a15936704eb5c23fcdb7c304a3db675e9ca81918b",
+   "size": 134222
+  },
+  "css/bulma.css.map": {
+   "sha512": "00758d2a9b4f7e7d85628e91e951f93b9d0ff46a9add33001d9d400b7d59d130",
+   "size": 53969
+  },
+  "css/main.css": {
+   "sha512": "cee3a7b49a952902afaf706f4abce2447fcae7d935eef8cfa50a6981ebab371f",
+   "size": 161
+  },
+  "index.html": {
+   "sha512": "870c51ecccf85cc8782e081fc10ba87006c76a5c7841fdc142d4f8dabbc8f305",
+   "size": 5616
+  },
+  "js/ZeroFrame.js": {
+   "sha512": "090a43d18dcd1aa836b0d160631fe958f9fabd761af712e8eed6f7e010c0dd76",
+   "size": 2409
+  },
+  "js/gsap/TimelineLite.min.js": {
+   "sha512": "295c96cb039af845ff8234116aa245573614a26fb3608df966f966ad2f88cb5c",
+   "size": 12535
+  },
+  "js/gsap/TimelineMax.min.js": {
+   "sha512": "6b9e3087db976bc27883ffd61b4983d55dae66f2218763188931df110cf7e478",
+   "size": 20489
+  },
+  "js/gsap/TweenLite.min.js": {
+   "sha512": "ac71db3eb3ece7b4b3a5f2aae6bd95db321644f7014bc8d8c699bddcc6132693",
+   "size": 27671
+  },
+  "js/gsap/TweenMax.min.js": {
+   "sha512": "67985e4f3dfac537a6b754dbb5b7d7b53ab994c7d89ce917336fde59c4d388b5",
+   "size": 112880
+  },
+  "js/gsap/easing/EasePack.min.js": {
+   "sha512": "9d086b7fa196523e55fb10d97764e372500db25dcb2c117657b5b18eaee295f8",
+   "size": 5467
+  },
+  "js/gsap/plugins/AttrPlugin.min.js": {
+   "sha512": "34197729f0c50de002c1f83e00e6e78b7b7a4472b9bc9a23785bc977a16eb38a",
+   "size": 1167
+  },
+  "js/gsap/plugins/BezierPlugin.min.js": {
+   "sha512": "c86702561c197c60f23ecbbef39e77da658049c712f4354cc7565ecc8230012d",
+   "size": 8870
+  },
+  "js/gsap/plugins/CSSPlugin.min.js": {
+   "sha512": "de919ca896dc7bf6cd178cedab58a99b0680b68a3d09756b43bac1acaff1124c",
+   "size": 42135
+  },
+  "js/gsap/plugins/CSSRulePlugin.min.js": {
+   "sha512": "0d412d7bc89649a47fd24b31705b8ecc3124df7dfdd21cd7b31c429e4b2dfdeb",
+   "size": 1915
+  },
+  "js/gsap/plugins/ColorPropsPlugin.min.js": {
+   "sha512": "a8fc92a3d4a49ee287035f68c1af9f1ed34a82cafcf54f3cf54789bdae8e4732",
+   "size": 4085
+  },
+  "js/gsap/plugins/DirectionalRotationPlugin.min.js": {
+   "sha512": "aa8df4b31c0fc687ad78904f4c2d370cf91db950f3810f026bd035f997c4bb56",
+   "size": 1907
+  },
+  "js/gsap/plugins/EaselPlugin.min.js": {
+   "sha512": "bbfc45bfea1309cec1e398e615c57d248d15c6e2faa99f29863b98b3263b6a06",
+   "size": 5913
+  },
+  "js/gsap/plugins/EndArrayPlugin.min.js": {
+   "sha512": "f1a5ba1436cde08b0e7e9816d970be8783c71d944d4079521ce7de639ae4a7b4",
+   "size": 1093
+  },
+  "js/gsap/plugins/ModifiersPlugin.min.js": {
+   "sha512": "95fc505a0a48f70d23204b11baede0089bc0af63139a9f943110ad8f9f7e2ad1",
+   "size": 2657
+  },
+  "js/gsap/plugins/RaphaelPlugin.min.js": {
+   "sha512": "5587b8c1bfb5f8a6ba216c98bcbd962bbe3ef3aafba7cb3f9d8e8ecc9cdeef03",
+   "size": 5774
+  },
+  "js/gsap/plugins/RoundPropsPlugin.min.js": {
+   "sha512": "1dacad1a5acfd0d5193f1efb144ae01bc100861153875d10f95fc0e7d5ead818",
+   "size": 1390
+  },
+  "js/gsap/plugins/ScrollToPlugin.min.js": {
+   "sha512": "73eca73276e330ff56b3b91797ab573a3feddfb95214f3d41546253af7607f0f",
+   "size": 3395
+  },
+  "js/gsap/plugins/TextPlugin.min.js": {
+   "sha512": "e0fecc1631dee0e1ea81505dea0131de7c22515fb2620b0caa356361a3e8ec1d",
+   "size": 2756
+  },
+  "js/gsap/utils/Draggable.min.js": {
+   "sha512": "0d67336529e1fd4bf71f7241b4d653a44f2185f06afcf04a0f135222330c0cf9",
+   "size": 37450
+  },
+  "js/navToggle.js": {
+   "sha512": "f80335e8934871d82aed51de1a314c458d304893327957bec9c925a8872437bd",
+   "size": 2889
+  },
+  "tutorials/GettingStarted.html": {
+   "sha512": "934796c7932963b71d1faf4fbc1ea2c068bd7ea901141e71ad16a2f9fe88b1ad",
+   "size": 5393
+  },
+  "tutorials/TheBasics.html": {
+   "sha512": "25d8560a967e18c4e66fcfb9e45b099c2d8ebf4502755d53f6cf0cbe2960a5aa",
+   "size": 7305
+  }
+ },
+ "ignore": "",
+ "inner_path": "content.json",
+ "modified": 1500031130,
+ "postmessage_nonce_security": true,
+ "signers_sign": "G7MtlUJ6Dpda7US7kDCTfHF2WumAtdtbLdiNi5tYXW71C3gU0FR4yWnTHiszFZxcw0E+kecKkXfekxPdxdWop+A=",
+ "signs": {
+  "14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt": "G11z5hM2iLlwexx8Edz9YFZbKSQhe5GFoahiWUpSSyULN/gMeor0ONhrJkCKktqAHNRokJ+iLmLhQtkh46zx51M="
+ },
+ "signs_required": 1,
+ "title": "ZeroNet Dev Center",
+ "translate": ["js/all.js"],
+ "viewport": "width=device-width, initial-scale=1.0, shrink-to-fit=no",
+ "zeronet_version": "0.5.6"
+}
