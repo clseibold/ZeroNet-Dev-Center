@@ -6,6 +6,14 @@
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
  "description": "Center for ZeroNet Development. Tutorials, Collaboration, Questions",
  "files": {
+  "LICENSE": {
+   "sha512": "9abc0d7f0e94d2541a83bb9b8fc671f71a6fd3efb78ddb578532b202a19cbd57",
+   "size": 1074
+  },
+  "README.md": {
+   "sha512": "b40ad199e514ee824c8814f320f45c5e023bcb4319a89250188c3629d934a730",
+   "size": 127
+  },
   "css/bulma.css": {
    "sha512": "65bcef3adc230e45c18b650a15936704eb5c23fcdb7c304a3db675e9ca81918b",
    "size": 134222
@@ -19,8 +27,8 @@
    "size": 161
   },
   "index.html": {
-   "sha512": "870c51ecccf85cc8782e081fc10ba87006c76a5c7841fdc142d4f8dabbc8f305",
-   "size": 5616
+   "sha512": "46f1f6b15e72b2402f99bb0300b3cafb253eb6d50de7e42d2086e9c991d8dfef",
+   "size": 5611
   },
   "js/ZeroFrame.js": {
    "sha512": "090a43d18dcd1aa836b0d160631fe958f9fabd761af712e8eed6f7e010c0dd76",
@@ -106,26 +114,22 @@
    "sha512": "f80335e8934871d82aed51de1a314c458d304893327957bec9c925a8872437bd",
    "size": 2889
   },
-  "tutorials/GettingStarted.html": {
-   "sha512": "934796c7932963b71d1faf4fbc1ea2c068bd7ea901141e71ad16a2f9fe88b1ad",
-   "size": 5393
-  },
   "tutorials/TheBasics.html": {
-   "sha512": "25d8560a967e18c4e66fcfb9e45b099c2d8ebf4502755d53f6cf0cbe2960a5aa",
-   "size": 7305
+   "sha512": "aba6c9d2c02a637fd69aaff18e34d323235730c3caafcec453892e14130dba72",
+   "size": 7993
   }
  },
  "ignore": "(data/.*db|data/users/.*/.*|admin|.git)",
  "inner_path": "content.json",
- "modified": 1500031130,
+ "modified": 1500711929,
  "postmessage_nonce_security": true,
  "signers_sign": "G7MtlUJ6Dpda7US7kDCTfHF2WumAtdtbLdiNi5tYXW71C3gU0FR4yWnTHiszFZxcw0E+kecKkXfekxPdxdWop+A=",
  "signs": {
-  "14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt": "G11z5hM2iLlwexx8Edz9YFZbKSQhe5GFoahiWUpSSyULN/gMeor0ONhrJkCKktqAHNRokJ+iLmLhQtkh46zx51M="
+  "14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt": "G4usZsSW/UQEwzCJWob6ANzxgGaGHKwR1loGKbgtOfbHaUwC9mphQPCPCrqoTu+j7UUDOvZF8pVRK69Ig1DTd0o="
  },
  "signs_required": 1,
  "title": "ZeroNet Dev Center",
  "translate": ["js/all.js"],
  "viewport": "width=device-width, initial-scale=1.0, shrink-to-fit=no",
- "zeronet_version": "0.5.6"
+ "zeronet_version": "0.5.7"
 }
