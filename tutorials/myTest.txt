@@ -25,3 +25,15 @@ Oh, [And Links](../) Too!
 And more code
 ```
 
+Markdown
+:  Text-to-HTML conversion tool
+
+Markdown converts text to HTML.
+
+*[HTML]: HyperText Markup Language
+
+I have more [^1] to say up here.
+
+[^1]: To say down here.
+
+:) Yay!!! Also Emoji's :P

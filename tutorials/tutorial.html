@@ -79,12 +79,20 @@
 	<script type="text/javascript" src="../js/buefy.js"></script>
 	<script type="text/javascript" src="../js/ZeroFrame.js"></script>
 	<script type="text/javascript" src="../js/markdown-it.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-footnote.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-emoji-light.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-abbr.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-deflist.min.js"></script>
 	<!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
 	<script type="text/javascript" src="js/gsap/plugins/CSSPlugin.min.js"></script>-->
 
 	<script>
 		var md = window.markdownit();
-		md.configure('commonmark')
+		md.use(window.markdownitFootnote);
+		md.use(window.markdownitEmoji);
+		md.use(window.markdownitAbbr);
+		md.use(window.markdownitDeflist);
+
 		md.set({ html: true });
 		Vue.use(Buefy);
 
