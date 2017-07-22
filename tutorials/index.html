@@ -63,11 +63,6 @@
 
         <section class="section">
             <div class="columns">
-                <div class="column is-8 is-offset-2">
-                    <div v-html="tList" class="custom-content"></div>
-                </div>
-            </div>
-            <div class="columns">
                 <div class="column is-6 is-offset-3">
                     <div v-html="mdContent" class="custom-content"></div>
                 </div>
@@ -125,37 +120,9 @@
                     this.site_info = site_info
                 });
 
-                var t = getParameterByName('t');
-                console.log("t", t);
-                if (t !== null) {
-                    this.cmd('fileGet', ['tutorials/' + t + '.md'], (content) => {
-                        console.log("Rendering content", content, typeof content);
-                        if (content !== null) {
-                            app.mdContent = md.render(content);
-                        } else {
-                            app.mdContent = md.render("# _**ERROR**_\n ### **This tutorial does _**not**_ exist!**");
-                        }
-                    });
-                } else {
-                    // Render tutorial-list
-
-                    // this.cmd('dbQuery', [
-                    //     "SELECT * FROM tutorials"
-                    this.cmd('fileQuery', [
-                        "data/tutorials.json",
-                        "tutorials"
-                    ], (t_list) => {
-                        if (!t_list)
-                            t_list = []
-
-                        var tListMD = '';
-                        for (var i = 0; i < t_list.length; i++) {
-                            var tut = t_list[i];
-                            tListMD += '[' + tut.title + '](?t=' + tut.file + ')\n';
-                        }
-                        app.tList = md.render(tListMD);
-                    });
-                }
+                this.cmd('fileGet', ['tutorials/' + t + '.md'], (content) => {
+                    app.mdContent = md.render(content);
+                });
             }
 
             selectUser() {
