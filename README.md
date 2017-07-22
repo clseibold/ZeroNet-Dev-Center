@@ -2,7 +2,7 @@
 A Development Center for the ZeroNet. Tutorials on ZeroNet Zite Development, Collaboration, and Questions
 
 ## Tutorials In Progress
-* The Basics - Krixano
+* [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1)
 
 ## Tutorial Ideas
 * User login
