@@ -4,7 +4,7 @@
  "background-color": "#f8f8f8",
  "clone_root": "template-new",
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
- "description": "Center for ZeroNet Zite Development",
+ "description": "Development branch of ZeroNet Dev Center.",
  "files": {
   "css/bulma.css": {
    "sha512": "65bcef3adc230e45c18b650a15936704eb5c23fcdb7c304a3db675e9ca81918b",
@@ -124,7 +124,7 @@
   "14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt": "G11z5hM2iLlwexx8Edz9YFZbKSQhe5GFoahiWUpSSyULN/gMeor0ONhrJkCKktqAHNRokJ+iLmLhQtkh46zx51M="
  },
  "signs_required": 1,
- "title": "ZeroNet Dev Center",
+ "title": "[DEV] ZeroNet Dev Center",
  "translate": ["js/all.js"],
  "viewport": "width=device-width, initial-scale=1.0, shrink-to-fit=no",
  "zeronet_version": "0.5.6"
