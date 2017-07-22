@@ -50,16 +50,17 @@
 	    	<div class="hero-body">
 			    <div class="container has-text-centered">
 			      <h1 class="title">
-			        Tutorials
+			        {{ title }}
 			      </h1>
+			      <h2 class="subtitle is-6">{{ author }}</h2>
 			    </div>
 			</div>
 		</section>
 
 		<section class="section">
 			<div class="columns">
-				<div class="column is-8 is-offset-2">
-					<a href="TheBasics.html">The Basics</a>
+				<div class="column is-6 is-offset-3">
+					<div v-html="mdContent" class="custom-content"></div>
 				</div>
 			</div>
 		</section>
@@ -78,18 +79,32 @@
 	<script type="text/javascript" src="../js/vue.min.js"></script>
 	<script type="text/javascript" src="../js/buefy.js"></script>
 	<script type="text/javascript" src="../js/ZeroFrame.js"></script>
+	<script type="text/javascript" src="../js/markdown-it.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-footnote.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-emoji-light.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-abbr.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-deflist.min.js"></script>
 	<!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
 	<script type="text/javascript" src="js/gsap/plugins/CSSPlugin.min.js"></script>-->
 
 	<script>
+		var md = window.markdownit();
+		md.use(window.markdownitFootnote);
+		md.use(window.markdownitEmoji);
+		md.use(window.markdownitAbbr);
+		md.use(window.markdownitDeflist);
+
+		md.set({ html: true });
 		Vue.use(Buefy);
 
 		var app = new Vue({
 			el: '#app',
 			data: {
-				message: 'Hello Vue!'
+				title: 'Tutorial',
+				mdContent: 'Loading ...',
+				author: ''
 			}
-		})
+		});
 
 		class ZeroChat extends ZeroFrame {
 			onOpenWebsocket () {
@@ -97,7 +112,39 @@
 					if (site_info.cert_user_id)
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
-				})
+				});
+				var slug = getParameterByName('t');
+				var tutorial;
+
+				if (!slug || slug == "") {
+					app.title = "Tutorials";
+					app.mdContent = "";
+					this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+						for (var i in tutorials) {
+							app.mdContent += "<a href='./?t=" + tutorials[i].slug + "'>" + tutorials[i].title + "</a><br>";
+						}
+					});
+				} else {
+					this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+						for (var i in tutorials) {
+							if (tutorials[i].slug == slug) {
+								tutorial = tutorials[i];
+							}
+						}
+
+						if (tutorial) {
+							this.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+								app.mdContent = md.render(content);
+								app.title = tutorial.title;
+								app.author = 'By ' + tutorial.author;
+							});
+						} else {
+							app.mdContent = "";
+							app.title = 'Not Found';
+							app.author = 'This page was not found!';
+						}
+					});
+				}
 			}
 
 			selectUser () {
@@ -120,6 +167,16 @@
 		}
 
 		page = new ZeroChat()
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
 	</script>
 
 	<!--<script>
