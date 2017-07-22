@@ -156,6 +156,7 @@
 			if (!slug || slug == "") {
 				app.title = "Tutorials";
 				app.mdContent = "";
+				app.author = "";
 				if (app.tutorials.length == 0) {
 					//console.log("setting tutorials cache");
 					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
