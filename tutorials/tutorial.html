@@ -111,7 +111,7 @@
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
 				});
-				this.cmd('fileGet', ['tutorials/myTest.md'], (content) => {
+				this.cmd('fileGet', ['tutorials/TheBasics.md'], (content) => {
 					app.mdContent = md.render(content);
 				});
 			}

@@ -76,7 +76,9 @@ h4, h5, h6 {
   margin-top: 0.25em;
 }
 
-.custom-content p:not(:last-child),
+.custom-content p:not(:last-child) {
+  margin-bottom: 1.25em;
+}
 .custom-content dl:not(:last-child),
 .custom-content ol:not(:last-child),
 .custom-content ul:not(:last-child),
