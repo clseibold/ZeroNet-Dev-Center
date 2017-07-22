@@ -19,9 +19,8 @@
 	<script src="../js/navToggle.js"></script>
 </head>
 <body>
-
 	<div id="app">
-		<section class="hero is-dark is-bold">
+		<section class="hero is-dark is-bold is-small">
 			<div class="hero-head">
 	    		<header class="nav">
 	    			<div class="container">
@@ -41,7 +40,7 @@
 	    				<!-- Add the modifier "is-active" to display it on mobile -->
 	    				<div id="nav-menu" class="nav-right nav-menu">
 	    					<a href="../" class="nav-item">Home</a>
-	    					<a href="./" class="nav-item">Tutorials</a>
+	    					<a href="./" class="nav-item is-active">Tutorials</a>
 	    					<!--<a class="nav-item">Questions</a>-->
 	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
 	    				</div>
@@ -51,68 +50,16 @@
 	    	<div class="hero-body">
 			    <div class="container has-text-centered">
 			      <h1 class="title">
-			        The Basics
+			        Tutorials
 			      </h1>
-			      <h2 class="subtitle">
-			      	<small>Posted April 20th, 2017 by Christian Seibold</small>
-			      </h2>
 			    </div>
 			</div>
 		</section>
 
 		<section class="section">
 			<div class="columns">
-				<div class="column is-6 is-offset-3">
-					<!--<p class="title is-4">Getting Started</p>-->
-					<em class="tag is-info">Incomplete</em><!--<em class="tag is-warning" style="margin-left: 5px;">Help Wanted</em>-->
-					<br>
-					<br>
-					<!--<p class="title is-4">What You Will Learn</p>
-					<p>
-						In this tutorial you will learn how you go about starting a new zite, how they are updated, stored, and transfered to peers, and how zites are kept secure.
-	                </p>-->
-	                <br>
-	                <p class="title is-4">Table of Contents</p>
-	                <ul>
-	                    <li>1. <a>Introduction</a></li>
-	                    <li>2. <a>Creating an Empty Zite</a></li>
-	                    <li>3. <a>Cloning a Zite</a></li>
-	                    <li>4. <a>The Sidebar</a></li>
-	                    <li>&nbsp;&nbsp;&nbsp;&nbsp;4a. <a>Zite Address</a></li>
-	                    <li>&nbsp;&nbsp;&nbsp;&nbsp;4b. <a>Where Your Zite is Stored Locally</a></li>
-	                    <li>&nbsp;&nbsp;&nbsp;&nbsp;4c. <a>Changing Basic Zite Settings</a></li>
-	                    <li>5. <a>How Does ZeroNet Know Who Owns a Zite?</a></li>
-	                    <li>6. <a>Content.json file - What is it?</a></li>
-	                    <li>7. <a>Signing the Content.json File</a></li>
-	                    <li>8. <a>Publishing Your Zite</a></li>
-	                    <li>9. <a>Keeping Your Zite Online</a></li>
-	                    <li>10. <a>Updating Your Zite</a></li>
-	                </ul>
-	                <br>
-	                <p class="title is-4">Introduction</p>
-	                <p>
-	                    Before we start creating zites, it is useful to know how zites work on ZeroNet. This tutorial will take you through how to create an empty zite, where to put your code, what you need before you can publish your zite, and how they are updated, transfered, and kept secure.
-	                </p>
-	                <br>
-	                <p>
-	                    Zites are made up of basic web code, including html, css, and js. However, json files are used for storing data and for telling ZeroNet what databases you have and how they are structured.
-	                </p>
-	                <br>
-	                <p>
-	                    Since ZeroNet makes no use of a server - everything is downloaded to you computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you ...
-					</p>
-					<br>
-					<p class="title is-4">Creating A Zite</p>
-					<p>
-						There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ... However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover.
-
-						In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to ZeroHello and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
-					</p>
-					<br>
-					<p class="title is-4">The Sidebar</p>
-					<p>
-						
-					</p>
+				<div class="column is-8 is-offset-2">
+					<a href="TheBasics.html">The Basics</a>
 				</div>
 			</div>
 		</section>
@@ -135,13 +82,21 @@
 	<script type="text/javascript" src="js/gsap/plugins/CSSPlugin.min.js"></script>-->
 
 	<script>
+		Vue.use(Buefy);
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				message: 'Hello Vue!'
+			}
+		})
+
 		class ZeroChat extends ZeroFrame {
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
 					if (site_info.cert_user_id)
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
-					this.loadZiteIndicator();
 				})
 			}
 
@@ -158,7 +113,7 @@
 					} else if (!message.params.cert_user_id) {
 						document.getElementById("select_user").innerHTML = "Select user"
 					} else if (message.params.event && message.params.event[0] == "file_done") {
-						this.loadZiteIndicator();
+						//this.loadZiteIndicator();
 					}
 				}
 			}
