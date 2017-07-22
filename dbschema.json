@@ -1,7 +1,7 @@
 {
     "db_name": "ZeroNetDevCenter",
     "db_file": "data/zeronetdevcenter.db",
-    "version": 1,
+    "version": 2,
     "maps": {
         "tutorials.json": {
             "to_table": [
@@ -34,7 +34,7 @@
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(json_id, slug)", "CREATE INDEX tutorial_file ON tutorials(slug)", "CREATE INDEX tutorial_title ON tutorials(title)"],
-            "schema_changed": 10
+            "schema_changed": 11
         }
     }
 }

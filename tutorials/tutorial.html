@@ -111,9 +111,25 @@
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
 				});
-				this.cmd('fileGet', ['tutorials/' + getParameterByName('t') + '.md'], (content) => {
-					app.mdContent = md.render(content);
+				var slug = getParameterByName('t');
+				var tutorial;
+
+				this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+					//console.log(t.slug);
+					console.log(tutorials);
+					for (var i in tutorials) {
+						if (tutorials[i].slug == slug) {
+							tutorial = tutorials[i];
+						}
+					}
+
+					this.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+						app.mdContent = md.render(content);
+					});
 				});
+
+				//if (tutorial) {
+				//}
 			}
 
 			selectUser () {
