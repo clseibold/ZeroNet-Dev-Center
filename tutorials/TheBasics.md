@@ -4,7 +4,7 @@ Before we start creating zites, it is useful to know how zites work on ZeroNet. 
 
 Zites are made up of basic web code, including html, css, and js. However, json files are used for storing data and for telling ZeroNet what databases you have and how they are structured.
 
-Since ZeroNet makes no use of a server - everything is downloaded to you computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you ...
+Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you ...
 
 ## Creating A Zite
 
