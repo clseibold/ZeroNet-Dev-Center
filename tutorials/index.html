@@ -127,13 +127,15 @@
 
 			onRequest (cmd, message) {
 				if (cmd == "setSiteInfo") {
-					this.site_info = message.params  // Save site info data to allow access it later
+					this.site_info = message.params  // Save site info data to allow access to it later
 					if (message.params.cert_user_id){
 						document.getElementById("select_user").innerHTML = message.params.cert_user_id
 					} else if (!message.params.cert_user_id) {
 						document.getElementById("select_user").innerHTML = "Select user"
 					} else if (message.params.event && message.params.event[0] == "file_done") {
-						//this.loadZiteIndicator();
+						// Reload the current tutorial's text, as well as the tutorials list.
+						app.tutorials = [];
+						loadTutorial(getParameterByName('t')); // TODO(krixano): This doesn't seem to be working!
 					}
 				}
 			}

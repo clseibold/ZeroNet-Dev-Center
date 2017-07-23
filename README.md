@@ -5,8 +5,10 @@ A Development Center for the ZeroNet. Tutorials on ZeroNet Zite Development, Col
 * [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1)
 
 ## Tutorial Ideas
-* User login
+* Building your first zite (static zite)
 * Database Basics
+* User login
+* Building a basic dynamic zite
 * Setting Up Git/Github with ZeroNet
 * How siteowner can modify each users' data.json file
 * Optional Files
