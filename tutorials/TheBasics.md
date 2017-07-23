@@ -42,4 +42,4 @@ In order to keep your zite online, you need peers that are reliable and always o
 ## Updating Your Zite
 [TODO]
 
-[^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here]().
+[^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here](/17Kom2G5qNDc6NaQwv445h1gFzxkY3ZtZe/site_development/zeroframe_api_reference/).
