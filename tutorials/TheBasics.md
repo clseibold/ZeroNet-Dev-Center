@@ -4,7 +4,7 @@ Before we start creating zites, it is useful to know how zites work on ZeroNet. 
 
 Zites are made up of basic web code, including html, css, and js. However, json files are used for storing data and for telling ZeroNet what databases you have and how they are structured.
 
-Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you ...
+Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you ...[^1]
 
 ## Creating A Zite
 
@@ -27,3 +27,19 @@ Whenever you make any changes to your zite, including to the content.json file, 
 **NOTE:** If you do not sign the `content.json` file, visitors will not be able to download this updated version of your zite for security reasons. If you have no peers, they will not be able to visit your zite at all since they can't download a *signed* `content.json` file elsewhere. So **make sure you sign this file before you publish it.**
 
 To sign this file, you go to the sidebar and, in the `This is my site` section, click `Sign`.
+
+## How Zites Are Kept Secure
+
+
+## Publishing Your Zite
+In order to publish your zite, you simply sign your `content.json` file and publish it. These buttons are located in the sidebar under the `This is my site` section. If you do not have any peers, you do not need to click publish. Publish only sends the content.json file to other peers. Without peers, there is no need because these peers will download your zite from your computer.
+
+## Keeping Your Zite Online
+In order to keep your zite online, you need peers that are reliable and always on. If your computer will not be connected to ZeroNet all the time, you will have to either have enough people to ensure your peer count won't go down to zero when you are offline, or you will have to find *at least* one peer that will always be online.
+
+[TODO]
+
+## Updating Your Zite
+[TODO]
+
+[^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here]().
