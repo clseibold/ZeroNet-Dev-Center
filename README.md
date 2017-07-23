@@ -1,6 +1,8 @@
 # ZeroNet-Dev-Center
 A Development Center for the ZeroNet. Tutorials on ZeroNet Zite Development, Collaboration, and Questions
 
+Our Goal is to provide useful information, tutorials, and help to those who want to develop Zites in order to inspire more development on the ZeroNet. This site will *not* teach the basics of front-end web development (this may change in the future). This site only focuses on ZeroNet-specific development, including the ZeroFrame API.
+
 ## Tutorials In Progress
 * [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1)
 
