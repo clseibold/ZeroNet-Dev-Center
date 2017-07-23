@@ -15,6 +15,7 @@ Our Goal is to provide useful information, tutorials, and help to those who want
 * How siteowner can modify each users' data.json file
 * Optional Files
 * Encrypting User's Private Data
+* Merger Zites
 
 ## Want to Write A Tutorial?
 If you would like to help me out and write a tutorial, either from one above or one you come up with that you think is needed, simply create an Issue detailing what you want the tutorial to cover and (anytime you think of it), it's outline. This allows people to talk about what the tutorial should or shouldn't include.
