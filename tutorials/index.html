@@ -1,237 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>ZeroNet Dev Center</title>
-    <meta charset="utf-8">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
-    <base href="" target="_top" id="base">
-    <script>
-        base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")
-    </script>
+	<title>ZeroNet Dev Center</title>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
+	<base href="" target="_top" id="base">
+	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
 
-    <link rel="stylesheet" href="../css/buefy.css" />
-    <link rel="stylesheet" href="../css/main.css" />
+	<link rel="stylesheet" href="../css/buefy.css" />
+	<link rel="stylesheet" href="../css/main.css" />
 
-    <style>
+	<style>
+	</style>
 
-    </style>
-
-    <script src="../js/navToggle.js"></script>
+	<script src="../js/navToggle.js"></script>
 </head>
-
 <body>
-    <div id="app">
-        <section class="hero is-dark is-bold is-small">
-            <div class="hero-head">
-                <header class="nav">
-                    <div class="container">
-                        <div class="nav-left">
-                            <a href="../" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</a>
-                        </div>
+	<div id="app">
+		<section class="hero is-dark is-bold is-small">
+			<div class="hero-head">
+	    		<header class="nav">
+	    			<div class="container">
+	    				<div class="nav-left">
+	    					<a href="../" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</a>
+	    				</div>
 
-                        <!-- This "nav-toggle" hamburger menu is only visible on mobile -->
-                        <!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->
-                        <span id="nav-toggle" class="nav-toggle">
+	    				<!-- This "nav-toggle" hamburger menu is only visible on mobile -->
+	    				<!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->
+	    				<span id="nav-toggle" class="nav-toggle">
 	    					<span></span>
-                        <span></span>
-                        <span></span>
-                        </span>
+	    					<span></span>
+	    					<span></span>
+	    				</span>
 
-                        <!-- This "nav-menu" is hidden on mobile -->
-                        <!-- Add the modifier "is-active" to display it on mobile -->
-                        <div id="nav-menu" class="nav-right nav-menu">
-                            <a href="../" class="nav-item">Home</a>
-                            <a class="nav-item is-active" onclick="loadTutorial('');">Tutorials</a>
-                            <!--<a class="nav-item">Questions</a>-->
-                            <span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
-                        </div>
-                    </div>
-                </header>
-            </div>
-            <div class="hero-body">
-                <div class="container has-text-centered">
-                    <h1 class="title">
-                        {{ title }}
-                    </h1>
-                    <h2 class="subtitle is-6">{{ author }}</h2>
-                </div>
-            </div>
-        </section>
+	    				<!-- This "nav-menu" is hidden on mobile -->
+	    				<!-- Add the modifier "is-active" to display it on mobile -->
+	    				<div id="nav-menu" class="nav-right nav-menu">
+	    					<a href="../" class="nav-item">Home</a>
+	    					<a class="nav-item is-active" onclick="loadTutorial('');">Tutorials</a>
+	    					<!--<a class="nav-item">Questions</a>-->
+	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick='return page.selectUser()'>Select user</a></span>
+	    				</div>
+	    			</div>
+	    		</header>
+	    	</div>
+	    	<div class="hero-body">
+			    <div class="container has-text-centered">
+			      <h1 class="title">
+			        {{ title }}
+			      </h1>
+			      <h2 class="subtitle is-6">{{ author }}</h2>
+			    </div>
+			</div>
+		</section>
 
-        <section class="section">
-            <div class="columns">
-                <div class="column is-6 is-offset-3">
-                    <div v-html="mdContent" class="custom-content"></div>
-                </div>
-            </div>
-        </section>
+		<section class="section">
+			<div class="columns">
+				<div class="column is-6 is-offset-3">
+					<div v-html="mdContent" class="custom-content"></div>
+				</div>
+			</div>
+		</section>
 
-        <footer class="footer">
-            <div class="container">
-                <span style="text-align: center">
+		<footer class="footer">
+			<div class="container">
+				<span style="text-align: center">
 					<small>NOTE: This zite is still a work-in-progress.</small><br>
 					<small>Zite created on April 20th, 2017 by <a href="/Me.ZeroNetwork.bit/?Profile/12h51ug6CcntU2aiBjhP8Ns2e5VypbWWtv/12gAes6NzDS9E2q6Q1UXrpUdbPS6nvuBPu/krixano@zeroid.bit">krixano@zeroid.bit</a> (Christian Seibold)</small><br>
 					<small><a href="https://github.com/krixano/ZeroNet-Dev-Center">Github Link</a></small>
 				</span>
-            </div>
-        </footer>
-    </div>
+			</div>
+		</footer>
+	</div>
 
-    <script type="text/javascript" src="../js/vue.min.js"></script>
-    <script type="text/javascript" src="../js/buefy.js"></script>
-    <script type="text/javascript" src="../js/ZeroFrame.js"></script>
-    <script type="text/javascript" src="../js/markdown-it.min.js"></script>
-    <script type="text/javascript" src="../js/markdown-it-footnote.min.js"></script>
-    <script type="text/javascript" src="../js/markdown-it-emoji-light.min.js"></script>
-    <script type="text/javascript" src="../js/markdown-it-abbr.min.js"></script>
-    <script type="text/javascript" src="../js/markdown-it-deflist.min.js"></script>
-    <!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
+	<script type="text/javascript" src="../js/vue.min.js"></script>
+	<script type="text/javascript" src="../js/buefy.js"></script>
+	<script type="text/javascript" src="../js/ZeroFrame.js"></script>
+	<script type="text/javascript" src="../js/markdown-it.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-footnote.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-emoji-light.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-abbr.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it-deflist.min.js"></script>
+	<!--<script type="text/javascript" src="js/gsap/TweenLite.min.js"></script>
 	<script type="text/javascript" src="js/gsap/plugins/CSSPlugin.min.js"></script>-->
 
-    <script>
-        var md = window.markdownit();
-        md.use(window.markdownitFootnote);
-        md.use(window.markdownitEmoji);
-        md.use(window.markdownitAbbr);
-        md.use(window.markdownitDeflist);
+	<script>
+		var md = window.markdownit();
+		md.use(window.markdownitFootnote);
+		md.use(window.markdownitEmoji);
+		md.use(window.markdownitAbbr);
+		md.use(window.markdownitDeflist);
 
-        md.set({
-            html: true
-        });
-        Vue.use(Buefy);
+		md.set({ html: true });
+		Vue.use(Buefy);
 
-        var app = new Vue({
-            el: '#app',
-            data: {
-                title: 'Tutorial',
-                mdContent: 'Loading ...',
-                author: '',
-                tutorials: []
-            }
-        });
+		var app = new Vue({
+			el: '#app',
+			data: {
+				title: 'Tutorial',
+				mdContent: 'Loading ...',
+				author: '',
+				tutorials: []
+			}
+		});
 
-        class ZeroChat extends ZeroFrame {
-            onOpenWebsocket() {
-                this.cmd("siteInfo", {}, (site_info) => {
-                    if (site_info.cert_user_id)
-                        document.getElementById("select_user").innerText = site_info.cert_user_id
-                    this.site_info = site_info
-                });
-                var slug = getParameterByName('t');
-                var tutorial;
-                loadTutorial(slug);
+		class ZeroChat extends ZeroFrame {
+			onOpenWebsocket () {
+				this.cmd("siteInfo", {}, (site_info) => {
+					if (site_info.cert_user_id)
+						document.getElementById("select_user").innerText = site_info.cert_user_id
+					this.site_info = site_info
+				});
+				var slug = getParameterByName('t');
+				var tutorial;
+				loadTutorial(slug);
+				
+			}
 
-            }
+			selectUser () {
+				this.cmd("certSelect", {accepted_domains: ["zeroid.bit", "kaffie.bit"]})
+				return false
+			}
 
-            selectUser() {
-                this.cmd("certSelect", {
-                    accepted_domains: ["zeroid.bit", "kaffie.bit"]
-                })
-                return false
-            }
+			onRequest (cmd, message) {
+				if (cmd == "setSiteInfo") {
+					this.site_info = message.params  // Save site info data to allow access to it later
+					if (message.params.cert_user_id){
+						document.getElementById("select_user").innerHTML = message.params.cert_user_id
+					} else if (!message.params.cert_user_id) {
+						document.getElementById("select_user").innerHTML = "Select user"
+					} else if (message.params.event && message.params.event[0] == "file_done") {
+						// Reload the current tutorial's text, as well as the tutorials list.
+						app.tutorials = [];
+						loadTutorial(getParameterByName('t')); // TODO(krixano): This doesn't seem to be working!
+					}
+				}
+			}
+		}
 
-            onRequest(cmd, message) {
-                if (cmd == "setSiteInfo") {
-                    this.site_info = message.params // Save site info data to allow access it later
-                    if (message.params.cert_user_id) {
-                        document.getElementById("select_user").innerHTML = message.params.cert_user_id
-                    } else if (!message.params.cert_user_id) {
-                        document.getElementById("select_user").innerHTML = "Select user"
-                    } else if (message.params.event && message.params.event[0] == "file_done") {
-                        //this.loadZiteIndicator();
-                    }
-                }
-            }
-        }
+		page = new ZeroChat()
 
-        page = new ZeroChat()
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
 
-        function getParameterByName(name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
+		function loadTutorial(slug) {
+			var tutorial;
+			if (!slug || slug == "") {
+				app.title = "Tutorials";
+				app.mdContent = "";
+				app.author = "";
+				if (app.tutorials.length == 0) {
+					//console.log("setting tutorials cache");
+					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+						app.tutorials = tutorials;
+						for (var i in tutorials) {
+							app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
+						}
+						page.cmd('wrapperPushState', [null, '', '']);
+					});
+				} else {
+					//console.log("using cached tutorials");
+					for (var i in app.tutorials) {
+						app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
+						page.cmd('wrapperPushState', [null, '', '']);
+					}
+				}
+			} else {
+				if (app.tutorials.length == 0) {
+					//console.log("setting tutorials cache");
+					page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+						app.tutorials = tutorials;
+						for (var i in tutorials) {
+							if (tutorials[i].slug == slug) {
+								tutorial = tutorials[i];
+							}
+						}
 
-        function loadTutorial(slug) {
-            var tutorial;
-            if (!slug || slug == "") {
-                app.title = "Tutorials";
-                app.mdContent = "";
-                app.author = "";
-                if (app.tutorials.length == 0) {
-                    //console.log("setting tutorials cache");
-                    page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-                        app.tutorials = tutorials;
-                        for (var i in tutorials) {
-                            app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
-                        }
-                        page.cmd('wrapperPushState', [null, '', '']);
-                    });
-                } else {
-                    //console.log("using cached tutorials");
-                    for (var i in app.tutorials) {
-                        app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
-                        page.cmd('wrapperPushState', [null, '', '']);
-                    }
-                }
-            } else {
-                if (app.tutorials.length == 0) {
-                    //console.log("setting tutorials cache");
-                    page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-                        app.tutorials = tutorials;
-                        for (var i in tutorials) {
-                            if (tutorials[i].slug == slug) {
-                                tutorial = tutorials[i];
-                            }
-                        }
+						if (tutorial) {
+							page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+								app.mdContent = md.render(content);
+								app.title = tutorial.title;
+								app.author = 'By ' + tutorial.author;
+								page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
+							});
+						} else {
+							app.mdContent = "";
+							app.title = 'Not Found';
+							app.author = 'This page was not found!';
+						}
+					});
+				} else {
+					//console.log("using cached tutorials");
+					for (var i in app.tutorials) {
+						if (app.tutorials[i].slug == slug) {
+							tutorial = app.tutorials[i];
+						}
+					}
 
-                        if (tutorial) {
-                            page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-                                app.mdContent = md.render(content);
-                                app.title = tutorial.title;
-                                app.author = 'By ' + tutorial.author;
-                                page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
-                            });
-                        } else {
-                            app.mdContent = "";
-                            app.title = 'Not Found';
-                            app.author = 'This page was not found!';
-                        }
-                    });
-                } else {
-                    //console.log("using cached tutorials");
-                    for (var i in app.tutorials) {
-                        if (app.tutorials[i].slug == slug) {
-                            tutorial = app.tutorials[i];
-                        }
-                    }
+					if (tutorial) {
+						page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+							app.mdContent = md.render(content);
+							app.title = tutorial.title;
+							app.author = 'By ' + tutorial.author;
+							page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
+						});
+					} else {
+						app.mdContent = "";
+						app.title = 'Not Found';
+						app.author = 'This page was not found!';
+					}
+				}
+			}
+		}
+	</script>
 
-                    if (tutorial) {
-                        page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-                            app.mdContent = md.render(content);
-                            app.title = tutorial.title;
-                            app.author = 'By ' + tutorial.author;
-                            page.cmd('wrapperPushState', [null, '', '?t=' + tutorial.slug]);
-                        });
-                    } else {
-                        app.mdContent = "";
-                        app.title = 'Not Found';
-                        app.author = 'This page was not found!';
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!--<script>
+	<!--<script>
 
 	class Page extends ZeroFrame {
 		setSiteInfo(site_info) {
@@ -261,5 +254,4 @@
 </script>-->
 
 </body>
-
 </html>

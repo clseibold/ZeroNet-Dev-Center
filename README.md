@@ -1,16 +1,21 @@
 # ZeroNet-Dev-Center
 A Development Center for the ZeroNet. Tutorials on ZeroNet Zite Development, Collaboration, and Questions
 
+Our Goal is to provide useful information, tutorials, and help to those who want to develop Zites in order to inspire more development on the ZeroNet. This site will *not* teach the basics of front-end web development (this may change in the future). This site only focuses on ZeroNet-specific development, including the ZeroFrame API.
+
 ## Tutorials In Progress
 * [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1)
 
 ## Tutorial Ideas
-* User login
+* Building your first zite (static zite)
 * Database Basics
+* User login
+* Building a basic dynamic zite
 * Setting Up Git/Github with ZeroNet
 * How siteowner can modify each users' data.json file
 * Optional Files
 * Encrypting User's Private Data
+* Merger Zites
 
 ## Want to Write A Tutorial?
 If you would like to help me out and write a tutorial, either from one above or one you come up with that you think is needed, simply create an Issue detailing what you want the tutorial to cover and (anytime you think of it), it's outline. This allows people to talk about what the tutorial should or shouldn't include.
