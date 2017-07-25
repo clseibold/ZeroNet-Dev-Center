@@ -13,16 +13,6 @@
         }
     },
     "tables": {
-        "json": {
-            "cols": [
-                ["json_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
-                ["directory", "TEXT"],
-                ["file_name", "TEXT"],
-                ["cert_user_id", "TEXT"]
-            ],
-            "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
-            "schema_changed": 10
-        },
         "tutorials": {
             "cols": [
                 ["id", "INTEGER PRIMARY KEY"],
