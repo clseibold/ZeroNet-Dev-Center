@@ -49,10 +49,8 @@
 	    	</div>
 	    	<div class="hero-body">
 			    <div class="container has-text-centered">
-			      <h1 class="title">
-			        {{ title }}
-			      </h1>
-			      <h2 class="subtitle is-6">{{ author }}</h2>
+			      <h1 class="title" v-html="title"></h1>
+			      <h2 class="subtitle is-6" v-html="author"></h2>
 			    </div>
 			</div>
 		</section>
