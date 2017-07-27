@@ -36,6 +36,10 @@ The List-part **This is my site**:
 3. **Save site settings**: A button, to save the last two inputs to the zites `content.json`-File
 4. **Content Publishing**: A list of files you can sign (click them to insert them into the input below), an input to input the file you want to sign/publish, a button to sign the selected file, and another one, to publish it to connected peers
 
+## Where Is A Zite Stored Locally?
+
+If you need to change any of the code for your zite, you can find your zite in the `ZeroNet_Root/data` folder, under the directory of your zite address. This is the same as the `identity address` shown in the sidebar. When you first start out, this directory where the files to your zite are stored should at least have a `content.json` file and an `index.html` file.
+
 ## Content.json File, What is It?
 
 When a visitor visit's your zite, the first thing they download is the zite's `content.json` file. This `content.json` file holds all of the other file names which must be downloaded in order to use the zite, along with their hashes so it can be verified that they are downloading the correct files. It basically gives information on the *content* of the zite. This file also holds a cryptographic digital signature that was created by the owner to verify that the content.json file has not been tampered with by anyone other than the zite owner. 
@@ -52,6 +56,9 @@ To sign this file, you go to the sidebar and, in the `This is my site` section, 
 
 ## How Zites Are Kept Secure
 
+ZeroNet secures zites by using private and public keys, the public key being your zite's identity address. The private key always kept on your computer, in the `users.json` file under the `ZeroNet_Root/data` directory. This private key is used to create a digital signature and encrypt the hash of the content.json file in its current state. This digital signature (and encrypted hash) is then stored in the `content.json` file. When a visitor downloads the `content.json` file, they first decrypt the digital signature with the zite's public key (the zite's address). Then, they verify the `content.json` file by comparing the hash of the `content.json` file with the hash that has been decrpted and sent.
+
+This keeps your zite secure because the only person who can create the digital signature that holds the hash of the `content.json` file is the person with the private key, the zite owner.
 
 ## Publishing Your Zite
 
