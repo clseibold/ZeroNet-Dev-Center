@@ -167,6 +167,7 @@
 							app.mdContent += "<a onclick='loadTutorial(\"" + tutorials[i].slug + "\");'>" + tutorials[i].title + "</a><br>";
 						}
 						page.cmd('wrapperPushState', [null, '', '']);
+						app.mdContent += "Database Basics (Coming Soon)";
 					});
 				} else {
 					//console.log("using cached tutorials");
@@ -174,8 +175,8 @@
 						app.mdContent += "<a onclick='loadTutorial(\"" + app.tutorials[i].slug + "\");'>" + app.tutorials[i].title + "</a><br>";
 						page.cmd('wrapperPushState', [null, '', '']);
 					}
+					app.mdContent += "Database Basics (Coming Soon)";
 				}
-				app.mdContent += "Database Basics (Coming Soon)";
 			} else {
 				if (app.tutorials.length == 0) {
 					//console.log("setting tutorials cache");
