@@ -157,7 +157,7 @@
 			var tutorial;
 			if (!slug || slug == "") {
 				app.title = "Tutorials";
-				app.mdContent = "";
+				app.mdContent = "<h2>Zite Creation</h2>";
 				app.author = "";
 				if (app.tutorials.length == 0) {
 					//console.log("setting tutorials cache");
@@ -175,6 +175,7 @@
 						page.cmd('wrapperPushState', [null, '', '']);
 					}
 				}
+				app.mdContent += "Database Basics (Coming Soon)";
 			} else {
 				if (app.tutorials.length == 0) {
 					//console.log("setting tutorials cache");

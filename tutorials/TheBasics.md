@@ -4,11 +4,11 @@ Before we start creating zites, it is useful to know how zites work on ZeroNet. 
 
 Zites are made up of basic web code, including html, css, and js. However, json files are used for storing data and for telling ZeroNet what databases you have and how they are structured.
 
-Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you ...[^1]
+Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you query server/site/uesr info, load or modify files using a WebSocket connection to your ZeroNet client, and query and modify databases. [^1]
 
 ## Creating A Zite
 
-There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ZeroBlog, [TODO] However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover.
+There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ZeroBlog, [TODO] However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover. [^2]
 
 In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to ZeroHello and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
 
@@ -72,10 +72,13 @@ In order to keep your zite online, you need peers that are reliable and always o
 
 It may be a good idea to seed your zite by ZeroNet proxies, for example [bit.surf](http://bit.surf:43110). To do this, you simply visit your zite using the proxy of your choosing. This will help keep your zite online by having another computer seed the zite. [bit.surf](http://bit.surf:43110) is a good choice if you want your zite picked up by ZeroNet search engines like [RVRE](/rvre.bit).
 
-You can also add your zite to the [New ZeroNet Sites](/1LtvsjbtQ2tY7SCtCZzC4KhErqEK3bXD4n) zite, which will not only further spread your zite, but also get seeders who seed from this list of new zites.
+You can also add your zite to [New ZeroNet Sites](/1LtvsjbtQ2tY7SCtCZzC4KhErqEK3bXD4n), which will not only further spread your zite, but also get seeders who seed from this list of new zites.
+
+And finally, you will also want to add your zite to [ZeroSites](/Sites.ZeroNetwork.bit).
 
 ## Updating Your Zite
 
 [TODO]
 
 [^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here](/17Kom2G5qNDc6NaQwv445h1gFzxkY3ZtZe/site_development/zeroframe_api_reference/).
+[^2]: [Here](/blog.zeronetwork.bit/?Post:43:ZeroNet+site+development+tutorial+1) is a pretty good tutorial to follow until we get up a tutorial of our own on this zite.
