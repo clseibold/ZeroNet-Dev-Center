@@ -8,9 +8,11 @@ Since ZeroNet makes no use of a server - everything is downloaded to your comput
 
 ## Creating A Zite
 
-There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ... However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover.
+There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ZeroBlog, [TODO] However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover.
 
 In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to ZeroHello and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
+
+To create an empty zite, go to ZeroHello, click the menu icon at the top left next to the ZeroHello logo, and click 'Create new, empty site'. Once you click on this, you will be redirected to your new empty zite. Take note of its address, this is the address people will use to visit your zite. An empty zite will setup everything necessary for you to start creating a zite from scratch.
 
 ## The Sidebar
 
@@ -38,7 +40,7 @@ The List-part **This is my site**:
 
 ## Where Is A Zite Stored Locally?
 
-If you need to change any of the code for your zite, you can find your zite in the `ZeroNet_Root/data` folder, under the directory of your zite address. This is the same as the `identity address` shown in the sidebar. When you first start out, this directory where the files to your zite are stored should at least have a `content.json` file and an `index.html` file.
+If you need to change any of the code for your zite, you can find your zite in the `ZeroNet_Root/data` folder, under the directory of your zite address. This is the same as the `site address` shown in the sidebar. When you first start out, this directory where the files to your zite are stored should at least have a `content.json` file and an `index.html` file.
 
 ## Content.json File, What is It?
 
@@ -48,17 +50,17 @@ The file does contain other information like what ZeroNet version the zite was c
 
 ## Signing the Content.json File
 
-Whenever you make any changes to your zite, including to the content.json file, you must *sign* the file. This ensures that whenever a person downloads your zite, they know these changes were made by the zite owner. Signing your content.json file will also update the hashes to all of the files stored and used on your zite.
+Whenever you make any changes to your zite, including to the `content.json` file, you must *sign* the file. This ensures that whenever a person downloads your zite, they know these changes were made by the zite owner. Signing your `content.json` file will update the hashes to all of the files stored and used on your zite.
 
-**NOTE:** If you do not sign the `content.json` file, visitors will not be able to download this updated version of your zite for security reasons. If you have no peers, they will not be able to visit your zite at all since they can't download a *signed* `content.json` file elsewhere. So **make sure you sign this file before you publish it.**
+**NOTE:** If you do not sign this file, visitors will not be able to download this updated version of your zite for security reasons. If you have no peers, they will not be able to visit your zite at all since they can't download a *signed* `content.json` file elsewhere. So **make sure you sign this file before you publish it.**
 
 To sign this file, you go to the sidebar and, in the `This is my site` section, click `Sign`.
 
 ## How Zites Are Kept Secure
 
-ZeroNet secures zites by using private and public keys, the public key being your zite's identity address. The private key always kept on your computer, in the `users.json` file under the `ZeroNet_Root/data` directory. This private key is used to create a digital signature and encrypt the hash of the content.json file in its current state. This digital signature (and encrypted hash) is then stored in the `content.json` file. When a visitor downloads the `content.json` file, they first decrypt the digital signature with the zite's public key (the zite's address). Then, they verify the `content.json` file by comparing the hash of the `content.json` file with the hash that has been decrpted and sent.
+ZeroNet secures zites by using private and public keys, the public key being your zite's address. The private key is always kept on your computer, in the `users.json` file under the `ZeroNet_Root/data` directory. This private key is used to create a digital signature and encrypt the hash of the `content.json` file in its current state (excluding the digital signature). This digital signature (and encrypted hash) is then stored in this file. When a visitor downloads the file, they first decrypt the digital signature with the zite's public key (the zite's address). Then, they verify the file by comparing the hash of the file with the hash that has been decrypted and sent via the digital signature.
 
-This keeps your zite secure because the only person who can create the digital signature that holds the hash of the `content.json` file is the person with the private key, the zite owner.
+This keeps your zite secure because the only person who can create the digital signature that holds the hash of the `content.json` file is the person with the private key - the zite owner.
 
 ## Publishing Your Zite
 
@@ -68,7 +70,9 @@ In order to publish your zite, you simply sign your `content.json` file and publ
 
 In order to keep your zite online, you need peers that are reliable and always on. If your computer will not be connected to ZeroNet all the time, you will have to either have enough people to ensure your peer count won't go down to zero when you are offline, or you will have to find *at least* one peer that will always be online.
 
-[TODO]
+It may be a good idea to seed your zite by ZeroNet proxies, for example [bit.surf](http://bit.surf:43110). To do this, you simply visit your zite using the proxy of your choosing. This will help keep your zite online by having another computer seed the zite. [bit.surf](http://bit.surf:43110) is a good choice if you want your zite picked up by ZeroNet search engines like [RVRE](/rvre.bit).
+
+You can also add your zite to the [New ZeroNet Sites](/1LtvsjbtQ2tY7SCtCZzC4KhErqEK3bXD4n) zite, which will not only further spread your zite, but also get seeders who seed from this list of new zites.
 
 ## Updating Your Zite
 
