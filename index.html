@@ -13,9 +13,6 @@
 	<link rel="stylesheet" href="css/buefy.css" />
 	<link rel="stylesheet" href="css/main.css" />
 
-	<style>
-	</style>
-
 	<script src="js/navToggle.js" defer></script>
 </head>
 <body>
@@ -23,45 +20,36 @@
 		<my-hero v-bind:class="{ 'is-medium': heroIsMedium }" title="ZeroNet Dev Center" subtitle="Tutorials, Questions, Collaboration">
 			<a href="tutorials/?t=the_basics" class="button is-info">The Basics</a>
 			<a href="tutorials/" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>
-			<a onclick="is_click()">Test</a>
+			<a onclick="is_click()">Test</a><br>
+			<router-link to="/about">Go to About</router-link>
 		</my-hero>
 
-		<my-body></my-body>
+		<!--<my-body></my-body>-->
+		<router-view></router-view>
 
 		<my-footer></my-footer>
 	</div>
 
+	<script type="text/javascript" src="js/ZeroFrame.js"></script>
 	<script type="text/javascript" src="js/vue.min.js"></script>
+	<script type="text/javascript" src="js/vue-router.min.js"></script>
 	<script type="text/javascript" src="js/vueRoutes.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
 	
-	<script type="text/javascript" src="js/ZeroFrame.js"></script>
 
 	<script>
-		var urlParams;
-		(window.onpopstate = function () {
-		    var match,
-		        pl     = /\+/g,  // Regex for replacing addition symbol with a space
-		        search = /([^&=]+)=?([^&]*)/g,
-		        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-		        query  = window.location.search.substring(1);
-
-		    urlParams = {};
-		    while (match = search.exec(query))
-		       urlParams[decode(match[1])] = decode(match[2]);
-		})();
 
 		Vue.use(Buefy);
 
 		var app = new Vue({
-			el: '#app',
+			router: router,
 			data: {
 				tutorialsList: "",
 				heroIsMedium: true
 			}
-		});
+		}).$mount('#app');
 
 		class ZeroChat extends ZeroFrame {
 			onOpenWebsocket () {
@@ -71,11 +59,11 @@
 					this.site_info = site_info
 				});
 
-				page.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+				this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
 					for (var i in tutorials) {
 						app.tutorialsList += "<a href='tutorials/?t=" + tutorials[i].slug + "'>" + tutorials[i].title + "</a><br>";
 					}
-					//page.cmd('wrapperPushState', [{}, '', '']);
+					//this.cmd('wrapperPushState', [{}, '', '']);
 					app.tutorialsList += "Database Basics (Coming Soon)";
 				});
 			}
@@ -99,7 +87,7 @@
 			}
 		}
 
-		page = new ZeroChat()
+		zeroframe = new ZeroChat()
 
 		function is_click() {
 			app.heroIsMedium = false;
@@ -115,6 +103,8 @@
 		    return decodeURIComponent(results[2].replace(/\+/g, " "));
 		}*/
 	</script>
+
+	<script type="text/javascript" src="js/vue-router-zeroframe.js"></script>
 
 	<!--<script>
 

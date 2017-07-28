@@ -33,7 +33,11 @@ const About = {
 	template: '<p v-once>About Page</p>'
 }
 
-const routes = { // TODO(christian): In the future, use hash table so we don't have to for loop through all of the options to see which query string matches.
-	'Home': Home,
-	'About': About
-}
+const routes = [
+	{path: '/', component: Home},
+	{ path: '/about', component: About}
+]
+
+const router = new VueRouter({
+	routes: routes
+});

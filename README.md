@@ -11,6 +11,7 @@ Our Goal is to provide useful information, tutorials, and help to those who want
 * Database Basics
 * User login
 * Building a basic dynamic zite
+* Client-Side Routing (pushState, etc.)
 * Setting Up Git/Github with ZeroNet
 * How siteowner can modify each users' data.json file
 * Optional Files
