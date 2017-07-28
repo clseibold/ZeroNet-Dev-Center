@@ -52,7 +52,8 @@ The file does contain other information like what ZeroNet version the zite was c
 
 Whenever you make any changes to your zite, including to the `content.json` file, you must *sign* the file. This ensures that whenever a person downloads your zite, they know these changes were made by the zite owner. Signing your `content.json` file will update the hashes to all of the files stored and used on your zite.
 
-**NOTE:** If you do not sign this file, visitors will not be able to download this updated version of your zite for security reasons. If you have no peers, they will not be able to visit your zite at all since they can't download a *signed* `content.json` file elsewhere. So **make sure you sign this file before you publish it.**
+**NOTE:** If you do not sign this file, visitors will not be able to download this updated version of your zite for security reasons. If you have no peers, they will not be able to visit your zite at all since they can't download a *signed* `content.json` file elsewhere.<br>
+**So make sure you sign this file before you publish it.**
 
 To sign this file, you go to the sidebar and, in the `This is my site` section, click `Sign`.
 
