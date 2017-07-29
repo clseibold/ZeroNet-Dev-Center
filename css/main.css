@@ -193,3 +193,12 @@ h4, h5, h6 {
 .custom-content.is-large {
   font-size: 1.5rem;
 }
+
+
+.fade-transition {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter, .fade-leave {
+  opacity: 0;
+}

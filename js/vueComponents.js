@@ -6,7 +6,7 @@ Vue.component('my-hero', {
 	    		<header class="nav">\
 	    			<div class="container">\
 	    				<div class="nav-left">\
-	    					<a href="/13spciiqdBgsrhkWxghapiF1F4gNYDwgbS/" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</a>\
+	    					<route-link to="/" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</route-link>\
 	    				</div>\
 \
 	    				<!-- This "nav-toggle" hamburger menu is only visible on mobile -->\
@@ -20,11 +20,11 @@ Vue.component('my-hero', {
 	    				<!-- This "nav-menu" is hidden on mobile -->\
 	    				<!-- Add the modifier "is-active" to display it on mobile -->\
 	    				<div id="nav-menu" class="nav-right nav-menu">\
-	    					<a href="?Home" class="nav-item is-active">Home</a>\
-	    					<a href="/13spciiqdBgsrhkWxghapiF1F4gNYDwgbS/tutorials/" class="nav-item">Tutorials</a>\
-	    					<a href="?About" class="nav-item">About</a>\
+	    					<route-link to="/" class="nav-item is-active">Home</route-link>\
+	    					<route-link to="/tutorials" class="nav-item">Tutorials</route-link>\
+	    					<route-link to="/about" class="nav-item">About</route-link>\
 	    					<!--<a class="nav-item">Questions</a>-->\
-	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return page.selectUser()">Select user</a></span>\
+	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()">Select user</a></span>\
 	    				</div>\
 	    			</div>\
 	    		</header>\
@@ -54,19 +54,4 @@ Vue.component('my-footer', {
 				</span>\
 			</div>\
 		</footer>'
-});
-
-Vue.component('my-body', {
-	computed: {
-		ViewComponent () {
-			for (r in routes) {
-				if (r in urlParams) {
-					// TODO(krixano): OnSwitch/Init function to setup ZeroNet stuff for the page (pass in the current route's name)
-					return routes[r];
-				}
-			}
-			return Home;
-		}
-	},
-	render (h) { return h(this.ViewComponent) }
 });

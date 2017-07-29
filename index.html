@@ -17,54 +17,58 @@
 </head>
 <body>
 	<div id="app">
-		<my-hero v-bind:class="{ 'is-medium': heroIsMedium }" title="ZeroNet Dev Center" subtitle="Tutorials, Questions, Collaboration">
-			<a href="tutorials/?t=the_basics" class="button is-info">The Basics</a>
-			<a href="tutorials/" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>
-			<a onclick="is_click()">Test</a><br>
-			<router-link to="/about">Go to About</router-link>
+		<my-hero v-bind:class="{ 'is-medium': heroIsMedium }" v-bind:title="heroTitle" v-bind:subtitle="heroSubtitle">
+			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<!--<my-body></my-body>-->
-		<router-view></router-view>
+		<component v-bind:is="currentView" v-bind:tutorialsList="tutorialsList"></component>
 
 		<my-footer></my-footer>
 	</div>
 
 	<script type="text/javascript" src="js/ZeroFrame.js"></script>
+
 	<script type="text/javascript" src="js/vue.min.js"></script>
-	<script type="text/javascript" src="js/vue-router.min.js"></script>
+	<script type="text/javascript" src="js/router.js"></script>
+	<script type="text/javascript" src="js/vue-router-link.js"></script>
 	<script type="text/javascript" src="js/vueRoutes.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
 	
-
 	<script>
+		/*var urlParams;
+		(window.onpopstate = function () {
+		    var match,
+		        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+		        search = /([^&=]+)=?([^&]*)/g,
+		        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+		        query  = window.location.search.substring(1);
+
+		    urlParams = {};
+		    while (match = search.exec(query))
+		       urlParams[decode(match[1])] = decode(match[2]);
+		})();*/
 
 		Vue.use(Buefy);
 
 		var app = new Vue({
-			router: router,
 			data: {
-				tutorialsList: "",
-				heroIsMedium: true
+				currentView: 'route-home',
+				tutorialsList: '',
+				heroIsMedium: true,
+				heroTitle: "ZeroNet Dev Center",
+				heroSubtitle: "Tutorials, Questions, Collaboration",
+				heroContent: ""
 			}
 		}).$mount('#app');
 
-		class ZeroChat extends ZeroFrame {
+		class ZeroApp extends ZeroFrame {
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
 					if (site_info.cert_user_id)
 						document.getElementById("select_user").innerText = site_info.cert_user_id
 					this.site_info = site_info
-				});
-
-				this.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-					for (var i in tutorials) {
-						app.tutorialsList += "<a href='tutorials/?t=" + tutorials[i].slug + "'>" + tutorials[i].title + "</a><br>";
-					}
-					//this.cmd('wrapperPushState', [{}, '', '']);
-					app.tutorialsList += "Database Basics (Coming Soon)";
 				});
 			}
 
@@ -84,56 +88,54 @@
 						//this.loadZiteIndicator();
 					}
 				}
+
+				Router.listenForBack(cmd, message);
 			}
 		}
 
-		zeroframe = new ZeroChat()
+		zeroframe = new ZeroApp()
 
 		function is_click() {
 			app.heroIsMedium = false;
 		}
-
-		/*function getParameterByName(name, url) {
-		    if (!url) url = window.location.href;
-		    name = name.replace(/[\[\]]/g, "\\$&");
-		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-		        results = regex.exec(url);
-		    if (!results) return null;
-		    if (!results[2]) return '';
-		    return decodeURIComponent(results[2].replace(/\+/g, " "));
-		}*/
 	</script>
 
-	<script type="text/javascript" src="js/vue-router-zeroframe.js"></script>
+	<script>
+		Router.config({ mode: 'history' });
 
-	<!--<script>
+		Router.add("about", function () {
+			app.heroIsMedium = false;
+			app.heroTitle = "About";
+			app.heroSubtitle = "";
+			app.heroContent = "";
+		}).add("tutorials", function() {
+			app.heroIsMedium = false;
+			app.heroTitle = "Tutorials";
+			app.heroSubtitle = "";
+			app.heroContent = "";
+		}).add("products/:pid/edit/:eid", function(params) {
+			console.log('products', params.pid, params.eid);
+		}).add(function() {
+			app.heroIsMedium = true;
+			app.heroTitle = "ZeroNet Dev Center";
+			app.heroSubtitle = "Tutorials, Questions, Collaboration";
+			app.heroContent = '<a href="tutorials/?t=the_basics" class="button is-info">The Basics</a>\
+			<a href="tutorials/" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>';
 
-	class Page extends ZeroFrame {
-		setSiteInfo(site_info) {
-			var out = document.getElementById("out")
-			out.innerHTML =
-				"Page address: " + site_info.address +
-				"<br>- Peers: " + site_info.peers +
-				"<br>- Size: " + site_info.settings.size +
-				"<br>- Modified: " + (new Date(site_info.content.modified*1000))
-		}
-
-		onOpenWebsocket() {
-			this.cmd("siteInfo", [], function(site_info) {
-				page.setSiteInfo(site_info)
-			})
-		}
-
-		onRequest(cmd, message) {
-			if (cmd == "setSiteInfo")
-				this.setSiteInfo(message.params)
-			else
-				this.log("Unknown incoming message:", cmd)
-		}
-	}
-	page = new Page()
-
-</script>-->
-
+			zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+				for (var i in tutorials) {
+					app.tutorialsList += "<a href='tutorials/?t=" + tutorials[i].slug + "'>" + tutorials[i].title + "</a><br>";
+				}
+				//this.cmd('wrapperPushState', [{}, '', '']);
+				app.tutorialsList += "Database Basics (Coming Soon)";
+			});
+		}).all(function(currentRoute) {
+			app.currentView = 'route-' + currentRoute.replace(/\//, '_');
+			if (currentRoute == '') {
+				app.currentView = 'route-home';
+			}
+		});
+		Router.init();
+	</script>
 </body>
 </html>
