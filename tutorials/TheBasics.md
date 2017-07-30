@@ -8,7 +8,7 @@ Since ZeroNet makes no use of a server - everything is downloaded to your comput
 
 ## Creating A Zite
 
-There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ZeroBlog, [TODO] However, if you wan't to create your own zite from scratch, that is what the next few tutorials are going to cover. [^2]
+There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ZeroBlog, [TODO] However, if you want to create your own zite from scratch, that is what the next few tutorials are going to cover. [^2]
 
 In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to ZeroHello and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
 
@@ -40,7 +40,7 @@ The List-part **This is my site**:
 
 ## Where Is A Zite Stored Locally?
 
-If you need to change any of the code for your zite, you can find your zite in the `ZeroNet_Root/data` folder, under the directory of your zite address. This is the same as the `site address` shown in the sidebar. When you first start out, this directory where the files to your zite are stored should at least have a `content.json` file and an `index.html` file.
+If you need to change any of the code for your zite, you can find your zite in the `ZeroNet_Root/data` folder, under the directory of your zite address. This is the same as the `site address` shown in the sidebar. When you first start out, this directory should have a `content.json` file, an `index.html` file, and a `js` director where the `ZeroFrame.js` file is located.
 
 ## Content.json File, What is It?
 
@@ -59,17 +59,17 @@ To sign this file, you go to the sidebar and, in the `This is my site` section, 
 
 ## How Zites Are Kept Secure
 
-ZeroNet secures zites by using private and public keys, the public key being your zite's address. The private key is always kept on your computer, in the `users.json` file under the `ZeroNet_Root/data` directory. This private key is used to create a digital signature and encrypt the hash of the `content.json` file in its current state (excluding the digital signature). This digital signature (and encrypted hash) is then stored in this file. When a visitor downloads the file, they first decrypt the digital signature with the zite's public key (the zite's address). Then, they verify the file by comparing the hash of the file with the hash that has been decrypted and sent via the digital signature.
+ZeroNet secures zites by using private and public keys, the public key being your zite's address. The private key is always kept on your computer, in the `users.json` file under the `ZeroNet_Root/data` directory. This private key is used to create a digital signature and encrypt the hash of the `content.json` file in its current state (excluding the digital signature stored in the file). This digital signature (and encrypted hash) is then stored in this file. When a visitor downloads the file, they first decrypt the digital signature with the zite's public key (the zite's address). Then, they verify the file by comparing the hash of the file with the hash that has been decrypted and sent via the digital signature.
 
 This keeps your zite secure because the only person who can create the digital signature that holds the hash of the `content.json` file is the person with the private key - the zite owner.
 
 ## Publishing Your Zite
 
-In order to publish your zite, you simply sign your `content.json` file and click `publish` in the sidebar. These buttons are located in the sidebar under the `This is my site` section. If you do not have any peers, you do not need to click publish. Publish only sends the `content.json` file to other peers. Without peers, there is no need because these peers will download your zite from your computer.
+In order to publish your zite, you simply sign your `content.json` file and click `publish` in the sidebar. These buttons are located in the sidebar under the `This is my site` section. If you do not have any peers, you do not need to click publish. Publishing sends the `content.json` file to other peers. Without peers, there is no need because these peers will download your zite from your computer when they go to visit your zite.
 
 ## Keeping Your Zite Online
 
-In order to keep your zite online, you need peers that are reliable and always on. If your computer will not be connected to ZeroNet all the time, you will have to either have enough people to ensure your peer count won't go down to zero when you are offline, or you will have to find *at least* one peer that will always be online.
+In order to keep your zite online, you need peers that are reliable and always on. If your computer will not be connected to ZeroNet all the time, you will have to either have enough peers to ensure your peer count won't go down to zero when you are offline, or you will have to find *at least* one peer that will always be online.
 
 It may be a good idea to seed your zite by ZeroNet proxies, for example [bit.surf](http://bit.surf:43110). To do this, you simply visit your zite using the proxy of your choosing. This will help keep your zite online by having another computer seed the zite. [bit.surf](http://bit.surf:43110) is a good choice if you want your zite picked up by ZeroNet search engines like [RVRE](/rvre.bit).
 
@@ -83,7 +83,7 @@ Updating your zite is pretty simple. After making any changes to the zite, you m
 
 After a peer has the updated files, they then send them to other peers using the same method as above. Eventually, all peers will have the updated files.
 
-Note that before a peer download's the changed files, they first verify that the `content.json` file was modified by the zite owner by comparing the file's hash to the decrypted hash from the Digital Signature.
+Note that before a peer download's the changed files, they first verify that the `content.json` file was modified by the zite owner by comparing the file's hash to the decrypted hash from the Digital Signature. And after they have download the updated files, they also verify them with the hashes in the `content.json` file.
 
 [^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here](/17Kom2G5qNDc6NaQwv445h1gFzxkY3ZtZe/site_development/zeroframe_api_reference/).
 [^2]: [Here](/blog.zeronetwork.bit/?Post:43:ZeroNet+site+development+tutorial+1) is a pretty good tutorial to follow until we get up a tutorial of our own on this zite.
