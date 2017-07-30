@@ -55,3 +55,8 @@ Vue.component('my-footer', {
 			</div>\
 		</footer>'
 });
+
+Vue.component('tutorial-list-item', {
+	template: '\
+		'
+});

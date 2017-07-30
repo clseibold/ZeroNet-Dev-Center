@@ -3,7 +3,7 @@ Vue.component('route-not-found', {
 });
 
 Vue.component('route-home', {
-	props: ['tutorialsList', 'tutorialContent'],
+	props: ['tutorialsList'],
 	template: '\
 		<div>\
 			<section class="section">\
@@ -43,7 +43,7 @@ Vue.component('route-about', {
 });
 
 Vue.component('route-tutorials', {
-	props: ['tutorialsList', 'tutorialContent'],
+	props: ['tutorialsList'],
 	template: '\
 		<div>\
 			<section class="section">\
@@ -57,7 +57,7 @@ Vue.component('route-tutorials', {
 });
 
 Vue.component('route-tutorials-:slug', {
-	props: ['tutorialsList', 'tutorialContent'],
+	props: ['tutorialContent'],
 	template: '\
 		<div>\
 			<section class="section">\

@@ -2,9 +2,9 @@
 
 Before we start creating zites, it is useful to know how zites work on ZeroNet. This tutorial will take you through how to create an empty zite, where to put your code, what you need before you can publish your zite, and how they are updated, transfered, and kept secure.
 
-Zites are made up of basic web code, including html, css, and js. However, json files are used for storing data and for telling ZeroNet what databases you have and how they are structured.
+Zites are made up of basic web code, including html, css, and js. Additionally, json files are used for storing data and for telling ZeroNet what databases you have and how they are structured.
 
-Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you query server/site/uesr info, load or modify files using a WebSocket connection to your ZeroNet client, and query and modify databases. [^1]
+Since ZeroNet makes no use of a server - everything is downloaded to your computer and ran locally - there is no way to do server side scripting. However, this is remedied by using the ZeroNet API called ZeroFrame. This API lets you query server/site/user info, load or modify files using a WebSocket connection to your ZeroNet client, and query and modify databases. [^1]
 
 ## Creating A Zite
 
@@ -75,11 +75,15 @@ It may be a good idea to seed your zite by ZeroNet proxies, for example [bit.sur
 
 You can also add your zite to [New ZeroNet Sites](/1LtvsjbtQ2tY7SCtCZzC4KhErqEK3bXD4n), which will not only further spread your zite, but also get seeders who seed from this list of new zites.
 
-And finally, you will also want to add your zite to [ZeroSites](/Sites.ZeroNetwork.bit).
+And finally, you will also want to add your zite to [ZeroSites](/Sites.ZeroNetwork.bit) so it can more easily be discovered.
 
 ## Updating Your Zite
 
-[TODO]
+Updating your zite is pretty simple. After making any changes to the zite, you must first sign your zite. This will update the hashes and the digital signature in the `content.json` file. After you have done that, click `publish`. This will send the new `content.json` file to a max of 6 different peers. These peers check if the file is newer than the one they already have. If it is, they download the rest of the files *that have been changed/updated* (by comparing the hashes in the new `content.json` file to the hashes in the old `content.json` file to see if they have changed [NEEDS CONFIRMATION]).
+
+After a peer has the updated files, they then send them to other peers using the same method as above. Eventually, all peers will have the updated files.
+
+Note that before a peer download's the changed files, they first verify that the `content.json` file was modified by the zite owner by comparing the file's hash to the decrypted hash from the Digital Signature.
 
 [^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here](/17Kom2G5qNDc6NaQwv445h1gFzxkY3ZtZe/site_development/zeroframe_api_reference/).
 [^2]: [Here](/blog.zeronetwork.bit/?Post:43:ZeroNet+site+development+tutorial+1) is a pretty good tutorial to follow until we get up a tutorial of our own on this zite.
