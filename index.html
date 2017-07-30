@@ -21,45 +21,48 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorialsList="tutorialsList"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent"></component>
 
 		<my-footer></my-footer>
 	</div>
 
 	<script type="text/javascript" src="js/ZeroFrame.js"></script>
 
+	<!-- Vue & Router -->
 	<script type="text/javascript" src="js/vue.min.js"></script>
 	<script type="text/javascript" src="js/router.js"></script>
 	<script type="text/javascript" src="js/vue-router-link.js"></script>
-	<script type="text/javascript" src="js/vueRoutes.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
+	<script type="text/javascript" src="js/vueRoutes.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
+
+	<!-- Markdown-It -->
+	<script type="text/javascript" src="js/markdown-it/markdown-it.min.js"></script>
+	<script type="text/javascript" src="js/markdown-it/markdown-it-footnote.min.js"></script>
+	<script type="text/javascript" src="js/markdown-it/markdown-it-emoji-light.min.js"></script>
+	<script type="text/javascript" src="js/markdown-it/markdown-it-abbr.min.js"></script>
+	<script type="text/javascript" src="js/markdown-it/markdown-it-deflist.min.js"></script>
 	
 	<script>
-		/*var urlParams;
-		(window.onpopstate = function () {
-		    var match,
-		        pl     = /\+/g,  // Regex for replacing addition symbol with a space
-		        search = /([^&=]+)=?([^&]*)/g,
-		        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-		        query  = window.location.search.substring(1);
-
-		    urlParams = {};
-		    while (match = search.exec(query))
-		       urlParams[decode(match[1])] = decode(match[2]);
-		})();*/
+		var md = window.markdownit();
+		md.use(window.markdownitFootnote);
+		md.use(window.markdownitEmoji);
+		md.use(window.markdownitAbbr);
+		md.use(window.markdownitDeflist);
+		md.set({ html: true });
 
 		Vue.use(Buefy);
 
 		var app = new Vue({
 			data: {
 				currentView: 'route-home',
-				tutorialsList: '',
 				heroIsMedium: true,
-				heroTitle: "ZeroNet Dev Center",
-				heroSubtitle: "Tutorials, Questions, Collaboration",
-				heroContent: ""
+				heroTitle: "",
+				heroSubtitle: "",
+				heroContent: "",
+				tutorialsList: "",
+				tutorialContent: ""
 			}
 		}).$mount('#app');
 
@@ -93,49 +96,89 @@
 			}
 		}
 
-		zeroframe = new ZeroApp()
-
-		function is_click() {
-			app.heroIsMedium = false;
-		}
+		zeroframe = new ZeroApp();
+		page = zeroframe; // For ZeroFrame Router
 	</script>
 
 	<script>
-		Router.config({ mode: 'history' });
+		//Router.config({ mode: 'history' });
 
 		Router.add("about", function () {
 			app.heroIsMedium = false;
 			app.heroTitle = "About";
 			app.heroSubtitle = "";
 			app.heroContent = "";
+		}).add("tutorials/:slug", function(params) {
+			app.heroIsMedium = false;
+			app.heroContent = "";
+			getTutorial(params.slug);
 		}).add("tutorials", function() {
 			app.heroIsMedium = false;
 			app.heroTitle = "Tutorials";
 			app.heroSubtitle = "";
 			app.heroContent = "";
+			checkTutorialsList();
 		}).add("products/:pid/edit/:eid", function(params) {
 			console.log('products', params.pid, params.eid);
 		}).add(function() {
 			app.heroIsMedium = true;
 			app.heroTitle = "ZeroNet Dev Center";
 			app.heroSubtitle = "Tutorials, Questions, Collaboration";
-			app.heroContent = '<a href="tutorials/?t=the_basics" class="button is-info">The Basics</a>\
-			<a href="tutorials/" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>';
+			app.heroContent = '<a onclick="Router.navigate(\'tutorials/the_basics\')" class="button is-info">The Basics</a>\
+			<a onclick="Router.navigate(\'tutorials\')" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>';
+			checkTutorialsList();
+		});
 
-			zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-				for (var i in tutorials) {
-					app.tutorialsList += "<a href='tutorials/?t=" + tutorials[i].slug + "'>" + tutorials[i].title + "</a><br>";
+		Router.hooks({
+			after: function(currentRoute, params) {
+				app.currentView = 'route-' + currentRoute.replace(/\//, '-');//.replace(/:/, '');
+				if (currentRoute == '') {
+					app.currentView = 'route-home';
 				}
-				//this.cmd('wrapperPushState', [{}, '', '']);
-				app.tutorialsList += "Database Basics (Coming Soon)";
-			});
-		}).all(function(currentRoute) {
-			app.currentView = 'route-' + currentRoute.replace(/\//, '_');
-			if (currentRoute == '') {
-				app.currentView = 'route-home';
 			}
 		});
+		
 		Router.init();
+
+		function checkTutorialsList() {
+			if (app.tutorialsList == '') {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+					for (var i in tutorials) {
+						app.tutorialsList += "<a onclick='Router.navigate(\"tutorials/" + tutorials[i].slug + "\")'>" + tutorials[i].title + "</a><br>";
+						//app.tutorialsList += "test<br>";
+					}
+					app.tutorialsList += "Database Basics (Coming Soon)";
+				});
+			}
+		}
+
+		function getTutorial(slug) {
+			if (slug) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+					//app.tutorials = tutorials;
+					var tutorial = null;
+					for (var i in tutorials) {
+						if (tutorials[i].slug == slug) {
+							tutorial = tutorials[i];
+						}
+					}
+
+					if (tutorial) {
+						page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+							app.tutorialContent = md.render(content);
+							app.heroTitle = tutorial.title;
+							app.heroSubtitle = 'By ' + tutorial.author;
+							//page.cmd('wrapperPushState', [{}, '', '?t=' + tutorial.slug]);
+						});
+					} else {
+						app.tutorialContent = "";
+						app.heroTitle = 'Not Found';
+						app.heroSubtitle = 'This page was not found!';
+						// Router.navigate('not-found');
+					}
+				});
+			}
+		}
 	</script>
 </body>
 </html>

@@ -3,7 +3,7 @@ Vue.component('route-not-found', {
 });
 
 Vue.component('route-home', {
-	props: ['tutorialsList'],
+	props: ['tutorialsList', 'tutorialContent'],
 	template: '\
 		<div>\
 			<section class="section">\
@@ -33,5 +33,29 @@ Vue.component('route-about', {
 });
 
 Vue.component('route-tutorials', {
-	template: ''
+	props: ['tutorialsList', 'tutorialContent'],
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<div v-html="tutorialsList" class="custom-content"></div>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+});
+
+Vue.component('route-tutorials-:slug', {
+	props: ['tutorialsList', 'tutorialContent'],
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<div v-html="tutorialContent" class="custom-content"></div>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
 });

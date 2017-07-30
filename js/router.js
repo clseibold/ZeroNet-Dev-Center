@@ -2,7 +2,8 @@ var Router = {
 	routes: [],
 	currentRoute: '',
 	root: '/',
-	doAll: null, // Function called for every route, BEFORE it's controller function is called
+	notFoundFunction: null,
+	hookFunctions: {}, // hooks that are called for each route, functions for 'before' and 'after'.
 	config: function(options) {
 		this.root = options && options.root ? '/' + this.clearSlashes(options.root) + '/' : '/';
 		return this;
@@ -48,12 +49,27 @@ var Router = {
 				match.forEach(function (value, i) {
 					routeParams[keys[i].replace(":", "")] = value;
 				});
+				if (this.hookFunctions) { // TODO: Move this into navigate function?
+					if (this.hookFunctions["before"] && !this.hookFunctions["before"].call({}, this.routes[i].path, routeParams)) {
+						page.cmd('wrapperPushState', [{"route": this.currentRoute}, null, this.root + this.clearSlashes(this.currentRoute)]);
+						return this;
+					}
+				}
 				this.currentRoute = this.routes[i].path;
-				doAll(this.currentRoute);
 				this.routes[i].controller.call({}, routeParams);
+				if (this.hookFunctions) {
+					if (this.hookFunctions["after"]) {
+						this.hookFunctions["after"].call({}, this.currentRoute, routeParams);
+					}
+				}
 				return this;
 			}
 		}
+		// TODO: Call Not Found route
+		/*console.log(this.notFoundFunction);
+		if (this.notFoundFunction) {
+			this.notFoundFunction.call({}, routeParams);
+		}*/
 		return this;
 	},
 	refresh: function() { // Refreshes the current route - reruns the route's controller function
@@ -73,14 +89,24 @@ var Router = {
 		}
 	},
 	navigate: function(path) {
+		var previousRoute = this.currentRoute;
+		if (this.hookFunctions) {
+			if (this.hookFunctions["leave"]) {
+				this.hookFunctions["leave"].call({}, previousRoute);
+			}
+		}
+
 		path = path ? path : '';
-		zeroframe.cmd('wrapperPushState', [{"route": path}, null, this.root + this.clearSlashes(path)]);
+		page.cmd('wrapperPushState', [{"route": path}, null, this.root + this.clearSlashes(path)]);
 		this.check(path);
 		return this;
 	},
-	all: function(f) { // Sets the 'doAll' function, which is called before each route's controller function
-		if (typeof f === 'function') {
-			doAll = f;
+	hooks: function(hookFunctions) { // TODO: Check if using correct format?
+		this.hookFunctions = hookFunctions;
+	},
+	notFound: function(f) {
+		if (f && typeof f === 'function') {
+			this.notFoundFunction = f;
 		}
 	}
 }
@@ -88,4 +114,17 @@ var Router = {
 // Note: Call right after creating all of your routes.
 Router.init = function() {
 	Router.check(Router.getURL());
+}
+
+function test() {
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+   	//loadTutorial(urlParams['t']);
 }
