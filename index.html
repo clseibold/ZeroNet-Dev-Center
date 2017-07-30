@@ -176,7 +176,7 @@
 					}
 
 					if (tutorial) {
-						page.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+						zeroframe.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
 							app.tutorialContent = md.render(content);
 							app.heroTitle = tutorial.title;
 							app.heroSubtitle = 'By ' + tutorial.author;

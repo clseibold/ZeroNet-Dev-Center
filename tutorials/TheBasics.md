@@ -65,7 +65,7 @@ This keeps your zite secure because the only person who can create the digital s
 
 ## Publishing Your Zite
 
-In order to publish your zite, you simply sign your `content.json` file and publish it. These buttons are located in the sidebar under the `This is my site` section. If you do not have any peers, you do not need to click publish. Publish only sends the content.json file to other peers. Without peers, there is no need because these peers will download your zite from your computer.
+In order to publish your zite, you simply sign your `content.json` file and click `publish` in the sidebar. These buttons are located in the sidebar under the `This is my site` section. If you do not have any peers, you do not need to click publish. Publish only sends the `content.json` file to other peers. Without peers, there is no need because these peers will download your zite from your computer.
 
 ## Keeping Your Zite Online
 
