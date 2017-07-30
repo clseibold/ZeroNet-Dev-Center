@@ -116,33 +116,41 @@
 			}).init();
 
 		function route_home(params) {
-			app.heroIsMedium = true;
-			app.heroTitle = "ZeroNet Dev Center";
-			app.heroSubtitle = "Tutorials, Questions, Collaboration";
-			app.heroContent = '<a onclick="Router.navigate(\'tutorials/the_basics\')" class="button is-info">The Basics</a>\
+			var subtitle = "Tutorials, Questions, Collaboration";
+			var content = '<a onclick="Router.navigate(\'tutorials/the_basics\')" class="button is-info">The Basics</a>\
 			<a onclick="Router.navigate(\'tutorials\')" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>';
+
+			setupHero(true, "ZeroNet Dev Center", subtitle, content);
 			checkTutorialsList();
 		}
 
 		function route_about(params) {
-			app.heroIsMedium = false;
-			app.heroTitle = "About";
-			app.heroSubtitle = "";
-			app.heroContent = "";
+			setupHero(false, "About", "");
 		}
 
 		function route_tutorials(params) {
-			app.heroIsMedium = false;
-			app.heroTitle = "Tutorials";
-			app.heroSubtitle = "";
-			app.heroContent = "";
+			setupHero(false, "Tutorials", "");
 			checkTutorialsList();
 		}
 
 		function route_tutorials_slug(params) {
-			app.heroIsMedium = false;
-			app.heroContent = "";
+			setupHero(false, null, null);
 			getTutorial(params.slug);
+		}
+
+		function setupHero(isMedium, title, subtitle, content = "") {
+			if (isMedium != null) {
+				app.heroIsMedium = isMedium;
+			}
+			if (title != null) {
+				app.heroTitle = title;
+			}
+			if (subtitle != null) {
+				app.heroSubtitle = subtitle;
+			}
+			if (content != null) {
+				app.heroContent = content;
+			}
 		}
 
 		function checkTutorialsList() {
@@ -150,7 +158,6 @@
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
 					for (var i in tutorials) {
 						app.tutorialsList += "<a onclick='Router.navigate(\"tutorials/" + tutorials[i].slug + "\")'>" + tutorials[i].title + "</a><br>";
-						//app.tutorialsList += "test<br>";
 					}
 					app.tutorialsList += "Database Basics (Coming Soon)";
 				});
@@ -160,7 +167,6 @@
 		function getTutorial(slug) {
 			if (slug) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-					//app.tutorials = tutorials;
 					var tutorial = null;
 					for (var i in tutorials) {
 						if (tutorials[i].slug == slug) {
@@ -173,7 +179,6 @@
 							app.tutorialContent = md.render(content);
 							app.heroTitle = tutorial.title;
 							app.heroSubtitle = 'By ' + tutorial.author;
-							//page.cmd('wrapperPushState', [{}, '', '?t=' + tutorial.slug]);
 						});
 					} else {
 						app.tutorialContent = "";
