@@ -101,44 +101,49 @@
 	</script>
 
 	<script>
-		//Router.config({ mode: 'history' });
+		Router.add("about", route_about)
+			.add("tutorials/:slug", route_tutorials_slug).add("tutorials", route_tutorials)
+			.add("products/:pid/edit/:eid", function(params) {
+				console.log('products', params.pid, params.eid);
+			}).add(route_home)
+			.hooks({
+				after: function(currentRoute, params) {
+					app.currentView = 'route-' + currentRoute.replace(/\//, '-');//.replace(/:/, '');
+					if (currentRoute == '') {
+						app.currentView = 'route-home';
+					}
+				}
+			}).init();
 
-		Router.add("about", function () {
-			app.heroIsMedium = false;
-			app.heroTitle = "About";
-			app.heroSubtitle = "";
-			app.heroContent = "";
-		}).add("tutorials/:slug", function(params) {
-			app.heroIsMedium = false;
-			app.heroContent = "";
-			getTutorial(params.slug);
-		}).add("tutorials", function() {
-			app.heroIsMedium = false;
-			app.heroTitle = "Tutorials";
-			app.heroSubtitle = "";
-			app.heroContent = "";
-			checkTutorialsList();
-		}).add("products/:pid/edit/:eid", function(params) {
-			console.log('products', params.pid, params.eid);
-		}).add(function() {
+		function route_home(params) {
 			app.heroIsMedium = true;
 			app.heroTitle = "ZeroNet Dev Center";
 			app.heroSubtitle = "Tutorials, Questions, Collaboration";
 			app.heroContent = '<a onclick="Router.navigate(\'tutorials/the_basics\')" class="button is-info">The Basics</a>\
 			<a onclick="Router.navigate(\'tutorials\')" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>';
 			checkTutorialsList();
-		});
+		}
 
-		Router.hooks({
-			after: function(currentRoute, params) {
-				app.currentView = 'route-' + currentRoute.replace(/\//, '-');//.replace(/:/, '');
-				if (currentRoute == '') {
-					app.currentView = 'route-home';
-				}
-			}
-		});
-		
-		Router.init();
+		function route_about(params) {
+			app.heroIsMedium = false;
+			app.heroTitle = "About";
+			app.heroSubtitle = "";
+			app.heroContent = "";
+		}
+
+		function route_tutorials(params) {
+			app.heroIsMedium = false;
+			app.heroTitle = "Tutorials";
+			app.heroSubtitle = "";
+			app.heroContent = "";
+			checkTutorialsList();
+		}
+
+		function route_tutorials_slug(params) {
+			app.heroIsMedium = false;
+			app.heroContent = "";
+			getTutorial(params.slug);
+		}
 
 		function checkTutorialsList() {
 			if (app.tutorialsList == '') {

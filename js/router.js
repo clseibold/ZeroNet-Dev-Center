@@ -103,11 +103,13 @@ var Router = {
 	},
 	hooks: function(hookFunctions) { // TODO: Check if using correct format?
 		this.hookFunctions = hookFunctions;
+		return this;
 	},
 	notFound: function(f) {
 		if (f && typeof f === 'function') {
 			this.notFoundFunction = f;
 		}
+		return this;
 	}
 }
 
