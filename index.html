@@ -102,7 +102,8 @@
 
 	<script>
 		Router.add("about", route_about)
-			.add("tutorials/:slug", route_tutorials_slug).add("tutorials", route_tutorials)
+			.add("tutorials/:slug", route_tutorials_slug)
+			.add("tutorials", route_tutorials)
 			.add("products/:pid/edit/:eid", function(params) {
 				console.log('products', params.pid, params.eid);
 			}).add(route_home)
@@ -117,8 +118,8 @@
 
 		function route_home(params) {
 			var subtitle = "Tutorials, Questions, Collaboration";
-			var content = '<a onclick="Router.navigate(\'tutorials/the_basics\')" class="button is-info">The Basics</a>\
-			<a onclick="Router.navigate(\'tutorials\')" style="margin-top: 10px; margin-left: 10px;">All Tutorials</a>';
+			var content = generateRouteLinkHTML('tutorials/the_basics', 'The Basics', 'button is-info') + 
+							generateRouteLinkHTML('tutorials', 'All Tutorials', '', 'margin-top: 10px; margin-left: 10px;');
 
 			setupHero(true, "ZeroNet Dev Center", subtitle, content);
 			checkTutorialsList();
@@ -134,7 +135,7 @@
 		}
 
 		function route_tutorials_slug(params) {
-			setupHero(false, null, null);
+			setupHero(false, "", "");
 			getTutorial(params.slug);
 		}
 
@@ -157,7 +158,7 @@
 			if (app.tutorialsList == '') {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
 					for (var i in tutorials) {
-						app.tutorialsList += "<a onclick='Router.navigate(\"tutorials/" + tutorials[i].slug + "\")'>" + tutorials[i].title + "</a><br>";
+						app.tutorialsList += generateRouteLinkHTML('tutorials/' + tutorials[i].slug, tutorials[i].title) + "<br>";
 					}
 					app.tutorialsList += "Database Basics (Coming Soon)";
 				});

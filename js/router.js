@@ -118,6 +118,21 @@ Router.init = function() {
 	Router.check(Router.getURL());
 }
 
+// Returns a string with the html for a link that will call the Router.navigate function when clicked.
+// Example:
+//   content += generateRouteLinkHTML('tutorials/' + tutorial.slug, tutorial.name, 'button is-info', 'margin-left: 30px;') + "<br>";
+function generateRouteLinkHTML(to, display, tagClass = "", tagStyle = "") {
+	var link = '<a onclick="Router.navigate(\'' + to + '\')"';
+	if (tagClass && tagClass != "") {
+		link += ' class="' + tagClass + '"';
+	}
+	if (tagStyle && tagStyle != "") {
+		link += ' style="' + tagStyle + '"';
+	}
+	link += '>' + display + '</a>';
+	return link;
+}
+
 function test() {
     var match,
         pl     = /\+/g,  // Regex for replacing addition symbol with a space
