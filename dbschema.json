@@ -1,0 +1,31 @@
+{
+    "db_name": "ZeroNetDevCenter",
+    "db_file": "data/zeronetdevcenter.db",
+    "version": 2,
+    "maps": {
+        "tutorials.json": {
+            "to_table": [
+                {
+                    "node": "tutorials",
+                    "table": "tutorials"
+                }
+            ]
+        }
+    },
+    "tables": {
+        "tutorials": {
+            "cols": [
+                ["id", "INTEGER PRIMARY KEY"],
+                ["slug", "TEXT NOT NULL"],
+                ["file", "TEXT NOT NULL"],
+                ["title", "TEXT NOT NULL"],
+                ["description", "TEXT"],
+                ["author", "TEXT NOT NULL"],
+                ["tags", "TEXT"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(id, json_id)", "CREATE UNIQUE INDEX tutorials_slug ON tutorials(slug)", "CREATE INDEX tutorial_file ON tutorials(slug)", "CREATE INDEX tutorial_title ON tutorials(title)"],
+            "schema_changed": 12
+        }
+    }
+}

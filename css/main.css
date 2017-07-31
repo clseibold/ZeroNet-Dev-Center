@@ -6,3 +6,199 @@ html {
 html, body, section {
 	background: #f8f8f8;
 }
+
+/* Make header tags same as tags with .title class */
+h1, h2, h3, h4, h5, h6 {
+	color: inherit;
+	word-break: break-word;
+
+	color: #363636;
+	font-size: 2rem;
+	font-weight: 300;
+	line-height: 1.125;
+}
+h1:not(:last-child), h2:not(:last-child),
+h3:not(:last-child), h4:not(:last-child),
+h5:not(:last-child), h6:not(:last-child) {
+	margin-bottom: 1.5rem;
+}
+h1 em, h2 em, h3 em, h4 em, h5 em, h6 em,
+h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
+	font-weight: 300;
+}
+h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong {
+	font-weight: 500;
+	color: inherit;
+}
+h1 .tag, h2 .tag, h3 .tag, h4 .tag, h5 .tag, h6 .tag {
+	vertical-align: middle;
+}
+h1 .highlight, h2 .highlight, h3 .highlight, h4 .highlight, h5 .highlight, h6 .highlight {
+	margin-top: -0.75rem;
+}
+h1:not(.is-spaced) + .subtitle, h2:not(.is-spaced) + .subtitle,
+h3:not(.is-spaced) + .subtitle, h4:not(.is-spaced) + .subtitle,
+h5:not(.is-spaced) + .subtitle, h6:not(.is-spaced) + .subtitle {
+	margin-top: -1.5rem;
+}
+
+/*.title.is-1 {
+  font-size: 3rem;
+}
+
+.title.is-2 {
+  font-size: 2.5rem;
+}*/
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+h4, h5, h6 {
+  font-size: 1rem;
+}
+
+
+/* .custom-content similar to .content except for header tags */
+.custom-content:not(:last-child) {
+  margin-bottom: 1.5rem;
+}
+
+.custom-content li + li {
+  margin-top: 0.25em;
+}
+
+.custom-content p:not(:last-child) {
+  margin-bottom: 1.25em;
+}
+.custom-content dl:not(:last-child),
+.custom-content ol:not(:last-child),
+.custom-content ul:not(:last-child),
+.custom-content blockquote:not(:last-child),
+.custom-content pre:not(:last-child),
+.custom-content table:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+.custom-content blockquote {
+  background-color: whitesmoke;
+  border-left: 5px solid #dbdbdb;
+  padding: 1.25em 1.5em;
+}
+
+.custom-content ol {
+  list-style: decimal outside;
+  margin-left: 2em;
+  margin-top: 1em;
+}
+
+.custom-content ul {
+  list-style: disc outside;
+  margin-left: 2em;
+  margin-top: 1em;
+}
+
+.custom-content ul ul {
+  list-style-type: circle;
+  margin-top: 0.5em;
+}
+
+.custom-content ul ul ul {
+  list-style-type: square;
+}
+
+.custom-content dd {
+  margin-left: 2em;
+}
+
+.custom-content figure {
+  text-align: center;
+}
+
+.custom-content figure img {
+  display: inline-block;
+}
+
+.custom-content figure figcaption {
+  font-style: italic;
+}
+
+.custom-content pre {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  padding: 1.25em 1.5em;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.custom-content sup,
+.custom-content sub {
+  font-size: 70%;
+}
+
+.custom-content table {
+  width: 100%;
+}
+
+.custom-content table td,
+.custom-content table th {
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 1px;
+  padding: 0.5em 0.75em;
+  vertical-align: top;
+}
+
+.custom-content table th {
+  color: #363636;
+  text-align: left;
+}
+
+.custom-content table tr:hover {
+  background-color: whitesmoke;
+}
+
+.custom-content table thead td,
+.custom-content table thead th {
+  border-width: 0 0 2px;
+  color: #363636;
+}
+
+.custom-content table tfoot td,
+.custom-content table tfoot th {
+  border-width: 2px 0 0;
+  color: #363636;
+}
+
+.custom-content table tbody tr:last-child td,
+.custom-content table tbody tr:last-child th {
+  border-bottom-width: 0;
+}
+
+.custom-content.is-small {
+  font-size: 0.75rem;
+}
+
+.custom-content.is-medium {
+  font-size: 1.25rem;
+}
+
+.custom-content.is-large {
+  font-size: 1.5rem;
+}
+
+
+.fade-transition {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter, .fade-leave {
+  opacity: 0;
+}
