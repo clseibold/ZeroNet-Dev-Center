@@ -6,7 +6,7 @@ Vue.component('route-home', {
 	props: ['tutorialsList'],
 	template: '\
 		<div>\
-			<section class="section">\
+			<section class="section" v-once>\
 				<div class="columns">\
 					<div class="column is-8 is-offset-2">\
 						<h2>Our Goal</h2>\
@@ -28,7 +28,9 @@ Vue.component('route-home', {
 				<div class="columns">\
 					<div class="column is-5 is-offset-2">\
 						<h2>Tutorials</h2>\
-						<div v-html="tutorialsList"></div>\
+						<tutorial-list-item v-for="tutorial in tutorialsList" :key="tutorial.id" :title="tutorial.title" :authors="tutorial.author" :tags="tutorial.tags" :slug="tutorial.slug">\
+							{{ tutorial.description }}\
+						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
 						<h2>Tips &amp; Tricks</h2>\
@@ -39,7 +41,16 @@ Vue.component('route-home', {
 });
 
 Vue.component('route-about', {
-	template: '<p v-once>About Page</p>'
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						About Page!\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
 });
 
 Vue.component('route-tutorials', {
@@ -49,7 +60,9 @@ Vue.component('route-tutorials', {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
-						<div v-html="tutorialsList" class="custom-content"></div>\
+						<tutorial-list-item v-for="tutorial in tutorialsList" :key="tutorial.id" :title="tutorial.title" :authors="tutorial.author" :tags="tutorial.tags" :slug="tutorial.slug">\
+							{{ tutorial.description }}\
+						</tutorial-list-item>\
 					</div>\
 				</div>\
 			</section>\

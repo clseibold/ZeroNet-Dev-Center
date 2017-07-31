@@ -6,16 +6,15 @@ Vue.component('my-hero', {
 	    		<header class="nav">\
 	    			<div class="container">\
 	    				<div class="nav-left">\
+	    					<!-- This "nav-toggle" hamburger menu is only visible on mobile -->\
+	    					<!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->\
+	    					<span id="nav-toggle" class="nav-toggle">\
+	    						<span></span>\
+	    						<span></span>\
+	    						<span></span>\
+	    					</span>\
 	    					<route-link to="/" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</route-link>\
 	    				</div>\
-\
-	    				<!-- This "nav-toggle" hamburger menu is only visible on mobile -->\
-	    				<!-- You need JavaScript to toggle the "is-active" class on "nav-menu" -->\
-	    				<span id="nav-toggle" class="nav-toggle">\
-	    					<span></span>\
-	    					<span></span>\
-	    					<span></span>\
-	    				</span>\
 \
 	    				<!-- This "nav-menu" is hidden on mobile -->\
 	    				<!-- Add the modifier "is-active" to display it on mobile -->\
@@ -57,6 +56,17 @@ Vue.component('my-footer', {
 });
 
 Vue.component('tutorial-list-item', {
+	props: ['title', 'authors', 'slug', 'tags'],
+	computed: {
+		getSlug: function() {
+			return 'tutorials/' + this.slug;
+		}
+	},
 	template: '\
-		'
+		<div>\
+			<span class="title is-5" style="margin-right: 20px;"><route-link :to="getSlug">{{ title }}</route-link></span><span class="subtitle is-6">{{ authors }}</span><br>\
+			<small style="margin-top: 10px;"><slot></slot></small><br>\
+			<small style="float: right;">{{tags}}</small>\
+			<div style="clear: both;"></div>\
+		<hr></div>'
 });

@@ -61,7 +61,7 @@
 				heroTitle: "",
 				heroSubtitle: "",
 				heroContent: "",
-				tutorialsList: "",
+				tutorialsList: [],
 				tutorialContent: ""
 			}
 		}).$mount('#app');
@@ -155,39 +155,42 @@
 		}
 
 		function checkTutorialsList() {
-			if (app.tutorialsList == '') {
+			if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
-					for (var i in tutorials) {
-						app.tutorialsList += generateRouteLinkHTML('tutorials/' + tutorials[i].slug, tutorials[i].title) + "<br>";
-					}
-					app.tutorialsList += "Database Basics (Coming Soon)";
+					app.tutorialsList = tutorials;
 				});
 			}
 		}
 
-		function getTutorial(slug) {
+		function getTutorial(slug) { // TODO(krixano): Implement caching of last visited tutorial's text?
 			if (slug) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+				var getTutorial = function(tutorials) {
 					var tutorial = null;
-					for (var i in tutorials) {
-						if (tutorials[i].slug == slug) {
-							tutorial = tutorials[i];
+						for (var i in tutorials) {
+							if (tutorials[i].slug == slug) {
+								tutorial = tutorials[i];
+							}
 						}
-					}
 
-					if (tutorial) {
-						zeroframe.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-							app.tutorialContent = md.render(content);
-							app.heroTitle = tutorial.title;
-							app.heroSubtitle = 'By ' + tutorial.author;
-						});
-					} else {
-						app.tutorialContent = "";
-						app.heroTitle = 'Not Found';
-						app.heroSubtitle = 'This page was not found!';
-						// Router.navigate('not-found');
-					}
-				});
+						if (tutorial) {
+							zeroframe.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+								app.tutorialContent = md.render(content);
+								app.heroTitle = tutorial.title;
+								app.heroSubtitle = 'By ' + tutorial.author;
+							});
+						} else {
+							app.tutorialContent = "";
+							app.heroTitle = 'Not Found';
+							app.heroSubtitle = 'This page was not found!';
+							// Router.navigate('not-found');
+						}
+				};
+
+				if (app.tutorialsList.length == 0) {
+					zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => getTutorial(tutorials));
+				} else {
+					getTutorial(app.tutorialsList);
+				}
 			}
 		}
 	</script>
