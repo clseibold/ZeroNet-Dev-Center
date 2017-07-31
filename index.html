@@ -154,7 +154,7 @@
 			}
 		}
 
-		function checkTutorialsList() {
+		function checkTutorialsList() { // TODO(krixano): Recache tutorial list when tutorials database changes
 			if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
 					app.tutorialsList = tutorials;
@@ -174,9 +174,9 @@
 
 						if (tutorial) {
 							zeroframe.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-								app.tutorialContent = md.render(content);
 								app.heroTitle = tutorial.title;
 								app.heroSubtitle = 'By ' + tutorial.author;
+								app.tutorialContent = md.render(content);
 							});
 						} else {
 							app.tutorialContent = "";
