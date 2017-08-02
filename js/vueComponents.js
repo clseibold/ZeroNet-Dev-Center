@@ -73,9 +73,14 @@ Vue.component('tutorial-list-item', {
 
 Vue.component('tutorial-comment', {
 	props: ['username', 'body', 'date'],
+	computed: {
+		getBody: function() {
+			return md.render(this.body);
+		}
+	},
 	template: '\
 		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
 			<span style="color: blue;">{{ username }}:</span><br>\
-			<p style="margin-top: 3px;">{{ body }}</p>\
+			<div style="margin-top: 3px;" v-html="getBody" class="custom-content"></div>\
 		</div>'
 });

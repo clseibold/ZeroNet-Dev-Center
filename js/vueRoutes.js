@@ -27,13 +27,13 @@ Vue.component('route-home', {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-5 is-offset-2">\
-						<h2>Tutorials</h2>\
+						<h2>Recent Tutorials</h2>\
 						<tutorial-list-item v-for="tutorial in tutorialsList" :key="tutorial.id" :title="tutorial.title" :authors="tutorial.author" :tags="tutorial.tags" :slug="tutorial.slug">\
 							{{ tutorial.description }}\
 						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
-						<h2>Top Questions</h2>\
+						<h2>Recent Questions</h2>\
 					</div>\
 				</div>\
 			</section>\
