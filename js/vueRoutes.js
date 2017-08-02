@@ -56,8 +56,17 @@ Vue.component('route-tutorials', {
 		</div>'
 });
 
+Vue.component('route-questions', {
+	template: '<p>Questions</p>'
+});
+
 Vue.component('route-tutorials-:slug', {
 	props: ['tutorialContent', 'tutorialComments'],
+	computed: {
+		getCurrentUser: function() {
+			return zeroframe.site_info.cert_user_id ? zeroframe.site_info.cert_user_id + ":" : "<a onclick='zeroframe.selectUser(); return false;'>Select User:</a>";
+		}
+	},
 	template: '\
 		<div>\
 			<section class="section">\
@@ -67,7 +76,8 @@ Vue.component('route-tutorials-:slug', {
 						<hr>\
 						<div style="margin-bottom: 20px;">\
 							<h2>Comments</h2>\
-							<textarea id="comment" style="width: 100%; padding: 5px;" placeholder="Comment..."></textarea>\
+							<span style="color: blue;" v-html="getCurrentUser"></span><br>\
+							<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" onclick="postComment();">Comment</button>\
 						</div>\
 						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
