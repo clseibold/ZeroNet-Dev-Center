@@ -22,7 +22,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="tutorialComments"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="tutorialComments" v-bind:questions-list="questionsList"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -65,7 +65,8 @@
 				tutorialsList: [],
 				tutorialID: null,
 				tutorialContent: "",
-				tutorialComments: []
+				tutorialComments: [],
+				questionsList: []
 			}
 		}).$mount('#app');
 
@@ -132,6 +133,7 @@
 
 			setupHero(true, "ZeroNet Dev Center", subtitle, content);
 			checkTutorialsList();
+			getQuestionsList();
 		}
 
 		function route_tutorials(params) {
@@ -147,6 +149,7 @@
 
 		function route_questions(params) {
 			setupHero(false, "Questions", "");
+			getQuestionsList();
 		}
 
 		function setupHero(isMedium, title, subtitle, content = "") {
@@ -260,6 +263,14 @@
 					}
 				});
 			});
+		}
+
+		function getQuestionsList() {
+			if (app.tutorialsList.length == 0) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (questions) => {
+					app.questionsList = questions;
+				});
+			}
 		}
 	</script>
 </body>

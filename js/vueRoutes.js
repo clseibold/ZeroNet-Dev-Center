@@ -3,7 +3,12 @@ Vue.component('route-not-found', {
 });
 
 Vue.component('route-home', {
-	props: ['tutorialsList'],
+	props: ['tutorialsList', 'questionsList'],
+	computed: {
+		getLatestQuestions: function() {
+			return this.questionsList.slice(1, 3);
+		}
+	},
 	template: '\
 		<div>\
 			<section class="section" v-once>\
@@ -34,6 +39,10 @@ Vue.component('route-home', {
 					</div>\
 					<div class="column">\
 						<h2>Recent Questions</h2>\
+						<div v-for="question in questionsList">\
+							<h3 style="margin-bottom: 0;"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
+							<hr>\
+						</div>\
 					</div>\
 				</div>\
 			</section>\
@@ -57,7 +66,22 @@ Vue.component('route-tutorials', {
 });
 
 Vue.component('route-questions', {
-	template: '<p>Questions</p>'
+	props: ['questionsList'],
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
+						<hr>\
+						<div v-for="question in questionsList">\
+							<h3 style="margin-bottom: 0;"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
+							<hr>\
+						</div>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
 });
 
 Vue.component('route-tutorials-:slug', {
@@ -65,6 +89,9 @@ Vue.component('route-tutorials-:slug', {
 	computed: {
 		getCurrentUser: function() {
 			return zeroframe.site_info.cert_user_id ? zeroframe.site_info.cert_user_id + ":" : "<a onclick='zeroframe.selectUser(); return false;'>Select User:</a>";
+		},
+		getCommentAmount: function() {
+			return this.tutorialComments.length;
 		}
 	},
 	template: '\
@@ -75,7 +102,7 @@ Vue.component('route-tutorials-:slug', {
 						<div v-html="tutorialContent" class="custom-content"></div>\
 						<hr>\
 						<div style="margin-bottom: 20px;">\
-							<h2>Comments</h2>\
+							<h2>{{getCommentAmount}} Comments</h2>\
 							<span style="color: blue;" v-html="getCurrentUser"></span><br>\
 							<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" onclick="postComment();">Comment</button>\
