@@ -21,7 +21,7 @@ Vue.component('my-hero', {
 	    				<div id="nav-menu" class="nav-right nav-menu">\
 	    					<route-link to="/" class="nav-item is-active">Home</route-link>\
 	    					<route-link to="/tutorials" class="nav-item">Tutorials</route-link>\
-	    					<route-link to="/about" class="nav-item">About</route-link>\
+	    					<route-link to="/questions" class="nav-item">Questions</route-link>\
 	    					<!--<a class="nav-item">Questions</a>-->\
 	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()">Select user</a></span>\
 	    				</div>\

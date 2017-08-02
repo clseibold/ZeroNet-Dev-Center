@@ -91,8 +91,12 @@
 					} else if (!message.params.cert_user_id) {
 						document.getElementById("select_user").innerHTML = "Select user"
 					}
-					if (message.params.event && message.params.event[0] == "file_done") {
+					if (message.params.event[0] == "file_done") {
 						//this.loadZiteIndicator();
+						checkTutorialsList();
+						if (Router.currentRoute == "tutorials/:slug") {
+							getComments(app.tutorialID);
+						}
 					}
 				}
 
@@ -105,9 +109,9 @@
 	</script>
 
 	<script>
-		Router.add("about", route_about)
-			.add("tutorials/:slug", route_tutorials_slug)
+		Router.add("tutorials/:slug", route_tutorials_slug)
 			.add("tutorials", route_tutorials)
+			.add("questions", route_questions)
 			.add("products/:pid/edit/:eid", function(params) {
 				console.log('products', params.pid, params.eid);
 			}).add(route_home)
@@ -129,10 +133,6 @@
 			checkTutorialsList();
 		}
 
-		function route_about(params) {
-			setupHero(false, "About", "");
-		}
-
 		function route_tutorials(params) {
 			setupHero(false, "Tutorials", "");
 			checkTutorialsList();
@@ -141,6 +141,11 @@
 		function route_tutorials_slug(params) {
 			setupHero(false, "", "");
 			getTutorial(params.slug);
+			console.log(Router.currentRoute);
+		}
+
+		function route_questions(params) {
+			setupHero(false, "Questions", "");
 		}
 
 		function setupHero(isMedium, title, subtitle, content = "") {
@@ -183,9 +188,7 @@
 								app.tutorialContent = md.render(content);
 								app.tutorialID = tutorial.id;
 								// Get Comments
-								zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE tutorial_id=" + tutorial.id + " ORDER BY date_added DESC"], (comments) => {
-									app.tutorialComments = comments;
-								});
+								getComments(tutorial.id);
 							});
 						} else {
 							app.tutorialContent = "";
@@ -201,6 +204,12 @@
 					getTutorial(app.tutorialsList);
 				}
 			}
+		}
+
+		function getComments(tutorialID) {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE tutorial_id=" + tutorialID + " ORDER BY date_added DESC"], (comments) => {
+				app.tutorialComments = comments;
+			});
 		}
 
 		function postComment() {
@@ -241,9 +250,7 @@
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
 							// TODO(krixano): Reload Messages
-							zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE tutorial_id=" + app.tutorialID + " ORDER BY date_added DESC"], (comments) => {
-								app.tutorialComments = comments;
-							});
+							getComments(app.tutorialID);
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 						});

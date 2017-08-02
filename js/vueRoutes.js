@@ -40,19 +40,6 @@ Vue.component('route-home', {
 		</div>'
 });
 
-Vue.component('route-about', {
-	template: '\
-		<div>\
-			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
-						About Page!\
-					</div>\
-				</div>\
-			</section>\
-		</div>'
-});
-
 Vue.component('route-tutorials', {
 	props: ['tutorialsList'],
 	template: '\
