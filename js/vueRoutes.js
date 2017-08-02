@@ -33,7 +33,7 @@ Vue.component('route-home', {
 						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
-						<h2>Tips &amp; Tricks</h2>\
+						<h2>Top Questions</h2>\
 					</div>\
 				</div>\
 			</section>\
@@ -70,13 +70,21 @@ Vue.component('route-tutorials', {
 });
 
 Vue.component('route-tutorials-:slug', {
-	props: ['tutorialContent'],
+	props: ['tutorialContent', 'tutorialComments'],
 	template: '\
 		<div>\
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
 						<div v-html="tutorialContent" class="custom-content"></div>\
+						<hr>\
+						<div style="margin-bottom: 20px;">\
+							<h2>Comments</h2>\
+							<textarea id="comment" style="width: 100%; padding: 5px;" placeholder="Comment..."></textarea>\
+							<button class="button is-primary" onclick="postComment();">Comment</button>\
+						</div>\
+						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+						</tutorial-comment>\
 					</div>\
 				</div>\
 			</section>\

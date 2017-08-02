@@ -7,6 +7,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
+	<meta name="author" content="Krixano">
 	<base href="" target="_top" id="base">
 	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
 
@@ -21,7 +22,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="tutorialComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -62,7 +63,9 @@
 				heroSubtitle: "",
 				heroContent: "",
 				tutorialsList: [],
-				tutorialContent: ""
+				tutorialID: null,
+				tutorialContent: "",
+				tutorialComments: []
 			}
 		}).$mount('#app');
 
@@ -87,7 +90,8 @@
 						document.getElementById("select_user").innerHTML = message.params.cert_user_id
 					} else if (!message.params.cert_user_id) {
 						document.getElementById("select_user").innerHTML = "Select user"
-					} else if (message.params.event && message.params.event[0] == "file_done") {
+					}
+					if (message.params.event && message.params.event[0] == "file_done") {
 						//this.loadZiteIndicator();
 					}
 				}
@@ -177,6 +181,11 @@
 								app.heroTitle = tutorial.title;
 								app.heroSubtitle = 'By ' + tutorial.author;
 								app.tutorialContent = md.render(content);
+								app.tutorialID = tutorial.id;
+								// Get Comments
+								zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE tutorial_id=" + tutorial.id + " ORDER BY date_added DESC"], (comments) => {
+									app.tutorialComments = comments;
+								});
 							});
 						} else {
 							app.tutorialContent = "";
@@ -192,6 +201,57 @@
 					getTutorial(app.tutorialsList);
 				}
 			}
+		}
+
+		function postComment() {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return false;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			// Load our current messages
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (data)
+					data = JSON.parse(data);
+				else
+					data = { "comments": [] }
+
+				// Add the new message to data
+				data.comments.push({
+					"tutorial_id": app.tutorialID,
+					"body": document.getElementById("comment").value,
+					"date_added": Date.now()
+				});
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						// Reset the message input
+						document.getElementById("comment").value = "";
+
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// TODO(krixano): Reload Messages
+							zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE tutorial_id=" + app.tutorialID + " ORDER BY date_added DESC"], (comments) => {
+								app.tutorialComments = comments;
+							});
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
 		}
 	</script>
 </body>

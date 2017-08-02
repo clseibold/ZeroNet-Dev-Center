@@ -10,9 +10,26 @@
                     "table": "tutorials"
                 }
             ]
+        },
+        "users/.+/data.json": {
+            "to_table": ["comments"]
+        },
+        "users/.+/content.json": {
+            "to_json_table": ["cert_user_id"],
+            "file_name": "data.json"
         }
     },
     "tables": {
+        "json": {
+            "cols": [
+                ["json_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+                ["directory", "TEXT"],
+                ["file_name", "TEXT"],
+                ["cert_user_id", "TEXT"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
+            "schema_changed": 10
+        },
         "tutorials": {
             "cols": [
                 ["id", "INTEGER PRIMARY KEY"],
@@ -26,6 +43,17 @@
             ],
             "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(id, json_id)", "CREATE UNIQUE INDEX tutorials_slug ON tutorials(slug)", "CREATE INDEX tutorial_file ON tutorials(slug)", "CREATE INDEX tutorial_title ON tutorials(title)"],
             "schema_changed": 12
+        },
+        "comments": {
+            "cols": [
+                ["comment_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+                ["tutorial_id", "INTEGER"],
+                ["body", "TEXT"],
+                ["date_added", "INTEGER"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX comment_key ON comments(json_id, comment_id)", "CREATE INDEX comment_tutorial_id ON comments(tutorial_id)"],
+            "schema_changed": 11
         }
     }
 }

@@ -70,3 +70,12 @@ Vue.component('tutorial-list-item', {
 			<div style="clear: both;"></div>\
 		<hr></div>'
 });
+
+Vue.component('tutorial-comment', {
+	props: ['username', 'body', 'date'],
+	template: '\
+		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
+			<span style="color: blue;">{{ username }}:</span><br>\
+			<p style="margin-top: 3px;">{{ body }}</p>\
+		</div>'
+});
