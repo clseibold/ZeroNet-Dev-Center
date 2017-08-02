@@ -19,6 +19,26 @@ onRequest (cmd, message) {
 }
 ```
 
+## Can A Zite Owner Modify A User's data.json File?
+Yes they can. All you have to do is modify the file, then manually put the path to the `content.json` file in the sidebar beside the `Sign` button and click `Sign` and `Publish`. Usually the path will be something like: `data/users/[user's id key folder]/content.json`.
+
+## What Browsers Do I Need To Support For My Zite?
+You only need to support browser versions that support Web Socket's because that is a requirement for ZeroNet. This means you *do not* have to support any version of IE *before* version 10. Here's a link showing browser support for Web Sockets: [https://caniuse.com/#search=websockets](https://caniuse.com/#search=websockets).
+
+## AUTOINCREMENT Issue in Database
+There is an interesting thing that happens with `AUTOINCREMENT`. Everytime you rebuild the database for your zite, any columns that use `AUTOINCREMENT` will not be reset back to 1, but will instead start at the next integer after the integer of the last row, which was deleted during the rebuild along with the rows before it. I'm unsure if this is intended or not. If you are manually updating your json file, a way around this is to just hardcode the integer's, incrementing them yourself. This is currently what I do for the tutorial id's on this zite.
+
+## Reloading List When Database Changes
+If you would like to reload a list, whose items were gotten from a database, whenever the database changes (for example, reloading comments when someone posts a new comment), all you need to do is add this to your `onRequest` function:
+
+```
+if (message.params.event[0] == "file_done") {
+    loadComments();
+}
+```
+
+The `file done` message is sent whenever a json file was changed, the new version has been downloaded, and the database has reloaded/updated.
+
 ## Using A Data.json File That's Not User-specific
 You can use a `data.json` file that only *you* can sign and isn't stored in a users folder. This is what I use to store the tutorials list for this zite. First, you need to make sure it isn't ignored in your `content.json` file. Next, create the file in the data folder. Below, this will be called `tutorials.json` since it stores tutorials. Then, in your `dbschema.json` file, add this:
 
@@ -59,12 +79,3 @@ This tells ZeroNet all of the columns and indexes of the `tutorials` table. The 
 **Make sure you add `["json_id", "INTEGER REFERENCES json (json_id)"]` otherwise none of this will work.**
 
 Whenever you change a table in your `dbschema.json` file, *make sure you update the `schema_changed` field* so ZeroNet knows to reload that table. Now all you need to do is press `Reload` and `Rebuild` on the sidebar on your zite.
-
-## AUTOINCREMENT Issue in Database
-There is an interesting thing that happens with the `AUTOINCREMENT`. Everytime you rebuild the database for your zite, any columns that use `AUTOINCREMENT` will not be reset back to 1, but will instead start at the next integer after the integer of the last row, which was deleted during the rebuild along with the rows before it. I'm unsure if this is intended or not. If you are manually updating your json file, a way around this is to just hardcode the integer's, incrementing them yourself. This is currently what I do for the tutorial id's on this zite.
-
-## Can A Zite Owner Modify A User's data.json File?
-Yes they can. All you have to do is modify the file, then manually put the path to the `content.json` file in the sidebar beside the `Sign` button and click `Sign` and `Publish`.
-
-## What Browsers Do I Need To Support?
-You only need to support browser versions that support Web Socket's because that is a requirement for ZeroNet. This means you *do not* have to support any version of IE *before* version 10. Here's a link showing browser support for Web Sockets: [https://caniuse.com/#search=websockets](https://caniuse.com/#search=websockets).
