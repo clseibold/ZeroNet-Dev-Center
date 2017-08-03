@@ -20,6 +20,10 @@
                 {
                     "node": "questions",
                     "table": "questions"
+                },
+                {
+                    "node": "answers",
+                    "table": "answers"
                 }
             ]
         },
@@ -62,7 +66,7 @@
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX comment_key ON comments(json_id, comment_id)", "CREATE INDEX comment_tutorial_id ON comments(tutorial_id)"],
-            "schema_changed": 11
+            "schema_changed": 12
         },
         "questions": {
             "cols": [
@@ -73,7 +77,18 @@
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX question_key ON questions(json_id, question_id)"],
-            "schema_changed": 11
+            "schema_changed": 12
+        },
+        "answers": {
+            "cols": [
+                ["answer_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+                ["question_id", "INTEGER"],
+                ["body", "TEXT"],
+                ["date_added", "INTEGER"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX answer_key ON answers(json_id, answer_id)"],
+            "schema_changed": 13
         }
     }
 }

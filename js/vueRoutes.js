@@ -6,7 +6,15 @@ Vue.component('route-home', {
 	props: ['tutorialsList', 'questionsList'],
 	computed: {
 		getLatestQuestions: function() {
-			return this.questionsList.slice(1, 3);
+			return this.questionsList.slice(0, 3);
+		},
+		getLatestTutorials: function() {
+			return this.tutorialsList.slice(0, 3);
+		}
+	},
+	methods: {
+		questionClick: function(question) {
+			Router.navigate('questions/' + question.question_id);
 		}
 	},
 	template: '\
@@ -33,14 +41,14 @@ Vue.component('route-home', {
 				<div class="columns">\
 					<div class="column is-5 is-offset-2">\
 						<h2>Recent Tutorials</h2>\
-						<tutorial-list-item v-for="tutorial in tutorialsList" :key="tutorial.id" :title="tutorial.title" :authors="tutorial.author" :tags="tutorial.tags" :slug="tutorial.slug">\
+						<tutorial-list-item v-for="tutorial in getLatestTutorials" :key="tutorial.id" :title="tutorial.title" :authors="tutorial.author" :tags="tutorial.tags" :slug="tutorial.slug">\
 							{{ tutorial.description }}\
 						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
 						<h2>Recent Questions</h2>\
-						<div v-for="question in questionsList">\
-							<h3 style="margin-bottom: 0;"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
+						<div v-for="question in getLatestQuestions">\
+							<h3 style="margin-bottom: 0;" v-on:click="questionClick(question)"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
 							<hr>\
 						</div>\
 					</div>\
@@ -67,6 +75,11 @@ Vue.component('route-tutorials', {
 
 Vue.component('route-questions', {
 	props: ['questionsList'],
+	methods: {
+		questionClick: function(question) {
+			Router.navigate('questions/' + question.question_id);
+		}
+	},
 	template: '\
 		<div>\
 			<section class="section">\
@@ -75,7 +88,7 @@ Vue.component('route-questions', {
 						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
 						<hr>\
 						<div v-for="question in questionsList">\
-							<h3 style="margin-bottom: 0;"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
+							<h3 style="margin-bottom: 0;"><a v-on:click="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
 							<hr>\
 						</div>\
 					</div>\
@@ -84,7 +97,61 @@ Vue.component('route-questions', {
 		</div>'
 });
 
-Vue.component('route-tutorials-:slug', {
+Vue.component('route-questions-new', {
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<h2>Create New Question</h2>\
+						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
+						<textarea id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<button class="button is-primary" onclick="postQuestion();">Post</button>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+});
+
+Vue.component('route-questions-id', {
+	props: ['tutorialContent', 'questionId', 'answersList'],
+	methods: {
+		postAnswerClick: function() {
+			Router.navigate('questions/' + this.questionId + '/answer');
+		}
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<div class="custom-content" v-html="tutorialContent"></div>\
+						<hr>\
+						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-on:click="postAnswerClick">Post An Answer</a></small></h2>\
+						<tutorial-comment v-for="answer in answersList" :key="answer.id" :username="answer.cert_user_id" :body="answer.body" :date="answer.date_added">\
+						</tutorial-comment>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+});
+
+Vue.component('route-questions-id-answer', {
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<h2>Create New Answer</h2>\
+						<textarea id="answerBody" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<button class="button is-primary" onclick="postAnswer();">Post</button>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+});
+
+Vue.component('route-tutorials-slug', {
 	props: ['tutorialContent', 'tutorialComments'],
 	computed: {
 		getCurrentUser: function() {
