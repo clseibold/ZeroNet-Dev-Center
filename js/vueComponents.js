@@ -81,6 +81,58 @@ Vue.component('tutorial-comment', {
 	template: '\
 		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
 			<span style="color: blue;">{{ username }}:</span><br>\
+			<div style="margin-top: 3px;" v-html="getBody" class="custom-content is-small"></div>\
+		</div>'
+});
+
+Vue.component('question-answer', {
+	props: ['referenceid', 'username', 'body', 'date', 'comments'],
+	computed: {
+		getBody: function() {
+			return md.render(this.body);
+		}
+	},
+	methods: {
+		toggleCommentBox: function() {
+			this.isCommentBoxShown = !this.isCommentBoxShown;
+		},
+		innerPostComment: function() {
+			console.log(this.username);
+			postComment('a', this.referenceid, this.username, false);
+			getAllComments();
+			//this.getComments();
+			// TODO: Refresh Comments
+		},
+		getComments() {
+			return this.comments.filter((comment) => {
+				return comment.reference_type == "a" && comment.referenceId == this.referenceid && comment.reference_cert_user_id == this.username;
+			});
+		}
+	},
+	data: function() {
+		return {
+			isCommentBoxShown: false
+		}
+	},
+	template: '\
+		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
+			<span style="color: blue;">{{ username }}:</span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content"></div>\
+			<nav class="level is-mobile">\
+		        <div class="level-left">\
+			        <a class="level-item" v-on:click="toggleCommentBox">\
+			        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
+			        </a>\
+			        <a class="level-item">\
+			        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+			        </a>\
+		        </div>\
+      		</nav>\
+      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
+				<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+				<button class="button is-primary" v-on:click="innerPostComment">Comment</button>\
+      		</div>\
+      		<tutorial-comment v-for="comment in getComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+			</tutorial-comment>\
 		</div>'
 });

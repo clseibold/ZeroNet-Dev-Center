@@ -14,7 +14,7 @@ Vue.component('route-home', {
 	},
 	methods: {
 		questionClick: function(question) {
-			Router.navigate('questions/' + question.question_id);
+			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
 		}
 	},
 	template: '\
@@ -77,7 +77,7 @@ Vue.component('route-questions', {
 	props: ['questionsList'],
 	methods: {
 		questionClick: function(question) {
-			Router.navigate('questions/' + question.question_id);
+			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
 		}
 	},
 	template: '\
@@ -113,11 +113,29 @@ Vue.component('route-questions-new', {
 		</div>'
 });
 
-Vue.component('route-questions-id', {
-	props: ['tutorialContent', 'questionId', 'answersList'],
+Vue.component('route-questions-certuserid-id', {
+	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionCertuserid', 'answersList', 'allComments'],
 	methods: {
 		postAnswerClick: function() {
-			Router.navigate('questions/' + this.questionId + '/answer');
+			Router.navigate('questions/' + this.questionCertuserid + '/' + this.referenceId + '/answer');
+		},
+		toggleCommentBox: function() {
+			this.isCommentBoxShown = !this.isCommentBoxShown;
+		},
+		innerPostComment: function() {
+			postComment('q', this.referenceId,  this.questionCertuserid);
+		},
+		getAllComments() {
+			var that = this;
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_type='a' ORDER BY date_added DESC"], (comments) => {
+				that.comments = comments;
+				console.log(comments);
+			});
+		}
+	},
+	data: function() {
+		return {
+			isCommentBoxShown: false
 		}
 	},
 	template: '\
@@ -125,18 +143,38 @@ Vue.component('route-questions-id', {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
-						<div class="custom-content" v-html="tutorialContent"></div>\
+						<div class="box">\
+							<h2>{{ questionTitle }} <small>{{ questionSubtitle }}</small></h2>\
+							<div class="custom-content" v-html="tutorialContent"></div>\
+							<nav class="level is-mobile">\
+						        <div class="level-left">\
+							        <a class="level-item" v-on:click="toggleCommentBox">\
+							        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
+							        </a>\
+							        <a class="level-item">\
+							        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+							        </a>\
+						        </div>\
+				      		</nav>\
+				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
+								<!--<span style="color: blue;" v-html="getCurrentUser"></span><br>-->\
+								<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+								<button class="button is-primary" v-on:click="innerPostComment">Comment</button>\
+				      		</div>\
+				      		<tutorial-comment v-for="comment in questionComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+							</tutorial-comment>\
+						</div>\
 						<hr>\
 						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-on:click="postAnswerClick">Post An Answer</a></small></h2>\
-						<tutorial-comment v-for="answer in answersList" :key="answer.id" :username="answer.cert_user_id" :body="answer.body" :date="answer.date_added">\
-						</tutorial-comment>\
+						<question-answer v-for="answer in answersList" :key="answer.id" :referenceid="answer.answer_id" :username="answer.cert_user_id" :body="answer.body" :date="answer.date_added" :comments="allComments">\
+						</question-answer>\
 					</div>\
 				</div>\
 			</section>\
 		</div>'
 });
 
-Vue.component('route-questions-id-answer', {
+Vue.component('route-questions-certuserid-id-answer', {
 	template: '\
 		<div>\
 			<section class="section">\
@@ -152,13 +190,18 @@ Vue.component('route-questions-id-answer', {
 });
 
 Vue.component('route-tutorials-slug', {
-	props: ['tutorialContent', 'tutorialComments'],
+	props: ['tutorialContent', 'tutorialComments', 'referenceId'],
 	computed: {
 		getCurrentUser: function() {
 			return zeroframe.site_info.cert_user_id ? zeroframe.site_info.cert_user_id + ":" : "<a onclick='zeroframe.selectUser(); return false;'>Select User:</a>";
 		},
 		getCommentAmount: function() {
 			return this.tutorialComments.length;
+		}
+	},
+	methods: {
+		innerPostComment: function() {
+			postComment('t', this.referenceId);
 		}
 	},
 	template: '\
@@ -172,7 +215,7 @@ Vue.component('route-tutorials-slug', {
 							<h2>{{getCommentAmount}} Comments</h2>\
 							<span style="color: blue;" v-html="getCurrentUser"></span><br>\
 							<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
-							<button class="button is-primary" onclick="postComment();">Comment</button>\
+							<button class="button is-primary" v-on:click="innerPostComment">Comment</button>\
 						</div>\
 						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
 						</tutorial-comment>\

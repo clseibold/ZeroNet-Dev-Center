@@ -11,6 +11,7 @@
 	<base href="" target="_top" id="base">
 	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
 
+	<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/buefy.css" />
 	<link rel="stylesheet" href="css/main.css" />
 
@@ -22,7 +23,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="tutorialComments" v-bind:questions-list="questionsList" v-bind:question-id="questionID" v-bind:answers-list="answersList"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-certuserid="questionCertuserid" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -63,11 +64,14 @@
 				heroSubtitle: "",
 				heroContent: "",
 				tutorialsList: [],
-				tutorialID: null,
+				referenceID: null,
 				tutorialContent: "",
-				tutorialComments: [],
+				comments: [],
+				allComments: [],
 				questionsList: [],
-				questionID: null,
+				questionTitle: "",
+				questionSubtitle: "",
+				questionCertuserid: "",
 				answersList: []
 			}
 		}).$mount('#app');
@@ -99,7 +103,7 @@
 						//this.loadZiteIndicator();
 						checkTutorialsList();
 						if (Router.currentRoute == "tutorials/:slug") {
-							getComments(app.tutorialID);
+							getComments(app.referenceID, "t");
 						}
 					}
 				}
@@ -116,13 +120,13 @@
 		Router.add("tutorials/:slug", route_tutorials_slug)
 			.add("tutorials", route_tutorials)
 			.add("questions/new", route_questions_new)
-			.add("questions/:id/answer", route_questions_id_answer)
-			.add("questions/:id", route_questions_id)
+			.add("questions/:certuserid/:id/answer", route_questions_certuserid_id_answer)
+			.add("questions/:certuserid/:id", route_questions_certuserid_id)
 			.add("questions", route_questions)
 			.add(route_home)
 			.hooks({
 				after: function(currentRoute, params) {
-					app.currentView = 'route-' + currentRoute.replace(/:/, '').replace(/\//g, '-');
+					app.currentView = 'route-' + currentRoute.replace(/:/g, '').replace(/\//g, '-');
 					if (currentRoute == '') {
 						app.currentView = 'route-home';
 					}
@@ -146,8 +150,8 @@
 
 		function route_tutorials_slug(params) {
 			setupHero(false, "", "");
+			app.comments = [];
 			getTutorial(params.slug);
-			console.log(Router.currentRoute);
 		}
 
 		function route_questions(params) {
@@ -160,15 +164,18 @@
 			getQuestionsList();
 		}
 
-		function route_questions_id(params) {
+		function route_questions_certuserid_id(params) {
 			setupHero(false, "Questions", "");
-			getQuestion(params.id);
-			getAnswersList(params.id);
+			app.comments = [];
+			app.answersList = [];
+			app.allComments = [];
+			getQuestion(params.id, params.certuserid);
+			getAllComments();
 		}
 
-		function route_questions_id_answer(params) {
+		function route_questions_certuserid_id_answer(params) {
 			setupHero(false, "Questions", "");
-			getQuestion(params.id);
+			getQuestion(params.id, params.certuserid);
 		}
 
 		function setupHero(isMedium, title, subtitle, content = "") {
@@ -209,9 +216,9 @@
 								app.heroTitle = tutorial.title;
 								app.heroSubtitle = 'By ' + tutorial.author;
 								app.tutorialContent = md.render(content);
-								app.tutorialID = tutorial.id;
+								app.referenceID = tutorial.id;
 								// Get Comments
-								getComments(tutorial.id);
+								getComments(tutorial.id, "t");
 							});
 						} else {
 							app.tutorialContent = "";
@@ -229,13 +236,38 @@
 			}
 		}
 
-		function getComments(tutorialID) {
-			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE tutorial_id=" + tutorialID + " ORDER BY date_added DESC"], (comments) => {
-				app.tutorialComments = comments;
+		// ReferenceTypes:
+		// t - tutorial
+		// q - question
+		// a - answer
+		function getComments(referenceID, referenceType) {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
+				app.comments = comments;
 			});
 		}
 
-		function postComment() {
+		function getAllComments() {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) ORDER BY date_added DESC"], (comments) => {
+				app.allComments = comments;
+			});
+		}
+
+		function getCommentsWithCertuserid(referenceID, cert_user_id, referenceType) {
+			if (referenceType == "t") {
+				console.log("ERROR: getCommentsWithCertuserid doesn't work with tutorials.");
+				return;
+			}
+
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_cert_user_id='" + cert_user_id + "' AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
+				app.comments = comments;
+			});
+		}
+
+		// ReferenceTypes:
+		// t - tutorial
+		// q - question
+		// a - answer
+		function postComment(referenceType, referenceID, referenceCertuserid = null, refreshComments = true) {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
 				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
@@ -252,11 +284,13 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [] }
+					data = { "comments": [], "questions": [], "answers": [] }
 
 				// Add the new message to data
 				data.comments.push({
-					"tutorial_id": app.tutorialID,
+					"reference_id": referenceID,
+					"reference_type": referenceType,
+					"reference_cert_user_id": referenceCertuserid,
 					"body": document.getElementById("comment").value,
 					"date_added": Date.now()
 				});
@@ -272,8 +306,14 @@
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
-							// TODO(krixano): Reload Messages
-							getComments(app.tutorialID);
+							// Reload Messages
+							if (refreshComments) {
+								if (referenceCertuserid) {
+									getCommentsWithCertuserid(app.referenceID, referenceCertuserid, referenceType);
+								} else {
+									getComments(app.referenceID, referenceType);
+								}
+							}
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 						});
@@ -285,11 +325,11 @@
 		}
 
 		function getQuestionsList() {
-			if (app.tutorialsList.length == 0) {
+			//if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (questions) => {
 					app.questionsList = questions;
 				});
-			}
+			//}
 		}
 
 		function postQuestion() {
@@ -309,11 +349,21 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "questions": [] }
+					data = { "comments": [], "questions": [], "answers": [] }
+
+				// Get list of questions from current user
+				var usersQuestions = app.questionsList.filter((question) => {
+					return question.cert_user_id == zeroframe.site_info.cert_user_id;
+				});
+				// Get current user's last question's id and increment by 1
+				var questionID = 1;
+				if (usersQuestions.length > 0) {
+					questionID += usersQuestions[0].question_id;
+				}
 
 				// Add the new question to data
 				data.questions.push({
-					"question_id": app.questionsList[0].question_id + 1, // Get last question's id and increment by 1
+					"question_id": questionID,
 					"title": document.getElementById("questionTitle").value,
 					"body": document.getElementById("questionBody").value,
 					"date_added": Date.now()
@@ -344,45 +394,48 @@
 			});
 		}
 
-		function getQuestion(id) {
-			if (id) {
+		function getQuestion(id, cert_user_id) {
+			if (id && cert_user_id) {
 				var getQuestion = function(questions) {
 					var question = null;
-						for (var i in questions) {
-							if (questions[i].question_id == id) {
-								question = questions[i];
-							}
+					for (var i in questions) {
+						if (questions[i].question_id == id) {
+							question = questions[i];
 						}
+					}
 
-						if (question) {
-							app.heroTitle = question.title;
-							app.heroSubtitle = '' + question.cert_user_id;
-							app.tutorialContent = md.render(question.body);
-							app.questionID = question.question_id;
-							// Get Comments
-						} else {
-							app.tutorialContent = "";
-							app.heroTitle = 'Not Found';
-							app.heroSubtitle = 'This page was not found!';
-							// Router.navigate('not-found');
-						}
+					if (question) {
+						//app.heroTitle = question.title;
+						//app.heroSubtitle = '' + question.cert_user_id;
+						app.tutorialContent = md.render(question.body);
+						app.referenceID = question.question_id; // TODO: Change to referenceID
+						app.questionTitle = question.title;
+						app.questionSubtitle = question.cert_user_id;
+						app.questionCertuserid = question.cert_user_id;
+						getCommentsWithCertuserid(id, cert_user_id, "q");
+						getAnswersList(id, cert_user_id);
+					} else {
+						app.tutorialContent = "";
+						app.heroTitle = 'Not Found';
+						app.heroSubtitle = 'This page was not found!';
+						// Router.navigate('not-found');
+					}
 				};
 
-				if (app.questionsList.length == 0) {
-					zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (questions) => getQuestion(questions));
-				} else {
+				//if (app.questionsList.length == 0) {
+					zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE cert_user_id="' + cert_user_id + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions));
+				/*} else {
 					getQuestion(app.questionsList);
-				}
+				}*/
 			}
 		}
 
-		function getAnswersList(id) {
-			if (app.answersList.length == 0) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (answers) => {
-					console.log(id);
+		function getAnswersList(id, cert_user_id) {
+			//if (app.answersList.length == 0) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_cert_user_id="' + cert_user_id + '" ORDER BY date_added DESC'], (answers) => {
 					app.answersList = answers;
 				});
-			}
+			//}
 		}
 
 		function postAnswer() {
@@ -402,11 +455,15 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [] }
+
+				var answerId;
 
 				// Add the new question to data
 				data.answers.push({
-					"question_id": app.questionID, // Get last question's id and increment by 1
+					"answer_id": answerId,
+					"question_id": app.referenceID, // Get last question's id and increment by 1
+					"question_cert_user_id": app.questionCertuserid,
 					"body": document.getElementById("answerBody").value,
 					"date_added": Date.now()
 				});
@@ -422,11 +479,9 @@
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
-							// TODO(krixano): Reload Answers
-							//
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
-							Router.navigate("questions/" + app.questionID);
+							Router.navigate("questions/" + app.questionCertuserid + '/' + app.referenceID);
 						});
 					} else {
 						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
