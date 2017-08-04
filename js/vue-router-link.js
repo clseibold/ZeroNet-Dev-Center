@@ -14,9 +14,7 @@ Vue.component('route-link', {
 			return false;
 		},
 		getHref: function() { // Middle Click - open in new tab
-			console.log("/" + this.to);
 			return "./?/" + this.to;
-			//zeroframe.cmd("wrapperOpenWindow", ["/" + to, "_blank"])
 		}
 	}
 });
