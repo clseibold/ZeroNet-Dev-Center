@@ -90,6 +90,11 @@ Vue.component('question-answer', {
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
+		},
+		getComments: function() {
+			return result = this.comments.filter((comment) => {
+				return comment.reference_type == "a" && comment.reference_id == this.referenceid && comment.reference_cert_user_id == this.username;
+			});
 		}
 	},
 	methods: {
@@ -97,16 +102,11 @@ Vue.component('question-answer', {
 			this.isCommentBoxShown = !this.isCommentBoxShown;
 		},
 		innerPostComment: function() {
-			console.log(this.username);
-			postComment('a', this.referenceid, this.username, false);
-			getAllComments();
+			postComment('a', this.referenceid, this.username, false, function() {
+				getAllComments();
+			});
 			//this.getComments();
 			// TODO: Refresh Comments
-		},
-		getComments() {
-			return this.comments.filter((comment) => {
-				return comment.reference_type == "a" && comment.referenceId == this.referenceid && comment.reference_cert_user_id == this.username;
-			});
 		}
 	},
 	data: function() {

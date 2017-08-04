@@ -48,8 +48,7 @@ Vue.component('route-home', {
 					<div class="column">\
 						<h2>Recent Questions</h2>\
 						<div v-for="question in getLatestQuestions">\
-							<h3 style="margin-bottom: 0;" v-on:click="questionClick(question)"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
-							<hr>\
+							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;" v-on:click="questionClick(question)"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small></div>\
 						</div>\
 					</div>\
 				</div>\
@@ -124,13 +123,6 @@ Vue.component('route-questions-certuserid-id', {
 		},
 		innerPostComment: function() {
 			postComment('q', this.referenceId,  this.questionCertuserid);
-		},
-		getAllComments() {
-			var that = this;
-			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_type='a' ORDER BY date_added DESC"], (comments) => {
-				that.comments = comments;
-				console.log(comments);
-			});
 		}
 	},
 	data: function() {
