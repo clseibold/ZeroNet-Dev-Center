@@ -49,7 +49,7 @@ Vue.component('route-home', {
 						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
-						<h2>Recent Questions</h2>\
+						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Recent Questions</span> <small><route-link to="questions/new">Post New Question</route-link></small></div>\
 						<div v-for="question in getLatestQuestions">\
 							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small></div>\
 						</div>\
@@ -110,8 +110,8 @@ Vue.component('route-questions-new', {
 					<div class="column is-6 is-offset-3">\
 						<h2>Create New Question</h2>\
 						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
-						<textarea id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
-						<button class="button is-primary" onclick="postQuestion();">Post</button>\
+						<textarea class="textarea" rows="3" id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<button class="button is-primary" onclick="postQuestion();" style="margin-top: 10px;">Post</button>\
 					</div>\
 				</div>\
 			</section>\
@@ -156,8 +156,8 @@ Vue.component('route-questions-certuserid-id', {
 				      		</nav>\
 				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
 								<!--<span style="color: blue;" v-html="getCurrentUser"></span><br>-->\
-								<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
-								<button class="button is-primary" v-on:click="innerPostComment">Comment</button>\
+								<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 				      		</div>\
 				      		<tutorial-comment v-for="comment in questionComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
 							</tutorial-comment>\
@@ -179,8 +179,8 @@ Vue.component('route-questions-certuserid-id-answer', {
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
 						<h2>Create New Answer</h2>\
-						<textarea id="answerBody" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
-						<button class="button is-primary" onclick="postAnswer();">Post</button>\
+						<textarea id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<button class="button is-primary" onclick="postAnswer();" style="margin-top: 10px;">Post</button>\
 					</div>\
 				</div>\
 			</section>\
@@ -212,8 +212,8 @@ Vue.component('route-tutorials-slug', {
 						<div style="margin-bottom: 20px;">\
 							<h2>{{getCommentAmount}} Comments</h2>\
 							<span style="color: blue;" v-html="getCurrentUser"></span><br>\
-							<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
-							<button class="button is-primary" v-on:click="innerPostComment">Comment</button>\
+							<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 						</div>\
 						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
 						</tutorial-comment>\
