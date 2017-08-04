@@ -109,6 +109,7 @@ Vue.component('route-questions-new', {
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
 						<h2>Create New Question</h2>\
+						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
 						<textarea class="textarea" rows="3" id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
 						<button class="button is-primary" onclick="postQuestion();" style="margin-top: 10px;">Post</button>\
@@ -142,7 +143,7 @@ Vue.component('route-questions-certuserid-id', {
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
 						<div class="box">\
-							<h2>{{ questionTitle }} <small>{{ questionSubtitle }}</small></h2>\
+							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }}</span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
 							<nav class="level is-mobile">\
 						        <div class="level-left">\
@@ -155,7 +156,6 @@ Vue.component('route-questions-certuserid-id', {
 						        </div>\
 				      		</nav>\
 				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
-								<!--<span style="color: blue;" v-html="getCurrentUser"></span><br>-->\
 								<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 				      		</div>\
@@ -179,6 +179,7 @@ Vue.component('route-questions-certuserid-id-answer', {
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
 						<h2>Create New Answer</h2>\
+						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<textarea id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
 						<button class="button is-primary" onclick="postAnswer();" style="margin-top: 10px;">Post</button>\
 					</div>\
@@ -188,13 +189,10 @@ Vue.component('route-questions-certuserid-id-answer', {
 });
 
 Vue.component('route-tutorials-slug', {
-	props: ['tutorialContent', 'tutorialComments', 'referenceId'],
+	props: ['tutorialContent', 'tutorialComments', 'referenceId', 'tableofcontents'],
 	computed: {
 		getCommentAmount: function() {
 			return this.tutorialComments.length;
-		},
-		getCurrentUser: function() {
-			return zeroframe.site_info.cert_user_id ? zeroframe.site_info.cert_user_id + ":" : "<a onclick='zeroframe.selectUser(); return false;'>Select User:</a>";
 		}
 	},
 	methods: {
@@ -207,11 +205,13 @@ Vue.component('route-tutorials-slug', {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
+						<h2>Table Of Contents</h2>\
+						<div v-html="tableofcontents" class="custom-content"></div><br>\
 						<div v-html="tutorialContent" class="custom-content"></div>\
 						<hr>\
 						<div style="margin-bottom: 20px;">\
 							<h2>{{getCommentAmount}} Comments</h2>\
-							<span style="color: blue;" v-html="getCurrentUser"></span><br>\
+							<span style="color: blue;" class="currentuser"></span>:<br>\
 							<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 						</div>\

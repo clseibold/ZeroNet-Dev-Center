@@ -23,7 +23,7 @@ Vue.component('my-hero', {
 	    					<route-link to="/tutorials" class="nav-item">Tutorials</route-link>\
 	    					<route-link to="/questions" class="nav-item">Questions</route-link>\
 	    					<!--<a class="nav-item">Questions</a>-->\
-	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()">Select user</a></span>\
+	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()"><span class="currentuser">Select User</span></a></span>\
 	    				</div>\
 	    			</div>\
 	    		</header>\
@@ -129,6 +129,7 @@ Vue.component('question-answer', {
 		        </div>\
       		</nav>\
       		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
+      			<!--<span style="color: blue;" class="currentuser"></span>:<br>-->\
 				<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 				<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
       		</div>\

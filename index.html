@@ -23,7 +23,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-certuserid="questionCertuserid" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-certuserid="questionCertuserid" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -58,6 +58,7 @@
 
 		var app = new Vue({
 			data: {
+				site_info: null,
 				currentView: 'route-home',
 				heroIsMedium: true,
 				heroTitle: "",
@@ -66,6 +67,7 @@
 				tutorialsList: [],
 				referenceID: null,
 				tutorialContent: "",
+				tableOfContents: "",
 				comments: [],
 				allComments: [],
 				questionsList: [],
@@ -80,8 +82,18 @@
 		class ZeroApp extends ZeroFrame {
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
-					if (site_info.cert_user_id)
-						document.getElementById("select_user").innerText = site_info.cert_user_id
+					var elements = document.querySelectorAll('.currentuser');
+					for (var i = 0; i < elements.length; i++) {
+						if (site_info.cert_user_id) {
+							elements[i].innerHTML = site_info.cert_user_id;
+						} else {
+							if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
+								elements[i].innerHTML = "Select User";
+							} else {
+								elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">Select User</a>';
+							}
+						}
+					}
 					this.site_info = site_info
 				});
 			}
@@ -94,10 +106,17 @@
 			onRequest (cmd, message) {
 				if (cmd == "setSiteInfo") {
 					this.site_info = message.params  // Save site info data to allow access it later
-					if (message.params.cert_user_id){
-						document.getElementById("select_user").innerHTML = message.params.cert_user_id
-					} else if (!message.params.cert_user_id) {
-						document.getElementById("select_user").innerHTML = "Select user"
+					var elements = document.querySelectorAll('.currentuser');
+					for (var i = 0; i < elements.length; i++) {
+						if (this.site_info.cert_user_id) {
+							elements[i].innerHTML = this.site_info.cert_user_id;
+						} else {
+							if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
+								elements[i].innerHTML = "Select User";
+							} else {
+								elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">Select User</a>';
+							}
+						}
 					}
 					if (message.params.event[0] == "file_done") {
 						//this.loadZiteIndicator();
@@ -159,17 +178,32 @@
 		function route_tutorials_slug(params) {
 			setupHero(false, "", "");
 			app.comments = [];
-			getTutorial(params.slug);
+			getTutorial(params.slug, function() {
+				fillInCurrentUser();
+
+				// Get hash links working (for endnotes, etc.)
+				var elements = document.querySelectorAll('a[href^="#"]');
+				for (var i = 0; i < elements.length; i++) {
+					var hash = elements[i].hash;
+					elements[i].href = './?/tutorials/' + params.slug + hash;
+				}
+
+				// Add id's to headings
+				var headings = document.querySelectorAll('.custom-content > h2');
+				for (var i = 0; i < headings.length; i++) {
+					headings[i].id = "h" + i;
+				}
+			});
 		}
 
 		function route_questions(params) {
 			setupHero(false, "Questions", "");
-			getQuestionsList();
+			getQuestionsList(fillInCurrentUser);
 		}
 
 		function route_questions_new(params) {
 			setupHero(false, "Questions", "");
-			getQuestionsList();
+			getQuestionsList(fillInCurrentUser);
 		}
 
 		function route_questions_certuserid_id(params) {
@@ -177,15 +211,16 @@
 			app.comments = [];
 			app.answersList = [];
 			app.allComments = [];
-			getQuestion(params.id, params.certuserid);
-			getAllComments();
+			getQuestion(params.id, params.certuserid, function() {
+				getAllComments(fillInCurrentUser);
+			});
 		}
 
 		function route_questions_certuserid_id_answer(params) {
 			setupHero(false, "Questions", "");
 			app.allAnswersList = [];
 			getAllAnswers();
-			getQuestion(params.id, params.certuserid);
+			getQuestion(params.id, params.certuserid, fillInCurrentUser);
 		}
 
 		function setupHero(isMedium, title, subtitle, content = "") {
@@ -203,6 +238,22 @@
 			}
 		}
 
+		function fillInCurrentUser() {
+			// Fill in the current user
+			var elements = document.querySelectorAll('.currentuser');
+			for (var i = 0; i < elements.length; i++) {
+				if (zeroframe.site_info.cert_user_id) {
+					elements[i].innerHTML = zeroframe.site_info.cert_user_id;
+				} else {
+					if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
+						elements[i].innerHTML = "Select User";
+					} else {
+						elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">Select User</a>';
+					}
+				}
+			}
+		}
+
 		function checkTutorialsList() { // TODO(krixano): Recache tutorial list when tutorials database changes
 			if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
@@ -211,7 +262,7 @@
 			}
 		}
 
-		function getTutorial(slug) { // TODO(krixano): Implement caching of last visited tutorial's text?
+		function getTutorial(slug, f = null) { // TODO(krixano): Implement caching of last visited tutorial's text?
 			if (slug) {
 				var getTutorial = function(tutorials) {
 					var tutorial = null;
@@ -227,8 +278,20 @@
 								app.heroSubtitle = 'By ' + tutorial.author;
 								app.tutorialContent = md.render(content);
 								app.referenceID = tutorial.id;
+								// Generate Table Of Contents
+								var tableOfContents = "<ol>";
+								var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
+								for (var i = 0; i < headings.length; i++) {
+									//if (/<h2[^>]*>([^<]+)<\/h2>/.test(headings[i])) {
+										tableOfContents += "<li><a href='#h" + i + "'>" + headings[i].replace(/<h2[^>]*>/, '').replace(/<\/h2>/, '') + "</a></li>";
+									//}
+								}
+								tableOfContents += "</ol>";
+								app.tableOfContents = tableOfContents;
+								//console.log(tableOfContents)
+
 								// Get Comments
-								getComments(tutorial.id, "t");
+								getComments(tutorial.id, "t", f);
 							});
 						} else {
 							app.tutorialContent = "";
@@ -250,9 +313,10 @@
 		// t - tutorial
 		// q - question
 		// a - answer
-		function getComments(referenceID, referenceType) {
+		function getComments(referenceID, referenceType, f = null) {
 			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
 				app.comments = comments;
+				if (f && typeof f == 'function') f();
 			});
 		}
 
@@ -338,10 +402,11 @@
 			});
 		}
 
-		function getQuestionsList() {
+		function getQuestionsList(f = null) {
 			//if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (questions) => {
 					app.questionsList = questions;
+					if (f && typeof f == 'function') f();
 				});
 			//}
 		}
@@ -408,7 +473,7 @@
 			});
 		}
 
-		function getQuestion(id, cert_user_id) {
+		function getQuestion(id, cert_user_id, f = null) {
 			if (id && cert_user_id) {
 				var getQuestion = function(questions) {
 					var question = null;
@@ -427,7 +492,7 @@
 						app.questionSubtitle = question.cert_user_id;
 						app.questionCertuserid = question.cert_user_id;
 						getCommentsWithCertuserid(id, cert_user_id, "q");
-						getAnswersList(id, cert_user_id);
+						getAnswersList(id, cert_user_id, f);
 					} else {
 						app.tutorialContent = "";
 						app.heroTitle = 'Not Found';
@@ -444,10 +509,11 @@
 			}
 		}
 
-		function getAnswersList(id, cert_user_id) {
+		function getAnswersList(id, cert_user_id, f = null) {
 			//if (app.answersList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_cert_user_id="' + cert_user_id + '" ORDER BY date_added DESC'], (answers) => {
 					app.answersList = answers;
+					if (f && typeof f == 'function') f();
 				});
 			//}
 		}
