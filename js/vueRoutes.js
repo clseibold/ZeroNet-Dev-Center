@@ -27,7 +27,7 @@ Vue.component('route-home', {
 							Our Goal is to provide useful information, tutorials, and help to those\
 							who want to develop Zites in order to inspire more development on the\
 							ZeroNet. This site will <em>not</em> teach the basics of front-end web\
-							development. You can go <a href="#">here</a> for that. This site only\
+							development. This site only\
 							focuses on ZeroNet-specific development, including the ZeroFrame API. To\
 							get started developing a Zite for the ZeroNet, follow\
 							<route-link to="tutorials/the_basics">this tutorial</route-link> to start\
