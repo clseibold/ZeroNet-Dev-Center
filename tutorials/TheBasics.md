@@ -8,7 +8,7 @@ Since ZeroNet makes no use of a server - everything is downloaded to your comput
 
 ## Creating A Zite
 
-There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including ZeroBlog, [TODO] However, if you want to create your own zite from scratch, that is what the next few tutorials are going to cover. [^2]
+There are currently two ways of creating a zite. You can clone an existing zite, or you can create your own zite from scratch. If you decide to clone a zite, there are many of them you can choose from, including [ZeroBlog](/Blog.ZeroNetwork.bit/). However, if you want to create your own zite from scratch, that is what the next few tutorials are going to cover. [^2]
 
 In order to clone a zite, find a zite you want to clone, visit the zite so that it is downloaded to your computer. Next, go back to ZeroHello and find the zite in the sidebar. Click the menu icon, and press 'Clone'.
 
@@ -79,7 +79,7 @@ And finally, you will also want to add your zite to [ZeroSites](/Sites.ZeroNetwo
 
 ## Updating Your Zite
 
-Updating your zite is pretty simple. After making any changes to the zite, you must first sign your zite. This will update the hashes and the digital signature in the `content.json` file. After you have done that, click `publish`. This will send the new `content.json` file to a max of 6 different peers. These peers check if the file is newer than the one they already have. If it is, they download the rest of the files *that have been changed/updated* (by comparing the hashes in the new `content.json` file to the hashes in the old `content.json` file to see if they have changed [NEEDS CONFIRMATION]).
+Updating your zite is pretty simple. After making any changes to the zite, you must first sign your zite. This will update the hashes and the digital signature in the `content.json` file. After you have done that, click `publish`. This will send the new `content.json` file to a max of 6 different peers. These peers check if the file is newer than the one they already have. If it is, they download the rest of the files *that have been changed/updated* (by comparing the hashes in the new `content.json` file to the hashes in the old `content.json` file to see if they have changed).
 
 After a peer has the updated files, they then send them to other peers using the same method as above. Eventually, all peers will have the updated files.
 
