@@ -56,6 +56,7 @@ var Router = {
 					}
 				}
 				this.currentRoute = this.routes[i].path;
+				window.scroll(window.pageXOffset, 0);
 				this.routes[i].controller.call({}, routeParams);
 				if (this.hookFunctions) {
 					if (this.hookFunctions["after"]) {
@@ -83,7 +84,6 @@ var Router = {
 				if (!message.params.state.url) {
 					message.params.state.url = message.params.href.replace(/.*\?/, "");
 				}
-				window.scroll(window.pageXOffset, message.params.state.scrollTop || 0)
 				this.navigate(message.params.state.url.replace(/^\//, ''));
 			}
 		}

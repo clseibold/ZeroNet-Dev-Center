@@ -21,7 +21,7 @@ Vue.component('my-hero', {
 	    				<div id="nav-menu" class="nav-right nav-menu">\
 	    					<route-link to="/" class="nav-item is-active">Home</route-link>\
 	    					<route-link to="/tutorials" class="nav-item">Tutorials</route-link>\
-	    					<route-link to="/about" class="nav-item">About</route-link>\
+	    					<route-link to="/questions" class="nav-item">Questions</route-link>\
 	    					<!--<a class="nav-item">Questions</a>-->\
 	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()">Select user</a></span>\
 	    				</div>\
@@ -69,4 +69,70 @@ Vue.component('tutorial-list-item', {
 			<small style="float: right;">{{tags}}</small>\
 			<div style="clear: both;"></div>\
 		<hr></div>'
+});
+
+Vue.component('tutorial-comment', {
+	props: ['username', 'body', 'date'],
+	computed: {
+		getBody: function() {
+			return md.render(this.body);
+		}
+	},
+	template: '\
+		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
+			<span style="color: blue;">{{ username }}:</span><br>\
+			<div style="margin-top: 3px;" v-html="getBody" class="custom-content is-small"></div>\
+		</div>'
+});
+
+Vue.component('question-answer', {
+	props: ['referenceid', 'username', 'body', 'date', 'comments'],
+	computed: {
+		getBody: function() {
+			return md.render(this.body);
+		},
+		getComments: function() {
+			return result = this.comments.filter((comment) => {
+				return comment.reference_type == "a" && comment.reference_id == this.referenceid && comment.reference_cert_user_id == this.username;
+			});
+		}
+	},
+	methods: {
+		toggleCommentBox: function() {
+			this.isCommentBoxShown = !this.isCommentBoxShown;
+		},
+		innerPostComment: function() {
+			postComment('a', this.referenceid, this.username, false, function() {
+				getAllComments();
+			});
+			//this.getComments();
+			// TODO: Refresh Comments
+		}
+	},
+	data: function() {
+		return {
+			isCommentBoxShown: false
+		}
+	},
+	template: '\
+		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
+			<span style="color: blue;">{{ username }}:</span><br>\
+			<div style="margin-top: 3px;" v-html="getBody" class="custom-content"></div>\
+			<nav class="level is-mobile">\
+		        <div class="level-left">\
+			        <a class="level-item" v-on:click="toggleCommentBox">\
+			        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
+			        </a>\
+			        <a class="level-item">\
+			        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+			        </a>\
+		        </div>\
+      		</nav>\
+      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
+				<textarea id="comment" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+				<button class="button is-primary" v-on:click="innerPostComment">Comment</button>\
+      		</div>\
+      		<tutorial-comment v-for="comment in getComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+			</tutorial-comment>\
+		</div>'
 });
