@@ -189,7 +189,7 @@ Vue.component('route-questions-certuserid-id-answer', {
 });
 
 Vue.component('route-tutorials-slug', {
-	props: ['tutorialContent', 'tutorialComments', 'referenceId'],
+	props: ['tutorialContent', 'tutorialComments', 'referenceId', 'tableofcontents'],
 	computed: {
 		getCommentAmount: function() {
 			return this.tutorialComments.length;
@@ -205,6 +205,8 @@ Vue.component('route-tutorials-slug', {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
+						<h2>Table Of Contents</h2>\
+						<div v-html="tableofcontents" class="custom-content"></div><br>\
 						<div v-html="tutorialContent" class="custom-content"></div>\
 						<hr>\
 						<div style="margin-bottom: 20px;">\

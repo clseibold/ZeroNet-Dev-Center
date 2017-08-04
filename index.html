@@ -23,7 +23,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-certuserid="questionCertuserid" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-certuserid="questionCertuserid" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -67,6 +67,7 @@
 				tutorialsList: [],
 				referenceID: null,
 				tutorialContent: "",
+				tableOfContents: "",
 				comments: [],
 				allComments: [],
 				questionsList: [],
@@ -187,6 +188,12 @@
 					var hash = elements[i].hash;
 					elements[i].href = './?/tutorials/' + params.slug + hash;
 				}
+
+				// Add id's to headings
+				var headings = document.querySelectorAll('.custom-content > h2');
+				for (var i = 0; i < headings.length; i++) {
+					headings[i].id = "h" + i;
+				}
 			});
 		}
 
@@ -272,6 +279,18 @@
 								app.heroSubtitle = 'By ' + tutorial.author;
 								app.tutorialContent = md.render(content);
 								app.referenceID = tutorial.id;
+								// Generate Table Of Contents
+								var tableOfContents = "<ol>";
+								var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
+								for (var i = 0; i < headings.length; i++) {
+									//if (/<h2[^>]*>([^<]+)<\/h2>/.test(headings[i])) {
+										tableOfContents += "<li><a href='#h" + i + "'>" + headings[i].replace(/<h2[^>]*>/, '').replace(/<\/h2>/, '') + "</a></li>";
+									//}
+								}
+								tableOfContents += "</ol>";
+								app.tableOfContents = tableOfContents;
+								//console.log(tableOfContents)
+
 								// Get Comments
 								getComments(tutorial.id, "t", f);
 							});
