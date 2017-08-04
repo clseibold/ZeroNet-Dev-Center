@@ -104,6 +104,14 @@
 						checkTutorialsList();
 						if (Router.currentRoute == "tutorials/:slug") {
 							getComments(app.referenceID, "t");
+						} else if (Router.currentRoute == "questions") {
+							getQuestionsList();
+						} else if (Router.currentRoute == "questions/:certuserid/:id") {
+							getCommentsWithCertuserid(app.referenceID, app.questionCertuserid, "q");
+							getAnswersList(app.referenceID, app.questionCertuserid);
+							getAllComments();
+						} else if (Router.currentRoute == "") {
+							getQuestionsList();
 						}
 					}
 				}
