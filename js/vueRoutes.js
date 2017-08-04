@@ -190,11 +190,11 @@ Vue.component('route-questions-certuserid-id-answer', {
 Vue.component('route-tutorials-slug', {
 	props: ['tutorialContent', 'tutorialComments', 'referenceId'],
 	computed: {
-		getCurrentUser: function() {
-			return zeroframe.site_info.cert_user_id ? zeroframe.site_info.cert_user_id + ":" : "<a onclick='zeroframe.selectUser(); return false;'>Select User:</a>";
-		},
 		getCommentAmount: function() {
 			return this.tutorialComments.length;
+		},
+		getCurrentUser: function() {
+			return zeroframe.site_info.cert_user_id ? zeroframe.site_info.cert_user_id + ":" : "<a onclick='zeroframe.selectUser(); return false;'>Select User:</a>";
 		}
 	},
 	methods: {
