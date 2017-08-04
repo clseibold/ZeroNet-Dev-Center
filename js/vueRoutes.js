@@ -15,6 +15,9 @@ Vue.component('route-home', {
 	methods: {
 		questionClick: function(question) {
 			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
+		},
+		getQuestionHref: function(question) {
+			return "./?/questions/" + question.cert_user_id + '/' + question.question_id;
 		}
 	},
 	template: '\
@@ -48,7 +51,7 @@ Vue.component('route-home', {
 					<div class="column">\
 						<h2>Recent Questions</h2>\
 						<div v-for="question in getLatestQuestions">\
-							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;" v-on:click="questionClick(question)"><a>{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small></div>\
+							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small></div>\
 						</div>\
 					</div>\
 				</div>\
@@ -77,6 +80,9 @@ Vue.component('route-questions', {
 	methods: {
 		questionClick: function(question) {
 			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
+		},
+		getQuestionHref: function(question) {
+			return "./?/questions/" + question.cert_user_id + '/' + question.question_id;
 		}
 	},
 	template: '\
@@ -87,7 +93,7 @@ Vue.component('route-questions', {
 						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
 						<hr>\
 						<div v-for="question in questionsList">\
-							<h3 style="margin-bottom: 0;"><a v-on:click="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
+							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
 							<hr>\
 						</div>\
 					</div>\

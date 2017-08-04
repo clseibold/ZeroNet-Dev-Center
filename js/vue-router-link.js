@@ -1,9 +1,8 @@
 Vue.component('route-link', {
 	props: ['to'],
-	template: '<a v-on:click="goto" v-bind:class="{ \'is-active\': active }"><slot></slot></a>',
+	template: '<a v-bind:href="getHref" v-on:click.prevent="goto" v-bind:class="{ \'is-active\': active }"><slot></slot></a>',
 	methods: {
 		goto: function() {
-			//console.log(typeof this.to);
 			Router.navigate(this.to);
 		}
 	},
@@ -13,6 +12,11 @@ Vue.component('route-link', {
 				return true;
 			}
 			return false;
+		},
+		getHref: function() { // Middle Click - open in new tab
+			console.log("/" + this.to);
+			return "./?/" + this.to;
+			//zeroframe.cmd("wrapperOpenWindow", ["/" + to, "_blank"])
 		}
 	}
 });
