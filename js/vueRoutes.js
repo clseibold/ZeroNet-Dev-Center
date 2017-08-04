@@ -6,7 +6,7 @@ Vue.component('route-home', {
 	props: ['tutorialsList', 'questionsList'],
 	computed: {
 		getLatestQuestions: function() {
-			return this.questionsList.slice(0, 3);
+			return this.questionsList.slice(0, 4);
 		},
 		getLatestTutorials: function() {
 			return this.tutorialsList.slice(0, 3);
