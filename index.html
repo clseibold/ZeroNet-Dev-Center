@@ -178,7 +178,16 @@
 		function route_tutorials_slug(params) {
 			setupHero(false, "", "");
 			app.comments = [];
-			getTutorial(params.slug, fillInCurrentUser);
+			getTutorial(params.slug, function() {
+				fillInCurrentUser();
+
+				// Get hash links working (for endnotes, etc.)
+				var elements = document.querySelectorAll('a[href^="#"]');
+				for (var i = 0; i < elements.length; i++) {
+					var hash = elements[i].hash;
+					elements[i].href = './?/tutorials/' + params.slug + hash;
+				}
+			});
 		}
 
 		function route_questions(params) {
