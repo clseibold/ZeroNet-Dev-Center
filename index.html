@@ -36,6 +36,7 @@
 	<script type="text/javascript" src="js/vue-router-link.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
 	<script type="text/javascript" src="js/vueRoutes.js"></script>
+	<script type="text/javascript" src="js/vue-async-computed.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
 
@@ -55,6 +56,7 @@
 		md.set({ html: true });
 
 		Vue.use(Buefy);
+		Vue.use(AsyncComputed);
 
 		var app = new Vue({
 			data: {
@@ -178,6 +180,7 @@
 
 		function route_tutorials_slug(params) {
 			setupHero(false, "", "");
+			app.tableofcontents = "";
 			app.comments = [];
 			getTutorial(params.slug, function() {
 				fillInCurrentUser();
@@ -194,6 +197,8 @@
 				for (var i = 0; i < headings.length; i++) {
 					headings[i].id = "h" + i;
 				}
+
+				console.log(app.comments);
 			});
 		}
 

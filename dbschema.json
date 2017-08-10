@@ -38,10 +38,11 @@
                 ["json_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
                 ["directory", "TEXT"],
                 ["file_name", "TEXT"],
-                ["cert_user_id", "TEXT"]
+                ["cert_user_id", "TEXT"],
+                ["auth_address", "TEXT"]
             ],
             "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
-            "schema_changed": 10
+            "schema_changed": 11
         },
         "tutorials": {
             "cols": [
