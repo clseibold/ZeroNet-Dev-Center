@@ -33,9 +33,9 @@
 	<!-- Vue & Router -->
 	<script type="text/javascript" src="js/vue.min.js"></script>
 	<script type="text/javascript" src="js/router.js"></script>
-	<script type="text/javascript" src="js/vue-router-link.js"></script>
+	<script type="text/javascript" src="js/vue-zeroframe-router.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
-	<script type="text/javascript" src="js/vueRoutes.js"></script>
+	<!--<script type="text/javascript" src="js/vueRoutes.js"></script>-->
 	<script type="text/javascript" src="js/vue-async-computed.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
@@ -46,7 +46,7 @@
 	<script type="text/javascript" src="js/markdown-it/markdown-it-emoji-light.min.js"></script>
 	<script type="text/javascript" src="js/markdown-it/markdown-it-abbr.min.js"></script>
 	<script type="text/javascript" src="js/markdown-it/markdown-it-deflist.min.js"></script>
-	
+
 	<script>
 		var md = window.markdownit();
 		md.use(window.markdownitFootnote);
@@ -57,11 +57,12 @@
 
 		Vue.use(Buefy);
 		Vue.use(AsyncComputed);
+		Vue.use(VueZeroFrameRouter);
 
 		var app = new Vue({
 			data: {
 				site_info: null,
-				currentView: 'route-home',
+				currentView: null,
 				heroIsMedium: true,
 				heroTitle: "",
 				heroSubtitle: "",
@@ -147,87 +148,24 @@
 	</script>
 
 	<script>
-		Router.add("tutorials/:slug", route_tutorials_slug)
+		/*Router.add("tutorials/:slug", route_tutorials_slug, { before: route_tutorials_slug_before, after: route_tutorials_slug_after })
 			.add("tutorials", route_tutorials)
 			.add("questions/new", route_questions_new)
 			.add("questions/:certuserid/:id/answer", route_questions_certuserid_id_answer)
 			.add("questions/:certuserid/:id", route_questions_certuserid_id)
 			.add("questions", route_questions)
 			.add(route_home)
-			.hooks({
-				after: function(currentRoute, params) {
-					app.currentView = 'route-' + currentRoute.replace(/:/g, '').replace(/\//g, '-');
-					if (currentRoute == '') {
-						app.currentView = 'route-home';
-					}
-				}
-			}).init();
-
-		function route_home(params) {
-			var subtitle = "Tutorials, Questions, Collaboration";
-			var content = generateRouteLinkHTML('tutorials/the_basics', 'The Basics', 'button is-info') + 
-							generateRouteLinkHTML('tutorials', 'All Tutorials', '', 'margin-top: 10px; margin-left: 10px;');
-
-			setupHero(true, "ZeroNet Dev Center", subtitle, content);
-			checkTutorialsList();
-			getQuestionsList();
-		}
-
-		function route_tutorials(params) {
-			setupHero(false, "Tutorials", "");
-			checkTutorialsList();
-		}
-
-		function route_tutorials_slug(params) {
-			setupHero(false, "", "");
-			app.tableofcontents = "";
-			app.comments = [];
-			getTutorial(params.slug, function() {
-				fillInCurrentUser();
-
-				// Get hash links working (for endnotes, etc.)
-				var elements = document.querySelectorAll('a[href^="#"]');
-				for (var i = 0; i < elements.length; i++) {
-					var hash = elements[i].hash;
-					elements[i].href = './?/tutorials/' + params.slug + hash;
-				}
-
-				// Add id's to headings
-				var headings = document.querySelectorAll('.custom-content > h2');
-				for (var i = 0; i < headings.length; i++) {
-					headings[i].id = "h" + i;
-				}
-
-				console.log(app.comments);
-			});
-		}
-
-		function route_questions(params) {
-			setupHero(false, "Questions", "");
-			getQuestionsList(fillInCurrentUser);
-		}
-
-		function route_questions_new(params) {
-			setupHero(false, "Questions", "");
-			getQuestionsList(fillInCurrentUser);
-		}
-
-		function route_questions_certuserid_id(params) {
-			setupHero(false, "Questions", "");
-			app.comments = [];
-			app.answersList = [];
-			app.allComments = [];
-			getQuestion(params.id, params.certuserid, function() {
-				getAllComments(fillInCurrentUser);
-			});
-		}
-
-		function route_questions_certuserid_id_answer(params) {
-			setupHero(false, "Questions", "");
-			app.allAnswersList = [];
-			getAllAnswers();
-			getQuestion(params.id, params.certuserid, fillInCurrentUser);
-		}
+			.init();*/
+		VueZeroFrameRouter_Init(app, [
+			{ route: 'tutorials/:slug', component: TutorialsSlug },
+			{ route: 'tutorials', component: Tutorials },
+			{ route: 'questions/new', component: QuestionsNew },
+			{ route: 'questions/:certuserid/:id/answer', component: QuestionsCertuseridIdAnswer },
+			{ route: 'questions/:certuserid/:id', component: QuestionsCertuseridId },
+			{ route: 'questions', component: Questions },
+			{ route: 'about', component: About },
+			{ route: '', component: Home }
+		]);
 
 		function setupHero(isMedium, title, subtitle, content = "") {
 			if (isMedium != null) {
