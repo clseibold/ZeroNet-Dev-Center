@@ -35,7 +35,7 @@
 	<script type="text/javascript" src="js/router.js"></script>
 	<script type="text/javascript" src="js/vue-zeroframe-router.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
-	<!--<script type="text/javascript" src="js/vueRoutes.js"></script>-->
+	<script type="text/javascript" src="js/vueRoutes.js"></script>
 	<script type="text/javascript" src="js/vue-async-computed.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
@@ -166,6 +166,8 @@
 			{ route: 'about', component: About },
 			{ route: '', component: Home }
 		]);
+
+		//console.log(QuestionsCertuseridIdAnswer.call(app));
 
 		function setupHero(isMedium, title, subtitle, content = "") {
 			if (isMedium != null) {
