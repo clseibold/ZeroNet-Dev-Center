@@ -31,7 +31,7 @@ There is an interesting thing that happens with `AUTOINCREMENT`. Everytime you r
 ## Reloading List When Database Changes
 If you would like to reload a list, whose items were gotten from a database, whenever the database changes (for example, reloading comments when someone posts a new comment), all you need to do is add this to your `onRequest` function:
 
-```
+```javascript
 if (message.params.event[0] == "file_done") {
     loadComments();
 }
@@ -43,6 +43,7 @@ The `file done` message is sent whenever a json file was changed, the new versio
 You can use a `data.json` file that only *you* can sign and isn't stored in a users folder. This is what I use to store the tutorials list for this zite. First, you need to make sure it isn't ignored in your `content.json` file. Next, create the file in the data folder. Below, this will be called `tutorials.json` since it stores tutorials. Then, in your `dbschema.json` file, add this:
 
 In `maps` section:
+
 ```json
 "tutorials.json": {
     "to_table": [
@@ -57,6 +58,7 @@ In `maps` section:
 This tells ZeroNet that in the `tutorials.json` file, you have an array called `tutorials` whose data should be mapped into the `tutorials` table in the sqlite database.
 
 In `tables` section:
+
 ```json
 "tutorials": {
     "cols": [

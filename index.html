@@ -49,13 +49,29 @@
 
 	<script type="text/javascript" src="js/moment.js"></script>
 
+	<!-- HighlightJS -->
+	<link rel="stylesheet" href="js/highlightjs/styles/atom-one-light.css">
+	<script type="text/javascript" src="js/highlightjs/highlight.pack.js">
+	<script>hljs.initHighlightingOnLoad();</script>
+
 	<script>
 		var md = window.markdownit();
 		md.use(window.markdownitFootnote);
 		md.use(window.markdownitEmoji);
 		md.use(window.markdownitAbbr);
 		md.use(window.markdownitDeflist);
-		md.set({ html: true });
+		md.set({
+			html: true,
+			highlight: function (str, lang) {
+				if (lang && hljs.getLanguage(lang)) {
+					try {
+					  return hljs.highlight(lang, str).value;
+					} catch (__) {}
+				}
+
+				return ''; // use external default escaping
+			}
+		});
 
 		Vue.use(Buefy);
 		Vue.use(AsyncComputed);
