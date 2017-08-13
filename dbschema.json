@@ -41,7 +41,7 @@
                 ["cert_user_id", "TEXT"]
             ],
             "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
-            "schema_changed": 10
+            "schema_changed": 12
         },
         "tutorials": {
             "cols": [
@@ -61,14 +61,14 @@
             "cols": [
                 ["comment_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
                 ["reference_id", "INTEGER"],
-                ["reference_cert_user_id", "TEXT"],
+                ["reference_auth_address", "TEXT"],
                 ["reference_type", "TEXT"],
                 ["body", "TEXT"],
                 ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX comment_key ON comments(json_id, comment_id)", "CREATE INDEX comment_reference_id ON comments(reference_id)"],
-            "schema_changed": 15
+            "schema_changed": 16
         },
         "questions": {
             "cols": [
@@ -85,13 +85,13 @@
             "cols": [
                 ["answer_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
                 ["question_id", "INTEGER"],
-                ["question_cert_user_id", "TEXT"],
+                ["question_auth_address", "TEXT"],
                 ["body", "TEXT"],
                 ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX answer_key ON answers(json_id, answer_id)"],
-            "schema_changed": 15
+            "schema_changed": 16
         }
     }
 }

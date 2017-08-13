@@ -76,25 +76,34 @@ Vue.component('tutorial-comment', {
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
+		},
+		getPostDate: function() {
+			return "― " + moment(this.date).fromNow();
 		}
 	},
 	template: '\
 		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
-			<span style="color: blue;">{{ username }}:</span><br>\
+			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content is-small"></div>\
 		</div>'
 });
 
 Vue.component('question-answer', {
-	props: ['referenceid', 'username', 'body', 'date', 'comments'],
+	props: ['referenceid', 'username', 'directory', 'body', 'date', 'comments'],
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
 		},
 		getComments: function() {
 			return result = this.comments.filter((comment) => {
-				return comment.reference_type == "a" && comment.reference_id == this.referenceid && comment.reference_cert_user_id == this.username;
+				return comment.reference_type == "a" && comment.reference_id == this.referenceid && comment.reference_auth_address == this.getAuthAddress;
 			});
+		},
+		getAuthAddress: function() {
+			return this.directory.replace(/users\//, '').replace(/\//g, '');
+		},
+		getPostDate: function() {
+			return "― " + moment(this.date).fromNow();
 		}
 	},
 	methods: {
@@ -102,7 +111,7 @@ Vue.component('question-answer', {
 			this.isCommentBoxShown = !this.isCommentBoxShown;
 		},
 		innerPostComment: function() {
-			postComment('a', this.referenceid, this.username, false, function() {
+			postComment('a', this.referenceid, this.getAuthAddress, false, function() {
 				getAllComments();
 			});
 			//this.getComments();
@@ -116,7 +125,7 @@ Vue.component('question-answer', {
 	},
 	template: '\
 		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
-			<span style="color: blue;">{{ username }}:</span><br>\
+			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content"></div>\
 			<nav class="level is-mobile">\
 		        <div class="level-left">\

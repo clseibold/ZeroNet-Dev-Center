@@ -23,7 +23,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-certuserid="questionCertuserid" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -33,9 +33,10 @@
 	<!-- Vue & Router -->
 	<script type="text/javascript" src="js/vue.min.js"></script>
 	<script type="text/javascript" src="js/router.js"></script>
-	<script type="text/javascript" src="js/vue-router-link.js"></script>
+	<script type="text/javascript" src="js/vue-zeroframe-router.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
 	<script type="text/javascript" src="js/vueRoutes.js"></script>
+	<script type="text/javascript" src="js/vue-async-computed.js"></script>
 
 	<script type="text/javascript" src="js/buefy.js"></script>
 
@@ -45,27 +46,48 @@
 	<script type="text/javascript" src="js/markdown-it/markdown-it-emoji-light.min.js"></script>
 	<script type="text/javascript" src="js/markdown-it/markdown-it-abbr.min.js"></script>
 	<script type="text/javascript" src="js/markdown-it/markdown-it-deflist.min.js"></script>
-	
+
+	<script type="text/javascript" src="js/moment.js"></script>
+
+	<!-- HighlightJS -->
+	<link rel="stylesheet" href="js/highlightjs/styles/atom-one-light.css">
+	<script type="text/javascript" src="js/highlightjs/highlight.pack.js">
+	<script>hljs.initHighlightingOnLoad();</script>
+
 	<script>
 		var md = window.markdownit();
 		md.use(window.markdownitFootnote);
 		md.use(window.markdownitEmoji);
 		md.use(window.markdownitAbbr);
 		md.use(window.markdownitDeflist);
-		md.set({ html: true });
+		md.set({
+			html: true,
+			highlight: function (str, lang) {
+				if (lang && hljs.getLanguage(lang)) {
+					try {
+					  return hljs.highlight(lang, str).value;
+					} catch (__) {}
+				}
+
+				return ''; // use external default escaping
+			}
+		});
 
 		Vue.use(Buefy);
+		Vue.use(AsyncComputed);
+		Vue.use(VueZeroFrameRouter);
 
 		var app = new Vue({
 			data: {
 				site_info: null,
-				currentView: 'route-home',
+				currentView: null,
 				heroIsMedium: true,
 				heroTitle: "",
 				heroSubtitle: "",
 				heroContent: "",
 				tutorialsList: [],
 				referenceID: null,
+				dateAdded: null,
 				tutorialContent: "",
 				tableOfContents: "",
 				comments: [],
@@ -73,7 +95,7 @@
 				questionsList: [],
 				questionTitle: "",
 				questionSubtitle: "",
-				questionCertuserid: "",
+				questionAuthaddress: "", // TODO: Change to questionAuthaddress
 				answersList: [],
 				allAnswersList: []
 			}
@@ -126,8 +148,8 @@
 						} else if (Router.currentRoute == "questions") {
 							getQuestionsList();
 						} else if (Router.currentRoute == "questions/:certuserid/:id") {
-							getCommentsWithCertuserid(app.referenceID, app.questionCertuserid, "q");
-							getAnswersList(app.referenceID, app.questionCertuserid);
+							getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q"); // TODO
+							getAnswersList(app.referenceID, app.questionAuthaddress);
 							getAllComments();
 						} else if (Router.currentRoute == "") {
 							getQuestionsList();
@@ -144,84 +166,26 @@
 	</script>
 
 	<script>
-		Router.add("tutorials/:slug", route_tutorials_slug)
+		/*Router.add("tutorials/:slug", route_tutorials_slug, { before: route_tutorials_slug_before, after: route_tutorials_slug_after })
 			.add("tutorials", route_tutorials)
 			.add("questions/new", route_questions_new)
 			.add("questions/:certuserid/:id/answer", route_questions_certuserid_id_answer)
 			.add("questions/:certuserid/:id", route_questions_certuserid_id)
 			.add("questions", route_questions)
 			.add(route_home)
-			.hooks({
-				after: function(currentRoute, params) {
-					app.currentView = 'route-' + currentRoute.replace(/:/g, '').replace(/\//g, '-');
-					if (currentRoute == '') {
-						app.currentView = 'route-home';
-					}
-				}
-			}).init();
+			.init();*/
+		VueZeroFrameRouter_Init(app, [
+			{ route: 'tutorials/:slug', component: TutorialsSlug },
+			{ route: 'tutorials', component: Tutorials },
+			{ route: 'questions/new', component: QuestionsNew },
+			{ route: 'questions/:certuserid/:id/answer', component: QuestionsCertuseridIdAnswer },
+			{ route: 'questions/:certuserid/:id', component: QuestionsCertuseridId },
+			{ route: 'questions', component: Questions },
+			{ route: 'about', component: About },
+			{ route: '', component: Home }
+		]);
 
-		function route_home(params) {
-			var subtitle = "Tutorials, Questions, Collaboration";
-			var content = generateRouteLinkHTML('tutorials/the_basics', 'The Basics', 'button is-info') + 
-							generateRouteLinkHTML('tutorials', 'All Tutorials', '', 'margin-top: 10px; margin-left: 10px;');
-
-			setupHero(true, "ZeroNet Dev Center", subtitle, content);
-			checkTutorialsList();
-			getQuestionsList();
-		}
-
-		function route_tutorials(params) {
-			setupHero(false, "Tutorials", "");
-			checkTutorialsList();
-		}
-
-		function route_tutorials_slug(params) {
-			setupHero(false, "", "");
-			app.comments = [];
-			getTutorial(params.slug, function() {
-				fillInCurrentUser();
-
-				// Get hash links working (for endnotes, etc.)
-				var elements = document.querySelectorAll('a[href^="#"]');
-				for (var i = 0; i < elements.length; i++) {
-					var hash = elements[i].hash;
-					elements[i].href = './?/tutorials/' + params.slug + hash;
-				}
-
-				// Add id's to headings
-				var headings = document.querySelectorAll('.custom-content > h2');
-				for (var i = 0; i < headings.length; i++) {
-					headings[i].id = "h" + i;
-				}
-			});
-		}
-
-		function route_questions(params) {
-			setupHero(false, "Questions", "");
-			getQuestionsList(fillInCurrentUser);
-		}
-
-		function route_questions_new(params) {
-			setupHero(false, "Questions", "");
-			getQuestionsList(fillInCurrentUser);
-		}
-
-		function route_questions_certuserid_id(params) {
-			setupHero(false, "Questions", "");
-			app.comments = [];
-			app.answersList = [];
-			app.allComments = [];
-			getQuestion(params.id, params.certuserid, function() {
-				getAllComments(fillInCurrentUser);
-			});
-		}
-
-		function route_questions_certuserid_id_answer(params) {
-			setupHero(false, "Questions", "");
-			app.allAnswersList = [];
-			getAllAnswers();
-			getQuestion(params.id, params.certuserid, fillInCurrentUser);
-		}
+		//console.log(QuestionsCertuseridIdAnswer.call(app));
 
 		function setupHero(isMedium, title, subtitle, content = "") {
 			if (isMedium != null) {
@@ -278,6 +242,7 @@
 								app.heroSubtitle = 'By ' + tutorial.author;
 								app.tutorialContent = md.render(content);
 								app.referenceID = tutorial.id;
+								app.dateAdded = tutorial.date_added;
 								// Generate Table Of Contents
 								var tableOfContents = "<ol>";
 								var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
@@ -297,6 +262,7 @@
 							app.tutorialContent = "";
 							app.heroTitle = 'Not Found';
 							app.heroSubtitle = 'This page was not found!';
+							app.dateAdded = null;
 							// Router.navigate('not-found');
 						}
 				};
@@ -327,13 +293,13 @@
 			});
 		}
 
-		function getCommentsWithCertuserid(referenceID, cert_user_id, referenceType) {
+		function getCommentsWithAuthaddress(referenceID, auth_address, referenceType) {
 			if (referenceType == "t") {
-				console.log("ERROR: getCommentsWithCertuserid doesn't work with tutorials.");
+				console.log("ERROR: getCommentsWithAuthaddress doesn't work with tutorials.");
 				return;
 			}
 
-			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_cert_user_id='" + cert_user_id + "' AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_auth_address='" + auth_address + "' AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
 				app.comments = comments;
 			});
 		}
@@ -342,7 +308,7 @@
 		// t - tutorial
 		// q - question
 		// a - answer
-		function postComment(referenceType, referenceID, referenceCertuserid = null, refreshComments = true, f = null) {
+		function postComment(referenceType, referenceID, referenceAuthAddress = null, refreshComments = true, f = null) {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
 				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
@@ -365,7 +331,7 @@
 				data.comments.push({
 					"reference_id": referenceID,
 					"reference_type": referenceType,
-					"reference_cert_user_id": referenceCertuserid,
+					"reference_auth_address": referenceAuthAddress,
 					"body": document.getElementById("comment").value,
 					"date_added": Date.now()
 				});
@@ -383,8 +349,8 @@
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
 							// Reload Messages
 							if (refreshComments) {
-								if (referenceCertuserid) {
-									getCommentsWithCertuserid(app.referenceID, referenceCertuserid, referenceType);
+								if (referenceAuthAddress) {
+									getCommentsWithAuthaddress(app.referenceID, referenceAuthAddress, referenceType);
 								} else {
 									getComments(app.referenceID, referenceType);
 								}
@@ -473,8 +439,8 @@
 			});
 		}
 
-		function getQuestion(id, cert_user_id, f = null) {
-			if (id && cert_user_id) {
+		function getQuestion(id, auth_address, f = null) {
+			if (id && auth_address) {
 				var getQuestion = function(questions) {
 					var question = null;
 					for (var i in questions) {
@@ -487,31 +453,33 @@
 						//app.heroTitle = question.title;
 						//app.heroSubtitle = '' + question.cert_user_id;
 						app.tutorialContent = md.render(question.body);
-						app.referenceID = question.question_id; // TODO: Change to referenceID
+						app.referenceID = question.question_id;
 						app.questionTitle = question.title;
 						app.questionSubtitle = question.cert_user_id;
-						app.questionCertuserid = question.cert_user_id;
-						getCommentsWithCertuserid(id, cert_user_id, "q");
-						getAnswersList(id, cert_user_id, f);
+						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
+						app.dateAdded = question.date_added;
+						getCommentsWithAuthaddress(id, auth_address, "q");
+						getAnswersList(id, auth_address, f);
 					} else {
 						app.tutorialContent = "";
 						app.heroTitle = 'Not Found';
 						app.heroSubtitle = 'This page was not found!';
+						if (f && typeof f == 'function') f();
 						// Router.navigate('not-found');
 					}
 				};
 
+				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE directory="users/' + auth_address + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions)); // TODO
 				//if (app.questionsList.length == 0) {
-					zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE cert_user_id="' + cert_user_id + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions));
 				/*} else {
 					getQuestion(app.questionsList);
 				}*/
 			}
 		}
 
-		function getAnswersList(id, cert_user_id, f = null) {
+		function getAnswersList(id, auth_address, f = null) {
 			//if (app.answersList.length == 0) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_cert_user_id="' + cert_user_id + '" ORDER BY date_added DESC'], (answers) => {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_auth_address="' + auth_address + '" ORDER BY date_added DESC'], (answers) => {
 					app.answersList = answers;
 					if (f && typeof f == 'function') f();
 				});
@@ -557,7 +525,7 @@
 				data.answers.push({
 					"answer_id": answerID,
 					"question_id": app.referenceID, // Get last question's id and increment by 1
-					"question_cert_user_id": app.questionCertuserid,
+					"question_auth_address": app.questionAuthaddress,
 					"body": document.getElementById("answerBody").value,
 					"date_added": Date.now()
 				});
@@ -575,7 +543,7 @@
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
-							Router.navigate("questions/" + app.questionCertuserid + '/' + app.referenceID);
+							Router.navigate("questions/" + app.questionAuthaddress + '/' + app.referenceID);
 						});
 					} else {
 						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);

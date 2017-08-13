@@ -2,8 +2,18 @@ Vue.component('route-not-found', {
 	template: '<p v-once>Page Not Found</p>'
 });
 
-Vue.component('route-home', {
+
+var Home = {
 	props: ['tutorialsList', 'questionsList'],
+	init: function() {
+		var subtitle = "Tutorials, Questions, Collaboration";
+		var content = generateRouteLinkHTML('tutorials/the_basics', 'The Basics', 'button is-info') +
+						generateRouteLinkHTML('tutorials', 'All Tutorials', '', 'margin-top: 10px; margin-left: 10px;');
+
+		setupHero(true, "ZeroNet Dev Center", subtitle, content);
+		checkTutorialsList();
+		getQuestionsList();
+	},
 	computed: {
 		getLatestQuestions: function() {
 			return this.questionsList.slice(0, 4);
@@ -14,10 +24,16 @@ Vue.component('route-home', {
 	},
 	methods: {
 		questionClick: function(question) {
-			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
+			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
 		},
 		getQuestionHref: function(question) {
-			return "./?/questions/" + question.cert_user_id + '/' + question.question_id;
+			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+		},
+		getQuestionAuthAddress: function(question) {
+			return question.directory.replace(/users\//, '').replace(/\//g, ''); // Return's auth address
+		},
+		getPostDate: function(date) {
+			return "― " + moment(date).fromNow();
 		}
 	},
 	template: '\
@@ -51,16 +67,25 @@ Vue.component('route-home', {
 					<div class="column">\
 						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Recent Questions</span> <small><route-link to="questions/new">Post New Question</route-link></small></div>\
 						<div v-for="question in getLatestQuestions">\
-							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small></div>\
+							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small></div>\
 						</div>\
 					</div>\
 				</div>\
 			</section>\
 		</div>'
-});
+};
 
-Vue.component('route-tutorials', {
+var About = {
+	template: '<p>Test About</p>',
+};
+
+var Tutorials = {
 	props: ['tutorialsList'],
+	test: "testing",
+	init: function() {
+		setupHero(false, "Tutorials", "");
+		checkTutorialsList();
+	},
 	template: '\
 		<div>\
 			<section class="section">\
@@ -73,123 +98,34 @@ Vue.component('route-tutorials', {
 				</div>\
 			</section>\
 		</div>'
-});
+};
 
-Vue.component('route-questions', {
-	props: ['questionsList'],
-	methods: {
-		questionClick: function(question) {
-			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
-		},
-		getQuestionHref: function(question) {
-			return "./?/questions/" + question.cert_user_id + '/' + question.question_id;
-		}
-	},
-	template: '\
-		<div>\
-			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
-						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
-						<hr>\
-						<div v-for="question in questionsList">\
-							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
-							<hr>\
-						</div>\
-					</div>\
-				</div>\
-			</section>\
-		</div>'
-});
-
-Vue.component('route-questions-new', {
-	template: '\
-		<div>\
-			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
-						<h2>Create New Question</h2>\
-						<span style="color: blue;" class="currentuser"></span>:<br>\
-						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
-						<textarea class="textarea" rows="3" id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
-						<button class="button is-primary" onclick="postQuestion();" style="margin-top: 10px;">Post</button>\
-					</div>\
-				</div>\
-			</section>\
-		</div>'
-});
-
-Vue.component('route-questions-certuserid-id', {
-	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionCertuserid', 'answersList', 'allComments'],
-	methods: {
-		postAnswerClick: function() {
-			Router.navigate('questions/' + this.questionCertuserid + '/' + this.referenceId + '/answer');
-		},
-		toggleCommentBox: function() {
-			this.isCommentBoxShown = !this.isCommentBoxShown;
-		},
-		innerPostComment: function() {
-			postComment('q', this.referenceId,  this.questionCertuserid);
-		}
-	},
-	data: function() {
-		return {
-			isCommentBoxShown: false
-		}
-	},
-	template: '\
-		<div>\
-			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
-						<div class="box">\
-							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }}</span></div>\
-							<div class="custom-content" v-html="tutorialContent"></div>\
-							<nav class="level is-mobile">\
-						        <div class="level-left">\
-							        <a class="level-item" v-on:click="toggleCommentBox">\
-							        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
-							        </a>\
-							        <a class="level-item">\
-							        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
-							        </a>\
-						        </div>\
-				      		</nav>\
-				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
-								<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
-								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
-				      		</div>\
-				      		<tutorial-comment v-for="comment in questionComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
-							</tutorial-comment>\
-						</div>\
-						<hr>\
-						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-on:click="postAnswerClick">Post An Answer</a></small></h2>\
-						<question-answer v-for="answer in answersList" :key="answer.id" :referenceid="answer.answer_id" :username="answer.cert_user_id" :body="answer.body" :date="answer.date_added" :comments="allComments">\
-						</question-answer>\
-					</div>\
-				</div>\
-			</section>\
-		</div>'
-});
-
-Vue.component('route-questions-certuserid-id-answer', {
-	template: '\
-		<div>\
-			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
-						<h2>Create New Answer</h2>\
-						<span style="color: blue;" class="currentuser"></span>:<br>\
-						<textarea id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
-						<button class="button is-primary" onclick="postAnswer();" style="margin-top: 10px;">Post</button>\
-					</div>\
-				</div>\
-			</section>\
-		</div>'
-});
-
-Vue.component('route-tutorials-slug', {
+var TutorialsSlug = {
 	props: ['tutorialContent', 'tutorialComments', 'referenceId', 'tableofcontents'],
+	init: function() {
+		setupHero(false, "", "");
+		app.tableofcontents = "";
+		app.comments = [];
+		var that = this;
+		getTutorial(that.params.slug, function() {
+			fillInCurrentUser();
+
+			// Get hash links working (for endnotes, etc.)
+			var elements = document.querySelectorAll('a[href^="#"]');
+			for (var i = 0; i < elements.length; i++) {
+				var hash = elements[i].hash;
+				elements[i].href = './?/tutorials/' + that.params.slug + hash;
+			}
+
+			// Add id's to headings
+			var headings = document.querySelectorAll('.custom-content > h2');
+			for (var i = 0; i < headings.length; i++) {
+				headings[i].id = "h" + i;
+			}
+
+			//console.log(app.comments);
+		});
+	},
 	computed: {
 		getCommentAmount: function() {
 			return this.tutorialComments.length;
@@ -221,4 +157,152 @@ Vue.component('route-tutorials-slug', {
 				</div>\
 			</section>\
 		</div>'
-});
+};
+
+var Questions = {
+	props: ['questionsList'],
+	init: function() {
+		setupHero(false, "Questions", "");
+		getQuestionsList(fillInCurrentUser);
+	},
+	methods: {
+		questionClick: function(question) {
+			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
+		},
+		getQuestionHref: function(question) {
+			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+		},
+		getQuestionAuthAddress: function(question) {
+			return question.directory.replace(/users\//, '').replace(/\//g, '');
+		},
+		getPostDate: function(date) {
+			return "― " + moment(date).fromNow();
+		}
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
+						<hr>\
+						<div v-for="question in questionsList">\
+							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
+							<hr>\
+						</div>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+};
+
+var QuestionsNew = {
+	init: function() {
+		setupHero(false, "Questions", "");
+		getQuestionsList(fillInCurrentUser);
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<h2>Create New Question</h2>\
+						<span style="color: blue;" class="currentuser"></span>:<br>\
+						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
+						<textarea class="textarea" rows="3" id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<button class="button is-primary" onclick="postQuestion();" style="margin-top: 10px;">Post</button>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+}
+
+var QuestionsCertuseridId = {
+	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments', 'dateAdded'],
+	init: function() {
+		setupHero(false, "Questions", "");
+		app.comments = [];
+		app.answersList = [];
+		app.allComments = [];
+		getQuestion(this.params.id, this.params.certuserid, function() {
+			getAllComments(fillInCurrentUser);
+		});
+	},
+	methods: {
+		postAnswerClick: function() {
+			Router.navigate('questions/' + this.questionAuthaddress + '/' + this.referenceId + '/answer');
+		},
+		toggleCommentBox: function() {
+			this.isCommentBoxShown = !this.isCommentBoxShown;
+		},
+		innerPostComment: function() {
+			postComment('q', this.referenceId,  this.questionAuthaddress);
+		},
+		postAnswerHref: function() {
+			return './?/questions/' + this.questionAuthaddress + '/' + this.referenceId + '/answer';
+		},
+		getPostDate: function() {
+			return "― " + moment(this.dateAdded).fromNow();
+		}
+	},
+	data: function() {
+		return {
+			isCommentBoxShown: false
+		}
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<div class="box">\
+							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
+							<div class="custom-content" v-html="tutorialContent"></div>\
+							<nav class="level is-mobile">\
+						        <div class="level-left">\
+							        <a class="level-item" v-on:click="toggleCommentBox">\
+							        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
+							        </a>\
+							        <a class="level-item">\
+							        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+							        </a>\
+						        </div>\
+				      		</nav>\
+				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
+								<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
+				      		</div>\
+				      		<tutorial-comment v-for="comment in questionComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+							</tutorial-comment>\
+						</div>\
+						<hr>\
+						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
+						<question-answer v-for="answer in answersList" :key="answer.id" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments">\
+						</question-answer>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+};
+
+var QuestionsCertuseridIdAnswer = {
+	init: function() {
+		setupHero(false, "Questions", "");
+		app.allAnswersList = [];
+		getAllAnswers();
+		getQuestion(this.params.id, this.params.certuserid, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<h2>Create New Answer</h2>\
+						<span style="color: blue;" class="currentuser"></span>:<br>\
+						<textarea id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<button class="button is-primary" onclick="postAnswer();" style="margin-top: 10px;">Post</button>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+};

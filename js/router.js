@@ -16,12 +16,14 @@ var Router = {
 	clearSlashes: function(path) {
 		return path.toString().replace(/\/$/, '').replace(/^\//, '');
 	},
-	add: function(path, controller) {
+	add: function(path, controller, hooks, object = null) {
 		if (typeof path == 'function') {
+			object = hooks;
+			hooks = controller;
 			controller = path;
 			path = '';
 		}
-		this.routes.push({ path: path, controller: controller });
+		this.routes.push({ path: path, controller: controller, hooks: hooks, object: object });
 		return this;
 	},
 	remove: function(param) {
@@ -49,28 +51,43 @@ var Router = {
 				match.forEach(function (value, i) {
 					routeParams[keys[i].replace(":", "")] = value;
 				});
-				if (this.hookFunctions) { // TODO: Move this into navigate function?
-					if (this.hookFunctions["before"] && !this.hookFunctions["before"].call({}, this.routes[i].path, routeParams)) {
+				var object = {};
+				if (this.routes[i].object) {
+					object = this.routes[i].object;
+					object.params = routeParams;
+				}
+				// Call 'before' hook
+				if (this.hookFunctions && this.hookFunctions["before"]) { // TODO: Move this into navigate function?
+					if (!this.hookFunctions["before"].call(object, this.routes[i].path, routeParams)) {
+						page.cmd('wrapperPushState', [{"route": this.currentRoute}, null, this.root + this.clearSlashes(this.currentRoute)]);
+						return this;
+					}
+				}
+				// Call route-specific 'before' hook
+				if (this.routes[i].hooks && this.routes[i].hooks["before"]) {
+					if (!this.routes[i].hooks["before"].call(object, routeParams)) {
 						page.cmd('wrapperPushState', [{"route": this.currentRoute}, null, this.root + this.clearSlashes(this.currentRoute)]);
 						return this;
 					}
 				}
 				this.currentRoute = this.routes[i].path;
 				window.scroll(window.pageXOffset, 0);
-				this.routes[i].controller.call({}, routeParams);
+				if (this.setView) { // Used for Vue-ZeroFrame-Router-Plugin NOTE: May Change
+					this.setView(i, this.routes[i].object);
+				}
+				this.routes[i].controller.call(object, routeParams);
+				// Call route-specific 'after' hook
+				if (this.routes[i].hooks) {
+					this.routes[i].hooks["after"].call(object, routeParams);
+				}
 				if (this.hookFunctions) {
 					if (this.hookFunctions["after"]) {
-						this.hookFunctions["after"].call({}, this.currentRoute, routeParams);
+						this.hookFunctions["after"].call(object, this.currentRoute, routeParams);
 					}
 				}
 				return this;
 			}
 		}
-		// TODO: Call Not Found route
-		/*console.log(this.notFoundFunction);
-		if (this.notFoundFunction) {
-			this.notFoundFunction.call({}, routeParams);
-		}*/
 		return this;
 	},
 	refresh: function() { // Refreshes the current route - reruns the route's controller function
@@ -90,9 +107,11 @@ var Router = {
 	},
 	navigate: function(path) {
 		var previousRoute = this.currentRoute;
-		if (this.hookFunctions) {
-			if (this.hookFunctions["leave"]) {
-				this.hookFunctions["leave"].call({}, previousRoute);
+		// TODO: Call route-specific 'leave' hook
+		// Call global 'leave' hook
+		if (this.hookFunctions && this.hookFunctions["leave"]) {
+			if (!this.hookFunctions["leave"].call({}, previousRoute)) {
+				return this;
 			}
 		}
 

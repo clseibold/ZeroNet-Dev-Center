@@ -1,3 +1,7 @@
+// Version 1.0.0 - Initial release
+// Version 1.1.0 (2017-08-02) - Added cmdp function that returns promise instead of using callback
+// Version 1.2.0 (2017-08-02) - Added Ajax monkey patch to emulate XMLHttpRequest over ZeroFrame API
+
 const CMD_INNER_READY = 'innerReady'
 const CMD_RESPONSE = 'response'
 const CMD_WRAPPER_READY = 'wrapperReady'
@@ -68,6 +72,18 @@ class ZeroFrame {
         }, cb)
     }
 
+    cmdp(cmd, params={}) {
+        return new Promise((resolve, reject) => {
+            this.cmd(cmd, params, (res) => {
+                if (res.error) {
+                    reject(res.error)
+                } else {
+                    resolve(res)
+                }
+            })
+        })
+    }
+
     send(message, cb=null) {
         message.wrapper_nonce = this.wrapper_nonce
         message.id = this.next_message_id
@@ -89,5 +105,43 @@ class ZeroFrame {
     onCloseWebsocket() {
         this.log('Websocket close')
     }
+
+    monkeyPatchAjax() {
+        window.XMLHttpRequest = ZeroFakeXMLHttpRequest
+        ZeroFakeXMLHttpRequest.zero_frame = this
+    }
 }
 
+class ZeroFakeXMLHttpRequest {
+    open (method, path) {
+        this.path = path
+        this.zero_frame = ZeroFakeXMLHttpRequest.zero_frame
+    }
+
+    onResult (res) {
+        this.status = 200
+        this.statusText = "200 OK"
+        this.readyState = 4 // Done
+        this.responseType = "text"
+        this.responseText = this.response = res
+        if (this.onload) this.onload()
+        if (this.onreadystatechange) this.onreadystatechange()
+    }
+
+    setRequestHeader (key, val) {
+        return
+    }
+
+    getAllResponseHeaders () {
+        return ""
+    }
+
+    getAllResponseHeaders (name) {
+        return null
+    }
+
+    send () {
+        this.zero_frame.cmd("fileGet", this.path, (res) => this.onResult(res))
+
+    }
+}
