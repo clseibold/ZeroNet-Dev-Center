@@ -154,7 +154,7 @@
 						} else if (Router.currentRoute == "questions") {
 							getQuestionsList();
 						} else if (Router.currentRoute == "questions/:certuserid/:id") {
-							getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q"); // TODO
+							getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
 							getAnswersList(app.referenceID, app.questionAuthaddress);
 							getAllComments();
 						} else if (Router.currentRoute == "") {
@@ -168,10 +168,11 @@
 		}
 
 		zeroframe = new ZeroApp();
-		page = zeroframe; // For ZeroFrame Router
+		page = zeroframe; // NOTE: For ZeroFrame Router
 
 
 		// ZeroFrame Router
+		// Route Components are declared in the js/vueRoutes.js file.
 		VueZeroFrameRouter_Init(app, [
 			{ route: 'tutorials/:slug', component: TutorialsSlug },
 			{ route: 'tutorials', component: Tutorials },
@@ -183,6 +184,7 @@
 			{ route: '', component: Home }
 		]);
 
+		// Change the content in the hero.
 		function setupHero(isMedium, title, subtitle, content = "") {
 			if (isMedium != null) {
 				app.heroIsMedium = isMedium;

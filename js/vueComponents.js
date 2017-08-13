@@ -114,8 +114,6 @@ Vue.component('question-answer', {
 			postComment('a', this.referenceid, this.getAuthAddress, false, function() {
 				getAllComments();
 			});
-			//this.getComments();
-			// TODO: Refresh Comments
 		}
 	},
 	data: function() {
