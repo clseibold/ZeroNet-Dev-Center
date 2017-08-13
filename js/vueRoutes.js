@@ -106,6 +106,7 @@ var TutorialsSlug = {
 		setupHero(false, "", "");
 		app.tableofcontents = "";
 		app.comments = [];
+		app.tutorialContent = "";
 		var that = this;
 		getTutorial(that.params.slug, function() {
 			fillInCurrentUser();
@@ -148,7 +149,7 @@ var TutorialsSlug = {
 						<div style="margin-bottom: 20px;">\
 							<h2>{{getCommentAmount}} Comments</h2>\
 							<span style="color: blue;" class="currentuser"></span>:<br>\
-							<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="3" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+							<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 						</div>\
 						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
@@ -269,7 +270,7 @@ var QuestionsCertuseridId = {
 						        </div>\
 				      		</nav>\
 				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
-								<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+								<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 				      		</div>\
 				      		<tutorial-comment v-for="comment in questionComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\

@@ -28,6 +28,7 @@
 		<my-footer></my-footer>
 	</div>
 
+	<!-- ZeroFrame -->
 	<script type="text/javascript" src="js/ZeroFrame.js"></script>
 
 	<!-- Vue & Router -->
@@ -38,6 +39,7 @@
 	<script type="text/javascript" src="js/vueRoutes.js"></script>
 	<script type="text/javascript" src="js/vue-async-computed.js"></script>
 
+	<!-- Bulma and Buefy -->
 	<script type="text/javascript" src="js/buefy.js"></script>
 
 	<!-- Markdown-It -->
@@ -47,6 +49,7 @@
 	<script type="text/javascript" src="js/markdown-it/markdown-it-abbr.min.js"></script>
 	<script type="text/javascript" src="js/markdown-it/markdown-it-deflist.min.js"></script>
 
+	<!-- Moment JS -->
 	<script type="text/javascript" src="js/moment.js"></script>
 
 	<!-- HighlightJS -->
@@ -55,6 +58,7 @@
 	<script>hljs.initHighlightingOnLoad();</script>
 
 	<script>
+		// Markdown It
 		var md = window.markdownit();
 		md.use(window.markdownitFootnote);
 		md.use(window.markdownitEmoji);
@@ -73,6 +77,7 @@
 			}
 		});
 
+		// Vue
 		Vue.use(Buefy);
 		Vue.use(AsyncComputed);
 		Vue.use(VueZeroFrameRouter);
@@ -95,12 +100,13 @@
 				questionsList: [],
 				questionTitle: "",
 				questionSubtitle: "",
-				questionAuthaddress: "", // TODO: Change to questionAuthaddress
+				questionAuthaddress: "",
 				answersList: [],
 				allAnswersList: []
 			}
 		}).$mount('#app');
 
+		// ZeroFrame
 		class ZeroApp extends ZeroFrame {
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
@@ -142,7 +148,6 @@
 						}
 					}
 					if (message.params.event[0] == "file_done") {
-						//this.loadZiteIndicator();
 						checkTutorialsList();
 						if (Router.currentRoute == "tutorials/:slug") {
 							getComments(app.referenceID, "t");
@@ -164,17 +169,9 @@
 
 		zeroframe = new ZeroApp();
 		page = zeroframe; // For ZeroFrame Router
-	</script>
 
-	<script>
-		/*Router.add("tutorials/:slug", route_tutorials_slug, { before: route_tutorials_slug_before, after: route_tutorials_slug_after })
-			.add("tutorials", route_tutorials)
-			.add("questions/new", route_questions_new)
-			.add("questions/:certuserid/:id/answer", route_questions_certuserid_id_answer)
-			.add("questions/:certuserid/:id", route_questions_certuserid_id)
-			.add("questions", route_questions)
-			.add(route_home)
-			.init();*/
+
+		// ZeroFrame Router
 		VueZeroFrameRouter_Init(app, [
 			{ route: 'tutorials/:slug', component: TutorialsSlug },
 			{ route: 'tutorials', component: Tutorials },
@@ -185,8 +182,6 @@
 			{ route: 'about', component: About },
 			{ route: '', component: Home }
 		]);
-
-		//console.log(QuestionsCertuseridIdAnswer.call(app));
 
 		function setupHero(isMedium, title, subtitle, content = "") {
 			if (isMedium != null) {
@@ -203,8 +198,9 @@
 			}
 		}
 
+		// Change innerHTML of all elements with class of 'currentuser' with
+		// the current user's cert_user_id
 		function fillInCurrentUser() {
-			// Fill in the current user
 			var elements = document.querySelectorAll('.currentuser');
 			for (var i = 0; i < elements.length; i++) {
 				if (zeroframe.site_info.cert_user_id) {
@@ -225,7 +221,9 @@
 			textarea.style.height = textarea.scrollHeight + "px";
 		}
 
-		function checkTutorialsList() { // TODO(krixano): Recache tutorial list when tutorials database changes
+		// Get's all tutorials from database and caches it in app.tutorialsList
+		// TODO(krixano): Recache tutorial list when tutorials database changes
+		function checkTutorialsList() {
 			if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
 					app.tutorialsList = tutorials;
@@ -233,7 +231,23 @@
 			}
 		}
 
-		function getTutorial(slug, f = null) { // TODO(krixano): Implement caching of last visited tutorial's text?
+		// Get comments that reference given id and type from database.
+		// ReferenceTypes:
+		// t - tutorial
+		// q - question
+		// a - answer
+		function getComments(referenceID, referenceType, f = null) {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
+				app.comments = comments;
+				if (f && typeof f == 'function') f();
+			});
+		}
+
+		// Get the tutorial from the tutorialList, get its markdown file,
+		// and convert it into html.
+		// Usually used when the referenced post is a Tutorial.
+		// TODO?(krixano): Implement caching of last visited tutorial's text?
+		function getTutorial(slug, f = null) {
 			if (slug) {
 				var getTutorial = function(tutorials) {
 					var tutorial = null;
@@ -250,19 +264,16 @@
 								app.tutorialContent = md.render(content);
 								app.referenceID = tutorial.id;
 								app.dateAdded = tutorial.date_added;
+
 								// Generate Table Of Contents
 								var tableOfContents = "<ol>";
 								var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
 								for (var i = 0; i < headings.length; i++) {
-									//if (/<h2[^>]*>([^<]+)<\/h2>/.test(headings[i])) {
-										tableOfContents += "<li><a href='#h" + i + "'>" + headings[i].replace(/<h2[^>]*>/, '').replace(/<\/h2>/, '') + "</a></li>";
-									//}
+									tableOfContents += "<li><a href='#h" + i + "'>" + headings[i].replace(/<h2[^>]*>/, '').replace(/<\/h2>/, '') + "</a></li>";
 								}
 								tableOfContents += "</ol>";
 								app.tableOfContents = tableOfContents;
-								//console.log(tableOfContents)
 
-								// Get Comments
 								getComments(tutorial.id, "t", f);
 							});
 						} else {
@@ -282,17 +293,7 @@
 			}
 		}
 
-		// ReferenceTypes:
-		// t - tutorial
-		// q - question
-		// a - answer
-		function getComments(referenceID, referenceType, f = null) {
-			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
-				app.comments = comments;
-				if (f && typeof f == 'function') f();
-			});
-		}
-
+		// Get all comments from database.
 		function getAllComments(f = null) {
 			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) ORDER BY date_added DESC"], (comments) => {
 				app.allComments = comments;
@@ -300,6 +301,13 @@
 			});
 		}
 
+		// Get all comments that reference given id, type, and auth_address of
+		// the user where the json file that contains the referenced post is located.
+		// Usually used when the referenced post is a Question or Answer.
+		// ReferenceTypes:
+		// t - tutorial
+		// q - question
+		// a - answer
 		function getCommentsWithAuthaddress(referenceID, auth_address, referenceType) {
 			if (referenceType == "t") {
 				console.log("ERROR: getCommentsWithAuthaddress doesn't work with tutorials.");
@@ -311,6 +319,9 @@
 			});
 		}
 
+		// Post a comment referencing a post of given type with given id from json
+		// file located in the directory of the user whose auth_address matches
+		// the given auth_address.
 		// ReferenceTypes:
 		// t - tutorial
 		// q - question
@@ -375,15 +386,17 @@
 			});
 		}
 
+
+		// Get list of all questions from database.
 		function getQuestionsList(f = null) {
-			//if (app.tutorialsList.length == 0) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (questions) => {
-					app.questionsList = questions;
-					if (f && typeof f == 'function') f();
-				});
-			//}
+			zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (questions) => {
+				app.questionsList = questions;
+				if (f && typeof f == 'function') f();
+			});
 		}
 
+		// Post a question in the current user's data.json file. The id of the question
+		// is 1 more than the id of the user's last question.
 		function postQuestion() {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
@@ -433,8 +446,9 @@
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
-							// TODO(krixano): Reload Questions List
+							// Reload Questions List
 							getQuestionsList();
+
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 							Router.navigate("questions");
@@ -446,6 +460,8 @@
 			});
 		}
 
+		// Get question with given id from the data.json file of the user whose
+		// auth_address matches given auth_address
 		function getQuestion(id, auth_address, f = null) {
 			if (id && auth_address) {
 				var getQuestion = function(questions) {
@@ -457,14 +473,13 @@
 					}
 
 					if (question) {
-						//app.heroTitle = question.title;
-						//app.heroSubtitle = '' + question.cert_user_id;
 						app.tutorialContent = md.render(question.body);
 						app.referenceID = question.question_id;
 						app.questionTitle = question.title;
 						app.questionSubtitle = question.cert_user_id;
 						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
 						app.dateAdded = question.date_added;
+
 						getCommentsWithAuthaddress(id, auth_address, "q");
 						getAnswersList(id, auth_address, f);
 					} else {
@@ -476,29 +491,31 @@
 					}
 				};
 
-				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE directory="users/' + auth_address + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions)); // TODO
-				//if (app.questionsList.length == 0) {
-				/*} else {
-					getQuestion(app.questionsList);
-				}*/
+				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE directory="users/' + auth_address + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions));
 			}
 		}
 
+		// Get list of all answers that reference a question with given id from
+		// a data.json file of a user whose auth_address matches the given auth_address.
 		function getAnswersList(id, auth_address, f = null) {
-			//if (app.answersList.length == 0) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_auth_address="' + auth_address + '" ORDER BY date_added DESC'], (answers) => {
-					app.answersList = answers;
-					if (f && typeof f == 'function') f();
-				});
-			//}
+			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_auth_address="' + auth_address + '" ORDER BY date_added DESC'], (answers) => {
+				app.answersList = answers;
+				if (f && typeof f == 'function') f();
+			});
 		}
 
+		// Get all answers from database.
 		function getAllAnswers() {
 			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) ORDER BY date_added DESC'], (answers) => {
 				app.allAnswersList = answers;
 			});
 		}
 
+		// Post an answer referencing the current question's id and the auth_address
+		// of the user who posted the question. The current question is loaded,
+		// before this function is called, using the getQuestion function (the
+		// values in the url are passed in). The id of the answer is 1 more than
+		// the current user's last answer's id.
 		function postAnswer() {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
@@ -531,7 +548,7 @@
 				// Add the new question to data
 				data.answers.push({
 					"answer_id": answerID,
-					"question_id": app.referenceID, // Get last question's id and increment by 1
+					"question_id": app.referenceID,
 					"question_auth_address": app.questionAuthaddress,
 					"body": document.getElementById("answerBody").value,
 					"date_added": Date.now()
