@@ -8,6 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
 	<meta name="author" content="Krixano">
+	<meta name="description" content="Center for ZeroNet Development. Tutorials, Collaboration, Questions">
 	<base href="" target="_top" id="base">
 	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
 
@@ -200,8 +201,10 @@
 			}
 		}
 
-		// Change innerHTML of all elements with class of 'currentuser' with
-		// the current user's cert_user_id
+		// Change innerHTML of all elements with class of 'currentuser' to
+		// the current user's cert_user_id, or a Select User link when there isn't
+		// a current user selected. This is called everytime a route is loaded
+		// and when the current user changes.
 		function fillInCurrentUser() {
 			var elements = document.querySelectorAll('.currentuser');
 			for (var i = 0; i < elements.length; i++) {
@@ -217,7 +220,8 @@
 			}
 		}
 
-		// Call from oninput of textarea, passing in this
+		// Called from oninput of textarea, passes in 'this' so the function can
+		// use it's height and scrollHeight.
 		function expandTextarea(textarea) {
 			textarea.style.height = "";
 			textarea.style.height = textarea.scrollHeight + "px";
@@ -233,21 +237,10 @@
 			}
 		}
 
-		// Get comments that reference given id and type from database.
-		// ReferenceTypes:
-		// t - tutorial
-		// q - question
-		// a - answer
-		function getComments(referenceID, referenceType, f = null) {
-			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
-				app.comments = comments;
-				if (f && typeof f == 'function') f();
-			});
-		}
-
 		// Get the tutorial from the tutorialList, get its markdown file,
-		// and convert it into html.
-		// Usually used when the referenced post is a Tutorial.
+		// and convert it into html, and generate a table of contents based on
+		// the main headings.
+		// Afterwards, call the getComments function.
 		// TODO?(krixano): Implement caching of last visited tutorial's text?
 		function getTutorial(slug, f = null) {
 			if (slug) {
@@ -293,6 +286,19 @@
 					getTutorial(app.tutorialsList);
 				}
 			}
+		}
+
+		// Get comments that reference given id and type from database.
+		// Usually used when the referenced post is a Tutorial.
+		// ReferenceTypes:
+		// t - tutorial
+		// q - question
+		// a - answer
+		function getComments(referenceID, referenceType, f = null) {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
+				app.comments = comments;
+				if (f && typeof f == 'function') f();
+			});
 		}
 
 		// Get all comments from database.
@@ -397,6 +403,41 @@
 			});
 		}
 
+		// Get question with given id from the data.json file of the user whose
+		// auth_address matches given auth_address
+		function getQuestion(id, auth_address, f = null) {
+			if (id && auth_address) {
+				var getQuestion = function(questions) {
+					var question = null;
+					for (var i in questions) {
+						if (questions[i].question_id == id) {
+							question = questions[i];
+						}
+					}
+
+					if (question) {
+						app.tutorialContent = md.render(question.body);
+						app.referenceID = question.question_id;
+						app.questionTitle = question.title;
+						app.questionSubtitle = question.cert_user_id;
+						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
+						app.dateAdded = question.date_added;
+
+						getCommentsWithAuthaddress(id, auth_address, "q");
+						getAnswersList(id, auth_address, f);
+					} else {
+						app.tutorialContent = "";
+						app.heroTitle = 'Not Found';
+						app.heroSubtitle = 'This page was not found!';
+						if (f && typeof f == 'function') f();
+						// Router.navigate('not-found');
+					}
+				};
+
+				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE directory="users/' + auth_address + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions));
+			}
+		}
+
 		// Post a question in the current user's data.json file. The id of the question
 		// is 1 more than the id of the user's last question.
 		function postQuestion() {
@@ -460,41 +501,6 @@
 					}
 				});
 			});
-		}
-
-		// Get question with given id from the data.json file of the user whose
-		// auth_address matches given auth_address
-		function getQuestion(id, auth_address, f = null) {
-			if (id && auth_address) {
-				var getQuestion = function(questions) {
-					var question = null;
-					for (var i in questions) {
-						if (questions[i].question_id == id) {
-							question = questions[i];
-						}
-					}
-
-					if (question) {
-						app.tutorialContent = md.render(question.body);
-						app.referenceID = question.question_id;
-						app.questionTitle = question.title;
-						app.questionSubtitle = question.cert_user_id;
-						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
-						app.dateAdded = question.date_added;
-
-						getCommentsWithAuthaddress(id, auth_address, "q");
-						getAnswersList(id, auth_address, f);
-					} else {
-						app.tutorialContent = "";
-						app.heroTitle = 'Not Found';
-						app.heroSubtitle = 'This page was not found!';
-						if (f && typeof f == 'function') f();
-						// Router.navigate('not-found');
-					}
-				};
-
-				zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE directory="users/' + auth_address + '" ORDER BY date_added DESC'], (questions) => getQuestion(questions));
-			}
 		}
 
 		// Get list of all answers that reference a question with given id from
