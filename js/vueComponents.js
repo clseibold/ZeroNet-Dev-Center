@@ -14,16 +14,19 @@ Vue.component('my-hero', {
 	    						<span></span>\
 	    					</span>\
 	    					<route-link to="/" class="nav-item" style="font-weight: bold;">ZeroNet Dev Center</route-link>\
+							<route-link to="/blog" class="nav-item is-hidden-mobile">Blog</route-link>\
+							<route-link to="/tutorials" class="nav-item is-hidden-mobile">Tutorials</route-link>\
+	    					<route-link to="/questions" class="nav-item is-hidden-mobile">Questions</route-link>\
 	    				</div>\
 \
 	    				<!-- This "nav-menu" is hidden on mobile -->\
 	    				<!-- Add the modifier "is-active" to display it on mobile -->\
 	    				<div id="nav-menu" class="nav-right nav-menu">\
-	    					<route-link to="/" class="nav-item is-active">Home</route-link>\
-	    					<route-link to="/tutorials" class="nav-item">Tutorials</route-link>\
-	    					<route-link to="/questions" class="nav-item">Questions</route-link>\
-	    					<!--<a class="nav-item">Questions</a>-->\
-	    					<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()"><span class="currentuser">Select User</span></a></span>\
+							<route-link to="/blog" class="nav-item is-hidden-tablet">Blog</route-link>\
+							<route-link to="/tutorials" class="nav-item is-hidden-tablet">Tutorials</route-link>\
+							<route-link to="/questions" class="nav-item is-hidden-tablet">Questions</route-link>\
+	    					<!--<span class="nav-item"><a href="#Select+user" id="select_user" class="button is-info" onclick="return zeroframe.selectUser()"><span class="currentuser">Select User</span></a></span>-->\
+							<span class="nav-item"><span class="currentuser"></span></span>\
 	    				</div>\
 	    			</div>\
 	    		</header>\

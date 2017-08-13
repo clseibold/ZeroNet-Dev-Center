@@ -111,19 +111,8 @@
 		class ZeroApp extends ZeroFrame {
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
-					var elements = document.querySelectorAll('.currentuser');
-					for (var i = 0; i < elements.length; i++) {
-						if (site_info.cert_user_id) {
-							elements[i].innerHTML = site_info.cert_user_id;
-						} else {
-							if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
-								elements[i].innerHTML = "Select User";
-							} else {
-								elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">Select User</a>';
-							}
-						}
-					}
 					this.site_info = site_info
+					fillInCurrentUser();
 				});
 				this.cmd("wrapperNotification", ["info", "This is the DEV version of the zite."]);
 			}
@@ -136,18 +125,7 @@
 			onRequest (cmd, message) {
 				if (cmd == "setSiteInfo") {
 					this.site_info = message.params  // Save site info data to allow access it later
-					var elements = document.querySelectorAll('.currentuser');
-					for (var i = 0; i < elements.length; i++) {
-						if (this.site_info.cert_user_id) {
-							elements[i].innerHTML = this.site_info.cert_user_id;
-						} else {
-							if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
-								elements[i].innerHTML = "Select User";
-							} else {
-								elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">Select User</a>';
-							}
-						}
-					}
+					fillInCurrentUser();
 					if (message.params.event[0] == "file_done") {
 						checkTutorialsList();
 						if (Router.currentRoute == "tutorials/:slug") {
@@ -209,7 +187,11 @@
 			var elements = document.querySelectorAll('.currentuser');
 			for (var i = 0; i < elements.length; i++) {
 				if (zeroframe.site_info.cert_user_id) {
-					elements[i].innerHTML = zeroframe.site_info.cert_user_id;
+					if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
+						elements[i].innerHTML = zeroframe.site_info.cert_user_id;
+					} else {
+						elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">' + zeroframe.site_info.cert_user_id + '</a>';
+					}
 				} else {
 					if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
 						elements[i].innerHTML = "Select User";
