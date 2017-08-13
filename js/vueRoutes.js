@@ -31,6 +31,9 @@ var Home = {
 		},
 		getQuestionAuthAddress: function(question) {
 			return question.directory.replace(/users\//, '').replace(/\//g, ''); // Return's auth address
+		},
+		getPostDate: function(date) {
+			return "― " + moment(date).fromNow();
 		}
 	},
 	template: '\
@@ -64,7 +67,7 @@ var Home = {
 					<div class="column">\
 						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Recent Questions</span> <small><route-link to="questions/new">Post New Question</route-link></small></div>\
 						<div v-for="question in getLatestQuestions">\
-							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small></div>\
+							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small></div>\
 						</div>\
 					</div>\
 				</div>\
@@ -171,6 +174,9 @@ var Questions = {
 		},
 		getQuestionAuthAddress: function(question) {
 			return question.directory.replace(/users\//, '').replace(/\//g, '');
+		},
+		getPostDate: function(date) {
+			return "― " + moment(date).fromNow();
 		}
 	},
 	template: '\
@@ -181,7 +187,7 @@ var Questions = {
 						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
 						<hr>\
 						<div v-for="question in questionsList">\
-							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small>by {{ question.cert_user_id }}</small>\
+							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
 							<hr>\
 						</div>\
 					</div>\
@@ -212,7 +218,7 @@ var QuestionsNew = {
 }
 
 var QuestionsCertuseridId = {
-	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments'],
+	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments', 'dateAdded'],
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.comments = [];
@@ -234,6 +240,9 @@ var QuestionsCertuseridId = {
 		},
 		postAnswerHref: function() {
 			return './?/questions/' + this.questionAuthaddress + '/' + this.referenceId + '/answer';
+		},
+		getPostDate: function() {
+			return "― " + moment(this.dateAdded).fromNow();
 		}
 	},
 	data: function() {
@@ -247,7 +256,7 @@ var QuestionsCertuseridId = {
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
 						<div class="box">\
-							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }}</span></div>\
+							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
 							<nav class="level is-mobile">\
 						        <div class="level-left">\

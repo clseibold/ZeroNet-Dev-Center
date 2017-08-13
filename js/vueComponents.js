@@ -76,11 +76,14 @@ Vue.component('tutorial-comment', {
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
+		},
+		getPostDate: function() {
+			return "― " + moment(this.date).fromNow();
 		}
 	},
 	template: '\
 		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
-			<span style="color: blue;">{{ username }}:</span><br>\
+			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content is-small"></div>\
 		</div>'
 });
@@ -98,6 +101,9 @@ Vue.component('question-answer', {
 		},
 		getAuthAddress: function() {
 			return this.directory.replace(/users\//, '').replace(/\//g, '');
+		},
+		getPostDate: function() {
+			return "― " + moment(this.date).fromNow();
 		}
 	},
 	methods: {
@@ -119,7 +125,7 @@ Vue.component('question-answer', {
 	},
 	template: '\
 		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
-			<span style="color: blue;">{{ username }}:</span><br>\
+			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content"></div>\
 			<nav class="level is-mobile">\
 		        <div class="level-left">\

@@ -23,7 +23,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -47,6 +47,8 @@
 	<script type="text/javascript" src="js/markdown-it/markdown-it-abbr.min.js"></script>
 	<script type="text/javascript" src="js/markdown-it/markdown-it-deflist.min.js"></script>
 
+	<script type="text/javascript" src="js/moment.js"></script>
+
 	<script>
 		var md = window.markdownit();
 		md.use(window.markdownitFootnote);
@@ -69,6 +71,7 @@
 				heroContent: "",
 				tutorialsList: [],
 				referenceID: null,
+				dateAdded: null,
 				tutorialContent: "",
 				tableOfContents: "",
 				comments: [],
@@ -224,6 +227,7 @@
 								app.heroSubtitle = 'By ' + tutorial.author;
 								app.tutorialContent = md.render(content);
 								app.referenceID = tutorial.id;
+								app.dateAdded = tutorial.date_added;
 								// Generate Table Of Contents
 								var tableOfContents = "<ol>";
 								var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
@@ -243,6 +247,7 @@
 							app.tutorialContent = "";
 							app.heroTitle = 'Not Found';
 							app.heroSubtitle = 'This page was not found!';
+							app.dateAdded = null;
 							// Router.navigate('not-found');
 						}
 				};
@@ -437,6 +442,7 @@
 						app.questionTitle = question.title;
 						app.questionSubtitle = question.cert_user_id;
 						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
+						app.dateAdded = question.date_added;
 						getCommentsWithAuthaddress(id, auth_address, "q");
 						getAnswersList(id, auth_address, f);
 					} else {
