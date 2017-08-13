@@ -23,13 +23,23 @@ const VueRouteLink = Vue.component('route-link', {
 
 const VueZeroFrameRouter = {
 	routes: null,
-	install(Vue, options) {
+	install(Vue) {
 		/*Vue.mixin({ // Inject stuff into all components
 			mounted() {
 				console.log('Mounted');
 			}
 		});*/
 		Vue.component(VueRouteLink.name, VueRouteLink);
+		/*Vue.mixin({
+			beforeCreate() {
+				if (options.zeroframe_router) {
+					this.$zeroframe_router = options.zeroframe_router;
+				} else if (options.parent && options.parent.$zeroframe_router) {
+					this.$zeroframe_router = options.parent.$zeroframe_router;
+				}
+				registerInstance();
+			}
+		});*/
 		//Vue.currentView = options.routes[0];
 		/*Router.hooks({
 			after: function(currentRoute, params) {

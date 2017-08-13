@@ -24,10 +24,13 @@ var Home = {
 	},
 	methods: {
 		questionClick: function(question) {
-			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
+			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
 		},
 		getQuestionHref: function(question) {
-			return "./?/questions/" + question.cert_user_id + '/' + question.question_id;
+			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+		},
+		getQuestionAuthAddress: function(question) {
+			return question.directory.replace(/users\//, '').replace(/\//g, ''); // Return's auth address
 		}
 	},
 	template: '\
@@ -79,7 +82,6 @@ var Tutorials = {
 	init: function() {
 		setupHero(false, "Tutorials", "");
 		checkTutorialsList();
-		console.log(this.test);
 	},
 	template: '\
 		<div>\
@@ -98,7 +100,6 @@ var Tutorials = {
 var TutorialsSlug = {
 	props: ['tutorialContent', 'tutorialComments', 'referenceId', 'tableofcontents'],
 	init: function() {
-		//console.log(this);
 		setupHero(false, "", "");
 		app.tableofcontents = "";
 		app.comments = [];
@@ -163,10 +164,13 @@ var Questions = {
 	},
 	methods: {
 		questionClick: function(question) {
-			Router.navigate('questions/' + question.cert_user_id + '/' + question.question_id);
+			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
 		},
 		getQuestionHref: function(question) {
-			return "./?/questions/" + question.cert_user_id + '/' + question.question_id;
+			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+		},
+		getQuestionAuthAddress: function(question) {
+			return question.directory.replace(/users\//, '').replace(/\//g, '');
 		}
 	},
 	template: '\
@@ -208,7 +212,7 @@ var QuestionsNew = {
 }
 
 var QuestionsCertuseridId = {
-	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionCertuserid', 'answersList', 'allComments'],
+	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments'],
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.comments = [];
@@ -220,13 +224,16 @@ var QuestionsCertuseridId = {
 	},
 	methods: {
 		postAnswerClick: function() {
-			Router.navigate('questions/' + this.questionCertuserid + '/' + this.referenceId + '/answer');
+			Router.navigate('questions/' + this.questionAuthaddress + '/' + this.referenceId + '/answer');
 		},
 		toggleCommentBox: function() {
 			this.isCommentBoxShown = !this.isCommentBoxShown;
 		},
 		innerPostComment: function() {
-			postComment('q', this.referenceId,  this.questionCertuserid);
+			postComment('q', this.referenceId,  this.questionAuthaddress);
+		},
+		postAnswerHref: function() {
+			return './?/questions/' + this.questionAuthaddress + '/' + this.referenceId + '/answer';
 		}
 	},
 	data: function() {
@@ -260,8 +267,8 @@ var QuestionsCertuseridId = {
 							</tutorial-comment>\
 						</div>\
 						<hr>\
-						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-on:click="postAnswerClick">Post An Answer</a></small></h2>\
-						<question-answer v-for="answer in answersList" :key="answer.id" :referenceid="answer.answer_id" :username="answer.cert_user_id" :body="answer.body" :date="answer.date_added" :comments="allComments">\
+						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
+						<question-answer v-for="answer in answersList" :key="answer.id" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments">\
 						</question-answer>\
 					</div>\
 				</div>\
@@ -270,16 +277,11 @@ var QuestionsCertuseridId = {
 };
 
 var QuestionsCertuseridIdAnswer = {
-	/*data: function() {
-		return {
-			test: "test"
-		}
-	},*/
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.allAnswersList = [];
 		getAllAnswers();
-		getQuestion(this.params.id, this.params.certuserid, fillInCurrentUser);
+		getQuestion(this.params.id, this.params.certuserid, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
 	},
 	template: '\
 		<div>\
