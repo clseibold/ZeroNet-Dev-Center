@@ -218,6 +218,12 @@
 			}
 		}
 
+		// Call from oninput of textarea, passing in this
+		function expandTextarea(textarea) {
+			textarea.style.height = "";
+			textarea.style.height = textarea.scrollHeight + "px";
+		}
+
 		function checkTutorialsList() { // TODO(krixano): Recache tutorial list when tutorials database changes
 			if (app.tutorialsList.length == 0) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {

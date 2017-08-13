@@ -139,7 +139,7 @@ Vue.component('question-answer', {
       		</nav>\
       		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
       			<!--<span style="color: blue;" class="currentuser"></span>:<br>-->\
-				<textarea id="comment" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+				<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="3" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 				<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
       		</div>\
       		<tutorial-comment v-for="comment in getComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
