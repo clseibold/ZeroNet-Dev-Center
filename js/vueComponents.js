@@ -92,7 +92,7 @@ Vue.component('tutorial-comment', {
 });
 
 Vue.component('question-answer', {
-	props: ['referenceid', 'username', 'directory', 'body', 'date', 'comments'],
+	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'comments'],
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
@@ -107,6 +107,10 @@ Vue.component('question-answer', {
 		},
 		getPostDate: function() {
 			return "― " + moment(this.date).fromNow();
+		},
+		isEditLinkShown: function() {
+			if (!this.currentAuthaddress) return false;
+			return this.currentAuthaddress == this.getAuthAddress;
 		}
 	},
 	methods: {
@@ -117,6 +121,9 @@ Vue.component('question-answer', {
 			postComment('a', this.referenceid, this.getAuthAddress, false, function() {
 				getAllComments();
 			});
+		},
+		editAnswer: function() {
+			zeroframe.cmd("wrapperNotification", ["info", "Not implemented yet!"]);
 		}
 	},
 	data: function() {
@@ -136,6 +143,7 @@ Vue.component('question-answer', {
 			        <a class="level-item">\
 			        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
 			        </a>\
+			        <a class="level-item" v-if="isEditLinkShown" v-on:click.prevent="editAnswer">Edit</a>\
 		        </div>\
       		</nav>\
       		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\

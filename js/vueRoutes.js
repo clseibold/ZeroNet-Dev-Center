@@ -197,6 +197,8 @@ var Questions = {
 					</div>\
 				</div>\
 			</section>\
+			<textarea id="editQuestionTitle"></textarea>\
+			<textarea id="editQuestionBody"></textarea>\
 		</div>'
 };
 
@@ -204,6 +206,11 @@ var QuestionsNew = {
 	init: function() {
 		setupHero(false, "Questions", "");
 		getQuestionsList(fillInCurrentUser);
+	},
+	methods: {
+		cancel: function() {
+			Router.navigate('questions');
+		}
 	},
 	template: '\
 		<div>\
@@ -215,6 +222,7 @@ var QuestionsNew = {
 						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
 						<textarea oninput="expandTextarea(this);" class="textarea" rows="3" id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
 						<button class="button is-primary" onclick="postQuestion();" style="margin-top: 10px;">Post</button>\
+						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button>\
 					</div>\
 				</div>\
 			</section>\
@@ -222,13 +230,13 @@ var QuestionsNew = {
 }
 
 var QuestionsCertuseridId = {
-	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments', 'dateAdded'],
+	props: ['currentAuthaddress', 'tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments', 'dateAdded'],
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.comments = [];
 		app.answersList = [];
 		app.allComments = [];
-		getQuestion(this.params.id, this.params.certuserid, function() {
+		getQuestion(this.params.id, this.params.certuserid, false, function() {
 			getAllComments(fillInCurrentUser);
 		});
 	},
@@ -247,6 +255,15 @@ var QuestionsCertuseridId = {
 		},
 		getPostDate: function() {
 			return "― " + moment(this.dateAdded).fromNow();
+		},
+		editQuestion: function() {
+			Router.navigate('questions/' + this.questionAuthaddress + '/' + this.referenceId + '/edit');
+		}
+	},
+	computed: {
+		isEditLinkShown: function() {
+			if (!this.currentAuthaddress) return false;
+			return this.currentAuthaddress == this.questionAuthaddress;
 		}
 	},
 	data: function() {
@@ -270,6 +287,7 @@ var QuestionsCertuseridId = {
 							        <a class="level-item">\
 							        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
 							        </a>\
+							        <a class="level-item" v-if="isEditLinkShown" v-on:click.prevent="editQuestion">Edit</a>\
 						        </div>\
 				      		</nav>\
 				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
@@ -281,7 +299,7 @@ var QuestionsCertuseridId = {
 						</div>\
 						<hr>\
 						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
-						<question-answer v-for="answer in answersList" :key="answer.id" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments">\
+						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments">\
 						</question-answer>\
 					</div>\
 				</div>\
@@ -289,12 +307,51 @@ var QuestionsCertuseridId = {
 		</div>'
 };
 
+var QuestionsCertuseridIdEdit = {
+	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionAuthaddress'],
+	before: function() {
+		// TODO: BUG, site_info isn't set yet because it happens async.
+		if (!zeroframe.site_info || zeroframe.site_info.auth_address != this.params.certuserid) {
+			console.log("You cannot edit this question. It doesn't belong to you! (or site_info isn't set yet - this is a know bug. You should use the edit button from the question's page instead.)");
+			return false;
+		}
+		return true;
+	},
+	init: function() {
+		setupHero(false, "Questions", "");
+		getQuestion(this.params.id, this.params.certuserid, true, fillInCurrentUser);
+	},
+	methods: {
+		editClick: function() {
+			editQuestion(this.referenceId);
+		},
+		cancel: function() {
+			Router.navigate('questions/' + this.questionAuthaddress + "/" + this.referenceId);
+		}
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<h2>Create New Question</h2>\
+						<span style="color: blue;" class="currentuser"></span>:<br>\
+						<input id="editQuestionTitle" type="text" class="input" placeholder="Question Title" v-bind:value="questionTitle"></input>\
+						<textarea oninput="expandTextarea(this);" class="textarea" rows="3" id="editQuestionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;">{{ tutorialContent }}</textarea>\
+						<button class="button is-primary" v-on:click="editClick" style="margin-top: 10px;">Edit</button>\
+						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+}
+
 var QuestionsCertuseridIdAnswer = {
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.allAnswersList = [];
 		getAllAnswers();
-		getQuestion(this.params.id, this.params.certuserid, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
+		getQuestion(this.params.id, this.params.certuserid, false, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
 	},
 	template: '\
 		<div>\
