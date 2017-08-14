@@ -503,7 +503,7 @@
 			});
 		}
 
-		// Overwrite question of given id with new body from textarea with id of 'questionBody'
+		// Overwrite question of given id with new body from textarea with id of 'editQuestionBody'
 		function editQuestion(questionID) {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
@@ -637,6 +637,64 @@
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 							Router.navigate("questions/" + app.questionAuthaddress + '/' + app.referenceID);
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
+		}
+
+		// Overwrite answer of given id with new body from textarea with id of 'editAnswerBody{id}'
+		function editAnswer(referenceID, bodyTextarea, answerAuthaddress) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// Check that the current user is equal to the question's user.
+			if (app.currentuser != app.answerAuthaddress) {
+				console.log("You cannot edit this. This question doesn't belong to you!");
+				zeroframe.cmd("wrapperNotification", ["info", "You cannot edit this. This question doesn't belong to you!"]);
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (!data) {
+					console.log("ERROR: No data for the current user. Cannot edit answer that doesn't exist.");
+					return;
+				}
+				data = JSON.parse(data);
+
+				for (var i = 0; i < data.answers.length; i++) {
+					var answer = data.answers[i];
+					if (answer.answer_id == referenceID) {
+						console.log("Before: " + answer.body);
+						answer.body = bodyTextarea.value;
+						// TODO: Add date_edited column to answers (and questions)
+						console.log("After: " + answer.body);
+					}
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// Refresh answers
+							getAnswersList(app.referenceID, app.questionAuthaddress);
+
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 						});
 					} else {
 						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);

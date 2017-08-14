@@ -111,6 +111,9 @@ Vue.component('question-answer', {
 		isEditLinkShown: function() {
 			if (!this.currentAuthaddress) return false;
 			return this.currentAuthaddress == this.getAuthAddress;
+		},
+		getTextareaId: function() {
+			return "editAnswerBody" + this.referenceid;
 		}
 	},
 	methods: {
@@ -123,18 +126,43 @@ Vue.component('question-answer', {
 			});
 		},
 		editAnswer: function() {
-			zeroframe.cmd("wrapperNotification", ["info", "Not implemented yet!"]);
+			//zeroframe.cmd("wrapperNotification", ["info", "Not implemented yet!"]);
+			if (!this.showEdit) { // Clicked Edit
+				this.showEdit = true;
+				this.editText = "Save";
+			} else { // Clicked Save
+				this.showEdit = false;
+				this.editText = "Edit";
+				var textarea = document.getElementById(this.getTextareaId);
+				console.log(textarea.value);
+				editAnswer(this.referenceid, textarea, this.getAuthAddress);
+			}
+		},
+		dontShowEdit: function() {
+			return !this.showEdit;
+		},
+		showCancel: function() {
+			return this.isEditLinkShown && this.showEdit;
+		},
+		cancelEdit: function() {
+			this.showEdit = false;
+			this.editText = "Edit";
 		}
 	},
 	data: function() {
 		return {
-			isCommentBoxShown: false
+			isCommentBoxShown: false,
+			showEdit: false,
+			editText: "Edit"
 		}
 	},
 	template: '\
 		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
 			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
-			<div style="margin-top: 3px;" v-html="getBody" class="custom-content"></div>\
+			<div style="margin-top: 3px;" v-html="getBody" class="custom-content" v-if="dontShowEdit()"></div>\
+			<div style="margin-top: 3px;" v-if="showEdit" class="custom-content">\
+				<textarea v-bind:id="getTextareaId" oninput="expandTextarea(this);" class="textarea" rows="3" style="width: 100%; padding: 7px;">{{ body }}</textarea>\
+			</div>\
 			<nav class="level is-mobile">\
 		        <div class="level-left">\
 			        <a class="level-item" v-on:click="toggleCommentBox">\
@@ -143,7 +171,8 @@ Vue.component('question-answer', {
 			        <a class="level-item">\
 			        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
 			        </a>\
-			        <a class="level-item" v-if="isEditLinkShown" v-on:click.prevent="editAnswer">Edit</a>\
+			        <a class="level-item" v-if="isEditLinkShown" v-on:click.prevent="editAnswer">{{ editText }}</a>\
+			        <a class="level-item" v-if="showCancel()" v-on:click.prevent="cancelEdit">Cancel</a>\
 		        </div>\
       		</nav>\
       		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
