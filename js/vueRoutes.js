@@ -75,8 +75,11 @@ var Home = {
 		</div>'
 };
 
-var About = {
-	template: '<p>Test About</p>',
+var Blog = {
+	init: function() {
+		setupHero(false, "Blog", "");
+	},
+	template: '<p>Blog</p>'
 };
 
 var Tutorials = {
