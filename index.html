@@ -507,7 +507,7 @@
 		}
 
 		// Overwrite question of given id with new body from textarea with id of 'editQuestionBody'
-		function editQuestion(questionID) {
+		function editQuestion(questionID, questionAuthaddress) {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
 				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
@@ -516,7 +516,7 @@
 			}
 
 			// Check that the current user is equal to the question's user.
-			if (app.currentuser != app.questionAuthaddress) {
+			if (app.currentAuthaddress != questionAuthaddress) {
 				console.log("You cannot edit this. This question doesn't belong to you!");
 				zeroframe.cmd("wrapperNotification", ["info", "You cannot edit this. This question doesn't belong to you!"]);
 				return;

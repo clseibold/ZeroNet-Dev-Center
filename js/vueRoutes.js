@@ -323,7 +323,7 @@ var QuestionsCertuseridIdEdit = {
 	},
 	methods: {
 		editClick: function() {
-			editQuestion(this.referenceId);
+			editQuestion(this.referenceId, this.questionAuthaddress);
 		},
 		cancel: function() {
 			Router.navigate('questions/' + this.questionAuthaddress + "/" + this.referenceId);
