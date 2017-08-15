@@ -1,0 +1,276 @@
+<html>
+<head>
+	<title>ZeroNet Dev Center</title>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="zite,zites,important,krixano,list,category,search,filter">
+	<meta name="author" content="Krixano">
+	<meta name="description" content="Center for ZeroNet Development. Tutorials, Collaboration, Questions">
+	<base href="" target="_top" id="base">
+	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+
+	<link rel="stylesheet" href="../font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../css/buefy.css" />
+	<link rel="stylesheet" href="../css/main.css" />
+
+	<script src="../js/navToggle.js" defer></script>
+</head>
+<body>
+	<div id="app">
+		<my-hero v-bind:class="{ 'is-medium': heroIsMedium }" v-bind:title="heroTitle" v-bind:subtitle="heroSubtitle">
+			<div v-html="heroContent"></div>
+		</my-hero>
+
+		<div>
+			<section class="section">
+				<div class="columns">
+					<div class="column is-6 is-offset-3">
+						<h2>Create New Blog Post</h2>
+						<span class="currentuser"></span>:
+						<input type="text" id="postTitle" placeholder="Post Title" class="input">
+						<input type="text" id="postSlug" placeholder="Post Slug" class="input" style="margin-top: 10px;">
+						<textarea id="postBody" oninput="expandTextarea(this);" onfocus="expandTextarea(this);" class="textarea" rows="3" placeholder="Post Body ..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>
+						<button class="button is-primary" onclick="postBlogPost();" style="margin-top: 10px;">Post</button>
+						<button id="previewButton" class="button is-link" onclick="togglePreview()">Preview</button>
+
+						<div v-html="content" class="custom-content" v-if="showPreview">
+						</div>
+
+						<hr>
+						<div v-for="post in blogPosts">
+							<h3>{{ post.title }}</h3>
+							<small>{{ post.slug }}</small>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+
+		<my-footer></my-footer>
+	</div>
+
+	<!-- ZeroFrame -->
+	<script type="text/javascript" src="../js/ZeroFrame.js"></script>
+	<script type="text/javascript" src="../js/vue.min.js"></script>
+	<script type="text/javascript" src="../js/vueComponents.js"></script>
+
+	<!-- Bulma and Buefy -->
+	<script type="text/javascript" src="../js/buefy.js"></script>
+
+	<!-- Markdown-It -->
+	<script type="text/javascript" src="../js/markdown-it/markdown-it.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it/markdown-it-footnote.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it/markdown-it-emoji-light.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it/markdown-it-abbr.min.js"></script>
+	<script type="text/javascript" src="../js/markdown-it/markdown-it-deflist.min.js"></script>
+
+	<!-- HighlightJS -->
+	<link rel="stylesheet" href="../js/highlightjs/styles/atom-one-light.css">
+	<script type="text/javascript" src="../js/highlightjs/highlight.pack.js">
+	<script>hljs.initHighlightingOnLoad();</script>
+
+	<script>
+		// Markdown It
+		var md = window.markdownit();
+		md.use(window.markdownitFootnote);
+		md.use(window.markdownitEmoji);
+		md.use(window.markdownitAbbr);
+		md.use(window.markdownitDeflist);
+		md.set({
+			html: true,
+			highlight: function (str, lang) {
+				if (lang && hljs.getLanguage(lang)) {
+					try {
+					  return hljs.highlight(lang, str).value;
+					} catch (__) {}
+				}
+
+				return ''; // use external default escaping
+			}
+		});
+
+		// Vue
+		Vue.use(Buefy);
+
+		var app = new Vue({
+			data: {
+				currentAuthaddress: '',
+				heroIsMedium: false,
+				heroTitle: "Blog",
+				heroSubtitle: "",
+				heroContent: "",
+				blogPosts: [],
+				showPreview: false,
+				content: ""
+			}
+		}).$mount('#app');
+
+		// ZeroFrame
+		class ZeroApp extends ZeroFrame {
+			onOpenWebsocket () {
+				this.cmd("siteInfo", {}, (site_info) => {
+					this.site_info = site_info;
+					fillInCurrentUser();
+					app.currentAuthaddress = this.site_info.auth_address;
+				});
+				this.cmd("wrapperNotification", ["info", "This is the DEV version of the zite."]);
+			}
+
+			selectUser () {
+				this.cmd("certSelect", {accepted_domains: ["zeroid.bit", "kaffie.bit", "cryptoid.bit"]})
+				return false
+			}
+
+			onRequest (cmd, message) {
+				if (cmd == "setSiteInfo") {
+					this.site_info = message.params;  // Save site info data to allow access it later
+					app.currentAuthaddress = this.site_info.auth_address;
+					fillInCurrentUser();
+					if (message.params.event[0] == "file_done") {
+						getBlogPosts(true);
+					}
+				}
+			}
+		}
+
+		zeroframe = new ZeroApp();
+		page = zeroframe; // NOTE: For ZeroFrame Router
+
+		// Change the content in the hero.
+		function setupHero(isMedium, title, subtitle, content = "") {
+			if (isMedium != null) {
+				app.heroIsMedium = isMedium;
+			}
+			if (title != null) {
+				app.heroTitle = title;
+			}
+			if (subtitle != null) {
+				app.heroSubtitle = subtitle;
+			}
+			if (content != null) {
+				app.heroContent = content;
+			}
+		}
+
+		// Change innerHTML of all elements with class of 'currentuser' to
+		// the current user's cert_user_id, or a Select User link when there isn't
+		// a current user selected. This is called everytime a route is loaded
+		// and when the current user changes.
+		function fillInCurrentUser() {
+			var elements = document.querySelectorAll('.currentuser');
+			for (var i = 0; i < elements.length; i++) {
+				if (zeroframe.site_info.cert_user_id) {
+					if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
+						elements[i].innerHTML = zeroframe.site_info.cert_user_id;
+					} else {
+						elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">' + zeroframe.site_info.cert_user_id + '</a>';
+					}
+				} else {
+					if (elements[i].parentElement.tagName == "A" || elements[i].parentElement.tagName == "BUTTON") {
+						elements[i].innerHTML = "Select User";
+					} else {
+						elements[i].innerHTML = '<a href="#Select+user" onclick="return zeroframe.selectUser()">Select User</a>';
+					}
+				}
+			}
+		}
+
+		// Called from oninput of textarea, passes in 'this' so the function can
+		// use it's height and scrollHeight.
+		function expandTextarea(textarea) {
+			textarea.style.height = "";
+			textarea.style.height = textarea.scrollHeight + "px";
+			if (textarea.style["overflow-y"] != "hidden") {
+				textarea.style["overflow-y"] = "hidden";
+			}
+		}
+
+		function postBlogPost() {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// Check for admin account
+			if (zeroframe.site_info.cert_user_id != "krixano@zeroid.bit" && zeroframe.site_info.auth_address != "12gAes6NzDS9E2q6Q1UXrpUdbPS6nvuBPu") {
+				zeroframe.cmd("wrapperNotification", ["info", "You are not signed in as Admin."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			var data_inner_path = "data/blog.json";
+			var content_inner_path = "content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (data)
+					data = JSON.parse(data);
+				else
+					data = { "blogposts": [] }
+
+				// Get current user's last question's id and increment by 1
+				var id = 1;
+				if (app.blogPosts.length > 0) {
+					id += app.blogPosts[0].post_id;
+				}
+
+				data.blogposts.push({
+					"post_id": id,
+					"title": document.getElementById('postTitle').value,
+					"slug": document.getElementById('postSlug').value,
+					"body": document.getElementById('postBody').value,
+					"tags": "", // TODO
+					"date_added": Date.now()
+				});
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						// Reset the question input
+						document.getElementById("postTitle").value = "";
+						document.getElementById("postSlug").value = "";
+						document.getElementById("postBody").value = "";
+
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => { // TODO: How to correctly sign this?
+							// Reload Blog Posts
+							getBlogPosts(true);
+
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
+		}
+
+		function getBlogPosts(refresh = false) {
+			if (app.blogPosts.length == 0 || refresh) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM blogposts ORDER BY date_added DESC'], (posts) => {
+					app.blogPosts = posts;
+				});
+			}
+		}
+
+		function togglePreview() {
+			if (app.showPreview) {
+				app.showPreview = false;
+				document.getElementById('previewButton').innerHTML = "Preview";
+			} else {
+				app.showPreview = true;
+				app.content = "<hr><h2>" + document.getElementById('postTitle').value + '</h2>';
+				app.content += md.render(document.getElementById('postBody').value);
+				document.getElementById('previewButton').innerHTML = "Close";
+			}
+		}
+	</script>
+</body>
+</html>

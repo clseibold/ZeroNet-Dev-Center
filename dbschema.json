@@ -11,21 +11,11 @@
                 }
             ]
         },
+        "blog.json": {
+            "to_table": ["blogposts"]
+        },
         "users/.+/data.json": {
-            "to_table": [
-                {
-                    "node": "comments",
-                    "table": "comments"
-                },
-                {
-                    "node": "questions",
-                    "table": "questions"
-                },
-                {
-                    "node": "answers",
-                    "table": "answers"
-                }
-            ]
+            "to_table": [ "comments", "questions", "answers" ]
         },
         "users/.+/content.json": {
             "to_json_table": ["cert_user_id"],
@@ -57,9 +47,22 @@
             "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(id, json_id)", "CREATE UNIQUE INDEX tutorials_slug ON tutorials(slug)", "CREATE INDEX tutorial_file ON tutorials(slug)", "CREATE INDEX tutorial_title ON tutorials(title)"],
             "schema_changed": 12
         },
+        "blogposts": {
+            "cols": [
+                ["post_id", "INTEGER"],
+                ["title", "TEXT"],
+                ["slug", "TEXT"],
+                ["body", "TEXT"],
+                ["tags", "TEXT"],
+                ["date_added", "INTEGER"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX blog_posts_key ON blogposts (json_id, post_id)", "CREATE INDEX blog_posts_id ON blogposts (post_id)"],
+            "schema_changed": 11
+        },
         "comments": {
             "cols": [
-                ["comment_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+                ["comment_id", "INTEGER"],
                 ["reference_id", "INTEGER"],
                 ["reference_auth_address", "TEXT"],
                 ["reference_type", "TEXT"],
@@ -68,7 +71,7 @@
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX comment_key ON comments(json_id, comment_id)", "CREATE INDEX comment_reference_id ON comments(reference_id)"],
-            "schema_changed": 16
+            "schema_changed": 18
         },
         "questions": {
             "cols": [
@@ -83,7 +86,7 @@
         },
         "answers": {
             "cols": [
-                ["answer_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+                ["answer_id", "INTEGER"],
                 ["question_id", "INTEGER"],
                 ["question_auth_address", "TEXT"],
                 ["body", "TEXT"],
@@ -91,7 +94,7 @@
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX answer_key ON answers(json_id, answer_id)"],
-            "schema_changed": 16
+            "schema_changed": 18
         }
     }
 }
