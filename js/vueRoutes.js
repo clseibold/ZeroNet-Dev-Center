@@ -247,8 +247,6 @@ var Questions = {
 					</div>\
 				</div>\
 			</section>\
-			<textarea id="editQuestionTitle"></textarea>\
-			<textarea id="editQuestionBody"></textarea>\
 		</div>'
 };
 
