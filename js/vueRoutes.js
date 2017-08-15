@@ -337,7 +337,7 @@ var QuestionsCertuseridIdEdit = {
 						<h2>Create New Question</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<input id="editQuestionTitle" type="text" class="input" placeholder="Question Title" v-bind:value="questionTitle"></input>\
-						<textarea oninput="expandTextarea(this);" class="textarea" rows="3" id="editQuestionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;">{{ tutorialContent }}</textarea>\
+						<textarea onfocus="expandTextarea(this);" oninput="expandTextarea(this);" class="textarea" rows="3" id="editQuestionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;">{{ tutorialContent }}</textarea>\
 						<button class="button is-primary" v-on:click="editClick" style="margin-top: 10px;">Edit</button>\
 						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button>\
 					</div>\
