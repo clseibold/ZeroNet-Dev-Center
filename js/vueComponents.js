@@ -132,7 +132,7 @@ Vue.component('question-answer', {
 			if (!this.showEdit) { // Clicked Edit
 				this.showEdit = true;
 				this.editText = "Save";
-				// Set the correct height for the textarea
+				// TODO: Instead of expanding on onfocus, do it when the textarea is shown.
 			} else { // Clicked Save
 				//var textarea = document.getElementById(this.getTextareaId);
 				this.showEdit = false;
@@ -149,6 +149,8 @@ Vue.component('question-answer', {
 		cancelEdit: function() {
 			this.showEdit = false;
 			this.editText = "Edit";
+			this.getTextArea.value = this.body;
+			expandTextarea(this.getTextArea);
 		}
 	},
 	data: function() {

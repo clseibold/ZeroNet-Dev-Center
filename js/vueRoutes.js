@@ -360,7 +360,7 @@ var QuestionsCertuseridIdAnswer = {
 					<div class="column is-6 is-offset-3">\
 						<h2>Create New Answer</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
-						<textarea id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<textarea oninput="expandTextarea(this);" id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
 						<button class="button is-primary" onclick="postAnswer();" style="margin-top: 10px;">Post</button>\
 					</div>\
 				</div>\
