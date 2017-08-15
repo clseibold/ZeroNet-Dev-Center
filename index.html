@@ -24,7 +24,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -92,6 +92,7 @@
 				heroTitle: "",
 				heroSubtitle: "",
 				heroContent: "",
+				blogPosts: [],
 				tutorialsList: [],
 				referenceID: null,
 				dateAdded: null,
@@ -130,7 +131,7 @@
 					app.currentAuthaddress = this.site_info.auth_address;
 					fillInCurrentUser();
 					if (message.params.event[0] == "file_done") {
-						checkTutorialsList();
+						checkTutorialsList(true);
 						if (Router.currentRoute == "tutorials/:slug") {
 							getComments(app.referenceID, "t");
 						} else if (Router.currentRoute == "questions") {
@@ -139,6 +140,11 @@
 							getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
 							getAnswersList(app.referenceID, app.questionAuthaddress);
 							getAllComments();
+						} else if (Router.currentRoute == "blog") {
+							getBlogPosts(null, true);
+						} else if (Router.currentRoute == "blog/:slug") {
+							// TODO: Update blog post
+							//getBlogPost(app.);
 						} else if (Router.currentRoute == "") {
 							getQuestionsList();
 						}
@@ -163,6 +169,7 @@
 			{ route: 'questions/:certuserid/:id/edit', component: QuestionsCertuseridIdEdit },
 			{ route: 'questions/:certuserid/:id', component: QuestionsCertuseridId },
 			{ route: 'questions', component: Questions },
+			{ route: 'blog/:slug', component: BlogSlug },
 			{ route: 'blog', component: Blog },
 			{ route: '', component: Home }
 		]);
@@ -216,10 +223,53 @@
 			}
 		}
 
+		function getBlogPosts(f = null, refresh = false) {
+			if (app.blogPosts.length == 0 || refresh) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM blogposts'], (posts) => {
+					app.blogPosts = posts;
+					if (f && typeof f == 'function') f();
+				});
+			}
+		}
+
+		function getBlogPost(slug, f = null) {
+			if (slug) {
+				var getBlogPost = function(blogPosts) {
+					var post = null;
+					for (var i in blogPosts) {
+						if (blogPosts[i].slug == slug) {
+							post = blogPosts[i];
+						}
+					}
+
+					if (post) {
+						app.tutorialContent = md.render(post.body);
+						app.heroTitle = post.title;
+						app.heroSubtitle = "Published on " + moment(this.dateAdded).format('MMMM Do, YYYY');
+						app.referenceID = post.post_id;
+						app.dateAdded = post.date_added;
+
+						getComments(post.post_id, "b", f);
+					} else {
+						app.tutorialContent = "";
+						app.heroTitle = 'Not Found';
+						app.heroSubtitle = 'This page was not found!';
+						app.dateAdded = null;
+					}
+				};
+
+				if (app.blogPosts.length == 0) {
+					zeroframe.cmd('dbQuery', ['SELECT * FROM blogPosts'], (blogPosts) => getBlogPost(blogPosts));
+				} else {
+					getBlogPost(app.blogPosts);
+				}
+			}
+		}
+
 		// Get's all tutorials from database and caches it in app.tutorialsList
 		// TODO(krixano): Recache tutorial list when tutorials database changes
-		function checkTutorialsList() {
-			if (app.tutorialsList.length == 0) {
+		function checkTutorialsList(refresh = false) {
+			if (app.tutorialsList.length == 0 || refresh) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
 					app.tutorialsList = tutorials;
 				});
@@ -235,38 +285,38 @@
 			if (slug) {
 				var getTutorial = function(tutorials) {
 					var tutorial = null;
-						for (var i in tutorials) {
-							if (tutorials[i].slug == slug) {
-								tutorial = tutorials[i];
+					for (var i in tutorials) {
+						if (tutorials[i].slug == slug) {
+							tutorial = tutorials[i];
+						}
+					}
+
+					if (tutorial) {
+						zeroframe.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
+							app.heroTitle = tutorial.title;
+							app.heroSubtitle = 'By ' + tutorial.author;
+							app.tutorialContent = md.render(content);
+							app.referenceID = tutorial.id;
+							app.dateAdded = tutorial.date_added;
+
+							// Generate Table Of Contents
+							var tableOfContents = "<ol>";
+							var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
+							for (var i = 0; i < headings.length; i++) {
+								tableOfContents += "<li><a href='#h" + i + "'>" + headings[i].replace(/<h2[^>]*>/, '').replace(/<\/h2>/, '') + "</a></li>";
 							}
-						}
+							tableOfContents += "</ol>";
+							app.tableOfContents = tableOfContents;
 
-						if (tutorial) {
-							zeroframe.cmd('fileGet', ['tutorials/' + tutorial.file], (content) => {
-								app.heroTitle = tutorial.title;
-								app.heroSubtitle = 'By ' + tutorial.author;
-								app.tutorialContent = md.render(content);
-								app.referenceID = tutorial.id;
-								app.dateAdded = tutorial.date_added;
-
-								// Generate Table Of Contents
-								var tableOfContents = "<ol>";
-								var headings = app.tutorialContent.match(/<(h2)[^>]*>([^<]+)<\/(h2)>/g);
-								for (var i = 0; i < headings.length; i++) {
-									tableOfContents += "<li><a href='#h" + i + "'>" + headings[i].replace(/<h2[^>]*>/, '').replace(/<\/h2>/, '') + "</a></li>";
-								}
-								tableOfContents += "</ol>";
-								app.tableOfContents = tableOfContents;
-
-								getComments(tutorial.id, "t", f);
-							});
-						} else {
-							app.tutorialContent = "";
-							app.heroTitle = 'Not Found';
-							app.heroSubtitle = 'This page was not found!';
-							app.dateAdded = null;
-							// Router.navigate('not-found');
-						}
+							getComments(tutorial.id, "t", f);
+						});
+					} else {
+						app.tutorialContent = "";
+						app.heroTitle = 'Not Found';
+						app.heroSubtitle = 'This page was not found!';
+						app.dateAdded = null;
+						// Router.navigate('not-found');
+					}
 				};
 
 				if (app.tutorialsList.length == 0) {
@@ -283,6 +333,7 @@
 		// t - tutorial
 		// q - question
 		// a - answer
+		// b - blog post
 		function getComments(referenceID, referenceType, f = null) {
 			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) WHERE reference_id=" + referenceID + " AND reference_type='" + referenceType + "' ORDER BY date_added DESC"], (comments) => {
 				app.comments = comments;
@@ -305,6 +356,7 @@
 		// t - tutorial
 		// q - question
 		// a - answer
+		// b - blog post
 		function getCommentsWithAuthaddress(referenceID, auth_address, referenceType) {
 			if (referenceType == "t") {
 				console.log("ERROR: getCommentsWithAuthaddress doesn't work with tutorials.");
@@ -323,6 +375,7 @@
 		// t - tutorial
 		// q - question
 		// a - answer
+		// b - blog post
 		function postComment(referenceType, referenceID, referenceAuthAddress = null, refreshComments = true, f = null) {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {

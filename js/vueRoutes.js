@@ -76,15 +76,65 @@ var Home = {
 };
 
 var Blog = {
+	props: ['blogPosts'],
 	init: function() {
 		setupHero(false, "Blog", "");
+		getBlogPosts();
 	},
-	template: '<p>Blog</p>'
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<blog-list-item v-for="post in blogPosts" :key="post.post_id" :title="post.title" :tags="post.tags" :slug="post.slug" :date-added="post.date_added">\
+						</blog-list-item>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+};
+
+var BlogSlug = {
+	props: ['tutorialContent', 'tutorialComments', 'referenceId'],
+	init: function() {
+		setupHero(false, "", "");
+		app.comments = [];
+		app.tutorialContent = "";
+		getBlogPost(this.params.slug, fillInCurrentUser);
+	},
+	computed: {
+		getCommentAmount: function() {
+			return this.tutorialComments.length;
+		}
+	},
+	methods: {
+		innerPostComment: function() {
+			postComment('b', this.referenceId);
+		}
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<div v-html="tutorialContent" class="custom-content"></div>\
+						<hr>\
+						<div style="margin-bottom: 20px;">\
+							<h2>{{getCommentAmount}} Comments</h2>\
+							<span style="color: blue;" class="currentuser"></span>:<br>\
+							<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
+							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
+						</div>\
+						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+						</tutorial-comment>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
 };
 
 var Tutorials = {
 	props: ['tutorialsList'],
-	test: "testing",
 	init: function() {
 		setupHero(false, "Tutorials", "");
 		checkTutorialsList();
@@ -334,7 +384,7 @@ var QuestionsCertuseridIdEdit = {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
-						<h2>Create New Question</h2>\
+						<h2>Edit Question</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<input id="editQuestionTitle" type="text" class="input" placeholder="Question Title" v-bind:value="questionTitle"></input>\
 						<textarea onfocus="expandTextarea(this);" oninput="expandTextarea(this);" class="textarea" rows="3" id="editQuestionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;">{{ tutorialContent }}</textarea>\

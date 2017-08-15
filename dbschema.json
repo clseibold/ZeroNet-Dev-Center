@@ -12,7 +12,7 @@
             ]
         },
         "blog.json": {
-            "to_table": ["posts"]
+            "to_table": ["blogposts"]
         },
         "users/.+/data.json": {
             "to_table": [ "comments", "questions", "answers" ]
@@ -47,16 +47,18 @@
             "indexes": ["CREATE UNIQUE INDEX tutorial_key ON tutorials(id, json_id)", "CREATE UNIQUE INDEX tutorials_slug ON tutorials(slug)", "CREATE INDEX tutorial_file ON tutorials(slug)", "CREATE INDEX tutorial_title ON tutorials(title)"],
             "schema_changed": 12
         },
-        "posts": {
+        "blogposts": {
             "cols": [
                 ["post_id", "INTEGER"],
                 ["title", "TEXT"],
+                ["slug", "TEXT"],
                 ["body", "TEXT"],
+                ["tags", "TEXT"],
                 ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
-            "indexes": ["CREATE UNIQUE INDEX posts_key ON posts (json_id, post_id)", "CREATE INDEX posts_id ON posts (post_id)"],
-            "schema_changed": 10
+            "indexes": ["CREATE UNIQUE INDEX blog_posts_key ON blogposts (json_id, post_id)", "CREATE INDEX blog_posts_id ON blogposts (post_id)"],
+            "schema_changed": 11
         },
         "comments": {
             "cols": [

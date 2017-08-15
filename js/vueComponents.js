@@ -58,6 +58,25 @@ Vue.component('my-footer', {
 		</footer>'
 });
 
+Vue.component('blog-list-item', {
+	props: ['title', 'slug', 'tags', 'dateAdded'],
+	computed: {
+		getSlug: function() {
+			return 'blog/' + this.slug;
+		},
+		getPostDate: function() {
+			return "Published on " + moment(this.dateAdded).format('MMMM Do, YYYY [at] h:mm:ss a');
+		}
+	},
+	template: '\
+		<div>\
+			<span class="title is-5" style="margin-right: 20px;"><route-link :to="getSlug">{{ title }}</route-link></span><br>\
+			<small>{{ getPostDate }}</small>\
+			<small>{{tags}}</small>\
+			<div style="clear: both;"></div>\
+		<hr></div>'
+});
+
 Vue.component('tutorial-list-item', {
 	props: ['title', 'authors', 'slug', 'tags'],
 	computed: {
