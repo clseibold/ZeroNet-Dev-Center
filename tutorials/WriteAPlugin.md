@@ -1,15 +1,15 @@
 ## Introduction
 
-In ZeroNet, it is possible to add plugins. Some of the features that we already use are actually plugins which is available at download like `MergerSite` or `Ǹewsfeed`. For now, there is no plugin store available in which you can select which one you want to install but it is still quite simple to add, disable or create a plugin. In this tutorial, we will see how to write one really simple plugin and how to interact with it from a zite.
+In ZeroNet, plugins can be created to extend the functionality of the client as well as provide api calls to zites. Some of the features that we use are actually plugins that can be downloaded, like `MergerSite` and `Newsfeed`. There currently isn't a plugin store where you can install them. However, it is simple to add, disable, or create plugins. In this tutorial, you will learn how to write a simple plugin that provides an api which can be called directly from a zite.
 
-> **Note** : I advice to read [The Basics](http://127.0.0.1:43110/14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt/?/tutorials/the_basics) tutorial first. Knowing how to create a zeronet site would also be usefull for this tutorial.
+> **Note**: I advise you to read [The Basics](http://127.0.0.1:43110/14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt/?/tutorials/the_basics) tutorial first. You should also know to create a zite.
 
 
 ## ZeroNet Plugins
 
-In your ZeroNet folder will find a `plugins` folder. If you have installed ZeroNet throught ZeroBundle, you might find it under the `core` folder.
+In your ZeroNet folder will find a `plugins` folder. If you have installed ZeroNet through ZeroBundle, you might find it under the `core` folder.
 
-You should see a bunch of folders like the following :
+You should see a bunch of folders like the following:
 
 ```
 .
@@ -37,24 +37,21 @@ You should see a bunch of folders like the following :
 
 ```
 
-We can notice that some folders name have the prefix `disabled-` it means that those plugins are not active. If you want to active them you can rename them and remove this prefix. Once ZeroNet restart those plugin will load.
+Notice that some folders have the prefix `disabled-`. This means that those plugins are not active. You can activate them by renaming the folder so that the prefix is removed. Once ZeroNet restarts, those plugins will load with the rest of them.
 
-It means that if you want to add a new plugin you just need to copy it in a new folder inside this `plugins` folder.
-
-Now we can start writing our own plugin.
+This means that if you want to add a new plugin, you just need to copy it into a new folder inside this `plugins` folder.
 
 ## Hello World ZeroNet Plugin
 
-First, we need to create a new folder with the name of our plugin : `HelloWorld`.
+In order to start creating our new ZeroNet Plugin, we will need to create a new folder with the name of our plugin: `HelloWorld`.
 
 ```
 $ mkdir HelloWorld
 $ cd HelloWorld
 ```
 
-We will need two python files : `__init__.py` and `HelloWorldPlugin.py`.
+Now, we need to create two seperate python files: `__init__.py` and `HelloWorldPlugin.py`.
 
-Lets create them :
 ```
 $ touch __init__.py HelloWorldPlugin.py
 ```
@@ -68,9 +65,9 @@ import HelloWorldPlugin
 Now we are getting to the interesting part...
 
 
-Lets create an zeroframe new api that allow us to comunicate with a website by using the command `helloWorld` and it will return a json message that says `Hello World !`.
+Lets create a new zeroframe api call that will allow us to comunicate with a zite using the command `helloWorld` which will return a json message that says `Hello World !`.
 
-For that we need to create a `UiWebsocketPlugin` class in our `HelloWorldPlugin.py` file.
+To do this, we need to create a `UiWebsocketPlugin` class in our `HelloWorldPlugin.py` file.
 
 ```python
 from Plugin import PluginManager
@@ -80,9 +77,9 @@ class UiWebsocketPlugin(object):
 
 ```
 
-We see that we have a `PluginManager.registerTo("UiWebsocket")` decorator, it is what will register and load our plugin into ZeroNet and extend our class as an `UiWebsocket`.
+Notice the `PluginManager.registerTo("UiWebsocket")` decorator. It registers and loads our plugin into ZeroNet and extends our class as a `UiWebsocket`.
 
-We can now create an _action_ to communicate our message via websocket. Let's define it in our class `UiWebsocketPlugin`...
+Next, we need to create an _action_ to communicate our message via websocket. Let's define it in our class `UiWebsocketPlugin`...
 
 ```python
 from Plugin import PluginManager
@@ -95,15 +92,15 @@ class UiWebsocketPlugin(object):
         self.response(to, {'message':'Hello World'})
 ```
 
-We have added a `actionHelloWorld` method to our class. We will notice here that the `action` prefix is mandatory in order to be called through the zeroframe api.
+We have added an `actionHelloWorld` method to our class. Notice here that the `action` prefix is mandatory in order to be called through the zeroframe api.
 
-We have two important elements that we are using here :
-1. **to** : represent the zite that called our comand.
-2. **response(to, json)**: the method that return the response to the zite using json format through websocket.
+We have two important elements that we are using here:
+1. **to**: represents the zite that called our command.
+2. **response(to, json)**: the method that returns the response to the zite through websocket using json format.
 
-Our plugin is done. Let's test it !
+We have finished our plugin. Now, let's test it!
 
-> **Note** : I am only showing here how to create a UIWebsocket plugin type there is others class that accept plugins :
+> **Note** : Here, I am only showing how to create a UIWebsocket plugin, but there are other classes that accept plugins. These include:
 - UiRequest
 - User
 - UserManager
@@ -120,11 +117,11 @@ Our plugin is done. Let's test it !
 
 ## Hello World zite
 
-We are going to create a fairly simple website to test our new feature. I will not give any details on how to create a zeronet site this subject will be cover in an other tutorial and is already cover on nofish blog.
+In order to test out our new plugin, we need to create a zite. This zite is going to be fairly simple. You can find out how to create a simple zite by following the other tutorials on the Dev Center, as well as on [ZeroBlog](/Blog.ZeroNetwork.bit/?Post:99:ZeroChat+tutorial+new).
 
 ![Create new site](../img/create-new-site.png "Create new site")
 
-Click on create new site on ZeroHello page. You should have those files in your site folder :
+Click on create new site on the ZeroHello page. Once you have done that, open directory where your zite files are stored. You should have these files in your site folder:
 
 ```
 .
@@ -136,7 +133,7 @@ Click on create new site on ZeroHello page. You should have those files in your 
 1 directory, 3 files
 ```
 
-Open the `index.html` file. You should have the following lines of code :
+Open the `index.html` file. You should have the following lines of code:
 
 ```javascript
 class Page extends ZeroFrame {
@@ -165,7 +162,7 @@ class Page extends ZeroFrame {
 page = new Page()
 ```
 
-Lets add a new method to our `Page` class that will print our message to the page. We will call it `setHelloWorld`.
+Let's add a new method to our `Page` class that will print our message to the page. We will call it `setHelloWorld`.
 
 ```javascript
 setHelloWorld(message) {
@@ -174,7 +171,7 @@ setHelloWorld(message) {
 }
 ```
 
-We are then going to modify `onOpenWebsocket` method so that instead to get the `"siteInfo"` api we want to call our `"helloWorld"` api.
+We are then going to modify the `onOpenWebsocket` method so that instead of calling the `"siteInfo"` api, we will call our `"helloWorld"` api.
 
 ```javascript
 onOpenWebsocket() {
@@ -185,11 +182,11 @@ onOpenWebsocket() {
 }
 ```
 
-We then pass the message in the response to our `setHelloWorld` method so it can modify the html dom and show our message.
+Now all we have to do is pass the message from the response into our `setHelloWorld` method so that it can modify the html dom and show our message.
 
-> **Note** : The name of our action method in our plugin will give us the name of our api. We noticed that we have removed the `action` prefix and the capital letter on the first word.
+> **Note**: The name of our action method in our plugin will give us the name of our api. It should be noted that we have removed the `action` prefix and the capital letter on the first word.
 
-Final code :
+Final code:
 
 ```javascript
 class Page extends ZeroFrame {
@@ -226,4 +223,4 @@ class Page extends ZeroFrame {
 page = new Page()
 ```
 
-There is many distributed applications to which we could plug Zeronet with. It is maybe also why ZeroNet is such a great application. Now you can also start to write your own.
+There are many distributed applications which we could plug into Zeronet. This is why ZeroNet is such a great application. There are already some plugins, and now you can start to write your own also.
