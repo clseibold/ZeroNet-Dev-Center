@@ -82,13 +82,18 @@ Vue.component('tutorial-list-item', {
 	computed: {
 		getSlug: function() {
 			return 'tutorials/' + this.slug;
+		},
+		getTagsList: function() {
+			return this.tags.split(',');
 		}
 	},
 	template: '\
 		<div>\
 			<span class="title is-5" style="margin-right: 20px;"><route-link :to="getSlug">{{ title }}</route-link></span><span class="subtitle is-6">{{ authors }}</span><br>\
 			<small style="margin-top: 10px;"><slot></slot></small><br>\
-			<small style="float: right;">{{tags}}</small>\
+			<div class="tags" style="margin-top: 10px;">\
+				<small v-for="tag in getTagsList" class="tag">{{tag}}</small>\
+			</div>\
 			<div style="clear: both;"></div>\
 		<hr></div>'
 });
@@ -161,7 +166,7 @@ Vue.component('tutorial-comment', { // TODO: Change this to just comment
 });
 
 Vue.component('question-answer', {
-	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'comments', 'questionAuthaddress'],
+	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'voteAmount', 'currentUservoted', 'comments', 'questionid', 'questionAuthaddress', 'solutionid', 'solutionAuthaddress'],
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
@@ -181,11 +186,21 @@ Vue.component('question-answer', {
 			if (!this.currentAuthaddress) return false;
 			return this.currentAuthaddress == this.getAuthAddress;
 		},
+		isMarkSolutionLinkShown: function() {
+			// If creator of question is same as current user
+			if (this.isSolution) return false;
+			if (!this.currentAuthaddress) return false;
+			return this.currentAuthaddress == this.questionAuthaddress;
+		},
 		getTextareaId: function() {
 			return "editAnswerBody" + this.referenceid + "From" + this.getAuthAddress;
 		},
 		getTextArea: function() {
 			return document.getElementById(this.getTextareaId);
+		},
+		isSolution: function() {
+			if (!this.solutionid || !this.solutionAuthaddress) return false;
+			return this.referenceid == this.solutionid && this.getAuthAddress == this.solutionAuthaddress;
 		}
 	},
 	methods: {
@@ -220,6 +235,15 @@ Vue.component('question-answer', {
 			this.editText = "Edit";
 			this.getTextArea.value = this.body;
 			expandTextarea(this.getTextArea);
+		},
+		markSolution: function() {
+			questionMarkSolution(this.questionid, this.questionAuthaddress, this.referenceid, this.getAuthAddress);
+		},
+		upvote: function() {
+			voteForAnswer(this.referenceid, this.getAuthAddress, false);
+		},
+		downvote: function() {
+			voteForAnswer(this.referenceid, this.getAuthAddress, true);
 		}
 	},
 	data: function() {
@@ -231,7 +255,9 @@ Vue.component('question-answer', {
 	},
 	template: '\
 		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
-			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
+			<span class="tag is-info" style="margin-right: 0px;">{{ voteAmount }}</span>\
+			<span class="tag is-success is-small" v-if="isSolution" style="margin-right: 0px;">Solution</span>\
+			<span style="color: blue; margin-left: 2px;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content" v-show="dontShowEdit()"></div>\
 			<div style="margin-top: 3px;" v-show="showEdit" class="custom-content">\
 				<textarea v-bind:id="getTextareaId" onfocus="expandTextarea(this);" oninput="expandTextarea(this);" class="textarea" rows="3" style="width: 100%; padding: 7px;" style="height: auto;">{{ body }}</textarea>\
@@ -241,8 +267,15 @@ Vue.component('question-answer', {
 			        <a class="level-item" v-on:click="toggleCommentBox">\
 			        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
 			        </a>\
-			        <a class="level-item">\
-			        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+			        <a class="level-item" v-on:click="upvote">\
+			        	<span class="icon is-small"><i class="fa fa-arrow-up"></i></span>\
+			        </a>\
+			        <!--<span class="level-item" v-if="voteAmount > 0">{{ voteAmount }}</span>-->\
+			        <a class="level-item" v-on:click="downvote">\
+			        	<span class="icon is-small"><i class="fa fa-arrow-down"></i></span>\
+			        </a>\
+			        <a class="level-item" v-show="isMarkSolutionLinkShown" v-on:click.prevent="markSolution">\
+			        	<span class="icon is-small"><i class="fa fa-check"></i></span>\
 			        </a>\
 			        <a class="level-item" v-show="isEditLinkShown" v-on:click.prevent="editAnswer">{{ editText }}</a>\
 			        <a class="level-item" v-show="showCancel()" v-on:click.prevent="cancelEdit">Cancel</a>\

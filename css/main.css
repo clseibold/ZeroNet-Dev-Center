@@ -7,15 +7,29 @@ html, body, section {
 	background: #f8f8f8;
 }
 
+code, .code {
+  padding-left: 7px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+/* Put .title and .subtitle back to normal */
+.title {
+  font-weight: 300 !important;
+}
+.subtitle {
+  font-weight: 300 !important;
+}
+
 /* Make header tags same as tags with .title class */
 h1, h2, h3, h4, h5, h6 {
-	color: inherit;
+	/*color: inherit;*/
 	word-break: break-word;
 
 	color: #363636;
-	font-size: 2rem;
-	font-weight: 300;
-	line-height: 1.125;
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1.125;
 }
 h1:not(:last-child), h2:not(:last-child),
 h3:not(:last-child), h4:not(:last-child),
@@ -24,16 +38,17 @@ h5:not(:last-child), h6:not(:last-child) {
 }
 h1 em, h2 em, h3 em, h4 em, h5 em, h6 em,
 h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
-	font-weight: 300;
+	/*font-weight: 300;*/
+  font-weight: inherit;
 }
 h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong {
-	font-weight: 500;
 	color: inherit;
+  font-weight: inherit;
 }
 h1 .tag, h2 .tag, h3 .tag, h4 .tag, h5 .tag, h6 .tag {
 	vertical-align: middle;
 }
-h1 .highlight, h2 .highlight, h3 .highlight, h4 .highlight, h5 .highlight, h6 .highlight {
+h1 + .highlight, h2 + .highlight, h3 + .highlight, h4 + .highlight, h5 + .highlight, h6 + .highlight {
 	margin-top: -0.75rem;
 }
 h1:not(.is-spaced) + .subtitle, h2:not(.is-spaced) + .subtitle,
@@ -66,6 +81,58 @@ h4, h5, h6 {
   font-size: 1rem;
 }
 
+.subtitle:not(.is-spaced) + h1, .subtitle:not(.is-spaced) + h2, .subtitle:not(.is-spaced) + h3,
+.subtitle:not(.is-spaced) + h4, .subtitle:not(.is-spaced) + h5, .subtitle:not(.is-spaced) + h6 {
+  margin-top: -1.5rem;
+}
+
+.level-item h1, .level-item h2, .level-item h3,
+.level-item h4, .level-item h5, .level-item h6 {
+  margin-bottom: 0;
+}
+
+.hero.is-white h1, .hero.is-white h2, .hero.is-white h3,
+.hero.is-white h4, .hero.is-white h5, .hero.is-white h6 {
+  color: #0a0a0a;
+}
+.hero.is-black h1, .hero.is-black h2, .hero.is-black h3,
+.hero.is-black h4, .hero.is-black h5, .hero.is-black h6 {
+  color: white;
+}
+.hero.is-light h1, .hero.is-light h2, .hero.is-light h3,
+.hero.is-light h4, .hero.is-light h5, .hero.is-light h6 {
+  color: #363636;
+}
+.hero.is-dark h1, .hero.is-dark h2, .hero.is-dark h3,
+.hero.is-dark h4, .hero.is-dark h5, .hero.is-dark h6 {
+  color: whitesmoke;
+}
+.hero.is-primary h1, .hero.is-primary h2, .hero.is-primary h3,
+.hero.is-primary h4, .hero.is-primary h5, .hero.is-primary h6 {
+  color: #fff;
+}
+.hero.is-info h1, .hero.is-info h2, .hero.is-info h3,
+.hero.is-info h4, .hero.is-info h5, .hero.is-info h6 {
+  color: #fff;
+}
+.hero.is-success h1, .hero.is-success h2, .hero.is-success h3,
+.hero.is-success h4, .hero.is-success h5, .hero.is-success h6 {
+  color: #fff;
+}
+.hero.is-warning h1, .hero.is-warning h2, .hero.is-warning h3,
+.hero.is-warning h4, .hero.is-warning h5, .hero.is-warning h6 {
+  color: rgba(0, 0, 0, 0.7);
+}
+.hero.is-danger h1, .hero.is-danger h2, .hero.is-danger h3,
+.hero.is-danger h4, .hero.is-danger h5, .hero.is-danger h6 {
+  color: #fff;
+}
+
+.notification h1, .notification h2, .notification h3,
+.notification h4, .notification h5, .notification h6,
+.notification .custom-content {
+  color: currentColor;
+}
 
 /* .custom-content similar to .content except for header tags */
 .custom-content:not(:last-child) {
@@ -194,11 +261,9 @@ h4, h5, h6 {
   font-size: 1.5rem;
 }
 
-
-.fade-transition {
-  transition: opacity 0.2s ease;
+.media .custom-content:not(:last-child) {
+  margin-bottom: 0.75rem;
 }
-
-.fade-enter, .fade-leave {
-  opacity: 0;
+.media .media .custom-content:not(:last-child) {
+  margin-bottom: 0.5rem;
 }

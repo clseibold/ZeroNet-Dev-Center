@@ -24,7 +24,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:solutionid="solutionid" v-bind:solution-authaddress="solutionAuthaddress" v-bind:all-comments="allComments" v-bind:tags="tags"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -105,8 +105,12 @@
 				questionTitle: "",
 				questionSubtitle: "",
 				questionAuthaddress: "",
+				solutionid: null,
+				solutionAuthaddress: "",
 				answersList: [],
-				allAnswersList: []
+				allAnswersList: [],
+				tags: "",
+				allTags: []
 			}
 		}).$mount('#app');
 
@@ -115,6 +119,7 @@
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
 					this.site_info = site_info;
+					getTags(true);
 					fillInCurrentUser();
 					app.currentAuthaddress = this.site_info.auth_address;
 					getUsersComments();
@@ -132,16 +137,24 @@
 					app.currentAuthaddress = this.site_info.auth_address;
 					fillInCurrentUser();
 					getUsersComments();
+					if (Router.currentRoute == "questions/:certuserid/:id") {
+						// When user changes, refresh answers list (but don't sort answers)
+						getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
+					}
 					if (message.params.event[0] == "file_done") {
-						checkTutorialsList(true);
-						if (Router.currentRoute == "tutorials/:slug") {
+						getTags(true);
+						if (Router.currentRoute == "tutorials") {
+							checkTutorialsList(true);
+						} else if (Router.currentRoute == "tutorials/:slug") {
 							getComments(app.referenceID, "t");
 						} else if (Router.currentRoute == "questions") {
 							getQuestionsList();
 						} else if (Router.currentRoute == "questions/:certuserid/:id") {
-							getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
-							getAnswersList(app.referenceID, app.questionAuthaddress);
-							getAllComments();
+							getQuestion(app.referenceID, app.questionAuthaddress, false);
+							//getVotesForAnswersList();
+							//getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
+							//getAnswersList(app.referenceID, app.questionAuthaddress);
+							//getAllComments();
 						} else if (Router.currentRoute == "blog") {
 							getBlogPosts(null, true);
 						} else if (Router.currentRoute == "blog/:slug") {
@@ -149,6 +162,7 @@
 							//getBlogPost(app.);
 							getComments(app.referenceID, 'b');
 						} else if (Router.currentRoute == "") {
+							checkTutorialsList(true);
 							getQuestionsList();
 						}
 					}
@@ -167,6 +181,7 @@
 		VueZeroFrameRouter_Init(app, [
 			{ route: 'tutorials/:slug', component: TutorialsSlug },
 			{ route: 'tutorials', component: Tutorials },
+			{ route: 'questions/tags/:tag', component: QuestionsTagsTag },
 			{ route: 'questions/new', component: QuestionsNew },
 			{ route: 'questions/:certuserid/:id/answer', component: QuestionsCertuseridIdAnswer },
 			{ route: 'questions/:certuserid/:id/edit', component: QuestionsCertuseridIdEdit },
@@ -224,6 +239,51 @@
 			if (textarea.style["overflow-y"] != "hidden") {
 				textarea.style["overflow-y"] = "hidden";
 			}
+		}
+
+		function getTags(refresh = false, f = null) {
+			if (app.allTags.length == 0 || refresh) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM tags'], (tags) => {
+					app.allTags = tags;
+					if (f && typeof f == 'function') {
+						f();
+					}
+				});
+			}
+		}
+
+		// Parses tags from string of tag id's delimited by commas
+		// If not an integer, it will use it as a name of a custom tag.
+		// Returns array of tag names
+		function parseTagIds(tags) {
+			// Make sure allTags is not empty
+			var tagIds = tags.split(',').map(function(t) {
+				var integer = parseInt(t);
+				return isNaN(integer) ? t.trim() : integer;
+			});
+			var tagNames = tagIds.map(function(id) {
+				if (typeof id == 'string') return id;
+				return app.allTags[id - 1].name;
+			});
+			return tagNames;
+		}
+
+		// Parses tags from string of tag names delimited by commas
+		// Returns arrays of tag ids
+		function parseTagNames(tags) {
+			var tagNames = tags.split(',');
+			var tagIds = tagNames.map(function(name) {
+				return tagNameToId(name);
+			});
+			return tagIds;
+		}
+
+		function tagNameToId(tagName) {
+			var tag = app.allTags.find(function(tag) {
+				return tag.name == tagName;
+			});
+			if (tag) return tag.tag_id;
+			else return tagName.trim();
 		}
 
 		function getBlogPosts(f = null, refresh = false) {
@@ -405,7 +465,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Get list of comments from current user
 				var usersComments = app.usersComments.filter((comment) => {
@@ -530,6 +590,15 @@
 			});
 		}
 
+		// Get list of all questions that have the given tagName in it's tags list
+		function getQuestionsToTag(tagName, f = null) {
+			var tagId = tagNameToId(tagName);
+			zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE tags LIKE \'%' + tagId + '%\' ORDER BY date_added DESC'], (questions) => {
+				app.questionsList = questions;
+				if (f && typeof f == 'function') f();
+			});
+		}
+
 		// Determins in the current user can edit the current question. If it can,
 		// app.showEdit is set to true, which will display the edit button.
 		function questionAllowEdit() {
@@ -540,7 +609,7 @@
 		// auth_address matches given auth_address
 		// Set markdown to true if you want app.tutorialContent to be the markdown
 		// instead of the html of the markdown.
-		function getQuestion(id, auth_address, markdown = false, f = null) {
+		function getQuestion(id, auth_address, sortAnswers = true, markdown = false, f = null) {
 			if (id && auth_address) {
 				var getQuestion = function(questions) {
 					var question = null;
@@ -560,10 +629,13 @@
 						app.questionTitle = question.title;
 						app.questionSubtitle = question.cert_user_id;
 						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
+						app.solutionid = question.solution_id;
+						app.solutionAuthaddress = question.solution_auth_address;
+						app.tags = question.tags ? question.tags : "";
 						app.dateAdded = question.date_added;
 
 						getCommentsWithAuthaddress(id, auth_address, "q");
-						getAnswersList(id, auth_address, f);
+						getAnswersList(id, auth_address, app.solutionid, app.solutionAuthaddress, sortAnswers, f);
 					} else {
 						app.tutorialContent = "";
 						app.heroTitle = 'Not Found';
@@ -596,7 +668,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Get list of questions from current user
 				var usersQuestions = app.questionsList.filter((question) => {
@@ -614,6 +686,7 @@
 					"question_id": questionID,
 					"title": document.getElementById("questionTitle").value,
 					"body": document.getElementById("questionBody").value,
+					"tags": parseTagNames(document.getElementById("questionTags").value).join(','),
 					"date_added": Date.now()
 				});
 
@@ -675,6 +748,7 @@
 					if (question.question_id == questionID) {
 						question.title = document.getElementById("editQuestionTitle").value;
 						question.body = document.getElementById("editQuestionBody").value;
+						question.tags = parseTagNames(document.getElementById("editQuestionTags").value).join(',');
 						// TODO: Add date_edited column to questions (and answers)
 					}
 				}
@@ -702,12 +776,211 @@
 			});
 		}
 
+		function questionMarkSolution(questionID, questionAuthaddress, answerID, answerAuthaddress) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// Check that the current user is equal to the question's user.
+			if (app.currentAuthaddress != questionAuthaddress) {
+				console.log("You cannot edit this. This question doesn't belong to you!");
+				zeroframe.cmd("wrapperNotification", ["info", "You cannot mark a solution for this question. This question doesn't belong to you!"]);
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (!data) {
+					console.log("ERROR: No data for the current user. Cannot mark solution for a question that doesn't exist.");
+					return;
+				}
+				data = JSON.parse(data);
+
+				for (var i = 0; i < data.questions.length; i++) {
+					var question = data.questions[i];
+					if (question.question_id == questionID) {
+						question.solution_id = answerID;
+						question.solution_auth_address = answerAuthaddress;
+					}
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						app.solutionid = answerID;
+						app.solutionAuthaddress = answerAuthaddress;
+
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
+		}
+
 		// Get list of all answers that reference a question with given id from
 		// a data.json file of a user whose auth_address matches the given auth_address.
-		function getAnswersList(id, auth_address, f = null) {
-			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_auth_address="' + auth_address + '" ORDER BY date_added DESC'], (answers) => {
-				app.answersList = answers;
-				if (f && typeof f == 'function') f();
+		function getAnswersList(question_id, question_auth_address, solutionID, solutionAuthaddress, sortAnswers = true, f = null) {
+			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + question_id + ' AND question_auth_address="' + question_auth_address + '" ORDER BY date_added DESC'], (answers) => {
+				// As long as a solution exists, go through all answers to find the solution from the array
+				//app.answersList = [];
+				var list = [];
+				if (solutionID && solutionAuthaddress) {
+					var solutionIndex = null;
+					for (var i = 0; i < answers.length; i++) {
+						if (answers[i].answer_id == solutionID && answers[i].directory.replace(/users\//, '').replace(/\//, '') == solutionAuthaddress) {
+							list.push(answers[i]); // Put solution first
+							solutionIndex = i;
+							break; // Don't go through rest of array if we found the solution - there can only be one solution
+						}
+					}
+					// If there is a solution
+					if (solutionIndex != null) {
+						// Remove solution from answers array
+						answers.splice(solutionIndex, 1); // Removes 1 element starting at the given index
+					}
+				}
+
+				list = list.concat(answers);
+				getVotesForAnswersList(list, function(newList) {
+					// Sort list by votes (disregarding the solution)
+					//if (sortAnswers) {
+						newList.sort(function(a, b) { // TODO: Don't resort when not on first zite load
+							if (a.answer_id == solutionID && a.directory.replace(/users\//, '').replace(/\//g, '') == solutionAuthaddress) return false;
+							return b.vote_amount - a.vote_amount;
+						});
+					//} else {
+					//}
+					// TODO: Make where it doesn't sort answers unless on first zite load
+					// which means I need to somehow keep the old sorting, since everytime the
+					// answerslist is updated, everything gets sorted by date (when not sorted by votes)
+					app.answersList = newList;
+					if (f && typeof f == 'function') f();
+				});
+			});
+		}
+
+		// Get the votes for the answers list
+		// This is called every time you get the answers list
+		// AND every time the current user changes
+		function getVotesForAnswersList(answersList, f = null) {
+			for (var i = 0; i < answersList.length; i++) {
+				var answer = answersList[i];
+				var auth_address = answer.directory.replace(/users\//, '').replace(/\//g, '');
+				getVotesForAnswer(answer.answer_id, auth_address, function(vote_amount, currentUserVoted, i) {
+					answersList[i]["vote_amount"] = vote_amount;
+					answersList[i]["current_user_voted"] = currentUserVoted;
+					
+					if (i == answersList.length - 1 && f && typeof f == 'function') f(answersList);
+				}, i);
+			}
+		}
+
+		// Get the votes for the given answer
+		// Calls passed in function, giving it the vote amount and whether the current user has voted
+		function getVotesForAnswer(answer_id, answer_auth_address, f, outer_i = null) {
+			zeroframe.cmd('dbQuery', ['SELECT * FROM answer_votes LEFT JOIN json USING (json_id) WHERE answer_id=' + answer_id + ' AND answer_auth_address="' + answer_auth_address + '"'], (votes) => {
+				var vote_amount = 0;
+				var currentUserVoted = false;
+				for (var i = 0; i < votes.length; i++) {
+					var auth_address = votes[i].directory.replace(/users\//, '').replace(/\//g, '');
+					// Don't let there be two different vote's from same user
+					if (currentUserVoted && app.currentAuthaddress == auth_address) continue;
+
+					if (votes[i].vote > 0) vote_amount++; // For upvotes
+					if (votes[i].vote < 0) vote_amount--; // For downvotes
+					if (!currentUserVoted && app.currentAuthaddress == auth_address) {
+						if (votes[i].vote == 0) {
+							// TODO/NOTE: User has vote in json file, but it is 0, so return false so the voted arrows don't change color
+							currentUserVoted = false;
+							break;
+						} else {
+							currentUserVoted = true;
+						}
+					}
+					// if vote == 0, no vote has happened
+				}
+				if (f && typeof f == 'function') f(vote_amount, currentUserVoted, outer_i);
+			});
+		}
+
+		function voteForAnswer(answer_id, answer_auth_address, downvote = false) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (data)
+					data = JSON.parse(data);
+				else
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+
+				var alreadyVoted = false;
+				var voteIndex = null;
+				for (var i = 0; i < data.answer_votes.length; i++) {
+					if (data.answer_votes[i].answer_id == answer_id && data.answer_votes[i].answer_auth_address == answer_auth_address) {
+						alreadyVoted = true;
+						voteIndex = i;
+						break;
+					}
+				}
+
+				if (alreadyVoted) {
+					if (data.answer_votes[voteIndex].vote < 0 && downvote) {
+						data.answer_votes[voteIndex].vote = 0;
+					} else if (data.answer_votes[voteIndex].vote > 0 && !downvote) {
+						data.answer_votes[voteIndex].vote = 0;
+					} else if (data.answer_votes[voteIndex].vote >= 0 && downvote) {
+						data.answer_votes[voteIndex].vote = -1;
+					} else if (data.answer_votes[voteIndex].vote <= 0 && !downvote) {
+						data.answer_votes[voteIndex].vote = 1;
+					}
+				} else {
+					data.answer_votes.push({
+						"answer_id": answer_id,
+						"answer_auth_address": answer_auth_address,
+						"vote": downvote ? -1 : 1,
+					});
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// Refresh answers
+							getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
+
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
 			});
 		}
 
@@ -740,7 +1013,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Get list of answers from current user
 				var usersAnswers = app.allAnswersList.filter((answer) => {
@@ -828,7 +1101,7 @@
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
 							// Refresh answers
-							getAnswersList(app.referenceID, app.questionAuthaddress);
+							getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
 
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
