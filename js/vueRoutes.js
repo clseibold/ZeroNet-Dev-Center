@@ -95,7 +95,7 @@ var Blog = {
 };
 
 var BlogSlug = {
-	props: ['tutorialContent', 'tutorialComments', 'referenceId'],
+	props: ['currentAuthaddress', 'tutorialContent', 'tutorialComments', 'referenceId'],
 	init: function() {
 		setupHero(false, "", "");
 		app.comments = [];
@@ -125,7 +125,7 @@ var BlogSlug = {
 							<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 						</div>\
-						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+						<tutorial-comment v-for="comment in tutorialComments" :key="comment.comment_id" :current-authaddress="currentAuthaddress" :comment-id="comment.comment_id" :username="comment.cert_user_id" :body="comment.body" :directory="comment.directory" :date="comment.date_added" reference-type="b">\
 						</tutorial-comment>\
 					</div>\
 				</div>\
@@ -154,7 +154,7 @@ var Tutorials = {
 };
 
 var TutorialsSlug = {
-	props: ['tutorialContent', 'tutorialComments', 'referenceId', 'tableofcontents'],
+	props: ['currentAuthaddress', 'tutorialContent', 'tutorialComments', 'referenceId', 'tableofcontents'],
 	init: function() {
 		setupHero(false, "", "");
 		app.tableofcontents = "";
@@ -205,7 +205,7 @@ var TutorialsSlug = {
 							<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 						</div>\
-						<tutorial-comment v-for="comment in tutorialComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+						<tutorial-comment v-for="comment in tutorialComments" :key="comment.comment_id" :current-authaddress="currentAuthaddress" :comment-id="comment.comment_id" :username="comment.cert_user_id" :body="comment.body" :directory="comment.directory" :date="comment.date_added" reference-type="t">\
 						</tutorial-comment>\
 					</div>\
 				</div>\
@@ -342,12 +342,12 @@ var QuestionsCertuseridId = {
 								<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
 				      		</div>\
-				      		<tutorial-comment v-for="comment in questionComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+				      		<tutorial-comment v-for="comment in questionComments" :key="comment.comment_id" :current-authaddress="currentAuthaddress" :comment-id="comment.comment_id" :username="comment.cert_user_id" :body="comment.body" :directory="comment.directory" :date="comment.date_added" reference-type="q" :reference-authaddress="questionAuthaddress">\
 							</tutorial-comment>\
 						</div>\
 						<hr>\
 						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
-						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments">\
+						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments" :question-authaddress="questionAuthaddress">\
 						</question-answer>\
 					</div>\
 				</div>\
