@@ -487,8 +487,8 @@ var QuestionsCertuseridId = {
 						<div class="box">\
 							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
-							<div class="tags" v-if="getTagNames.length > 0">\
-								<a v-for="tag in getTagNames" :href="\'./?/\' + tag" v-on:click.prevent="clickTag(tag)" class="tag">{{tag}}</a>\
+							<div class="tags" v-if="getCurrentTagNames.length > 0">\
+								<a v-for="tag in getCurrentTagNames" :href="\'./?/\' + tag" v-on:click.prevent="clickTag(tag)" class="tag">{{tag}}</a>\
 							</div>\
 							<nav class="level is-mobile">\
 						        <div class="level-left">\
