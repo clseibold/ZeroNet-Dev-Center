@@ -239,31 +239,23 @@ var Questions = {
 			if (this.searchInput == "" || !this.searchInput) return list;
 			var searchInputWords = this.searchInput.split(' ');
 			list = list.filter(function(question) {
-				//console.log(question);
 				question.order = 0;
 				for (var i = 0; i < searchInputWords.length; i++) {
 					var word = searchInputWords[i].trim().toLowerCase();
 					if (question.tags && parseTagIds(question.tags.toLowerCase()).includes(word)) {
 						question.order += 3;
 						continue;
-						//return true;
 					}
 					if (question.title.toLowerCase().includes(word)) {
-						//question.order = 0;
 						question.order += 2;
 						continue;
-						//return true;
 					}
 					if (question.cert_user_id.toLowerCase().includes(word) || question.cert_user_id.replace(/@.*\.bit/, '').toLowerCase().includes(word)) {
-						//question.order = 0;
 						question.order += 1;
 						continue;
-						//return true;
 					}
 					if (question.body.toLowerCase().includes(word)) {
-						//question.order = -1;
 						continue;
-						//return true;
 					}
 					return false;
 				}

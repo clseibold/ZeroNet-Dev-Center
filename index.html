@@ -280,12 +280,11 @@
 		}
 
 		function tagNameToId(tagName) {
-			for (var i = 0; i < app.allTags.length; i++) {
-				if (tagName.trim() == app.allTags[i].name) {
-					return app.allTags[i].tag_id;
-				}
-			}
-			return tagName.trim();
+			var tag = app.allTags.find(function(tag) {
+				return tag.name == tagName;
+			});
+			if (tag) return tag.tag_id;
+			else return tagName.trim();
 		}
 
 		function getBlogPosts(f = null, refresh = false) {
