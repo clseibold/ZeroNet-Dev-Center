@@ -415,15 +415,15 @@ var QuestionsCertuseridId = {
 			return parseTagIds(tags);
 		},
 		questionClick: function(question) {
-			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
+			Router.navigate('questions/' + this.getQuestionAuthAddressFromQuestion(question) + '/' + question.question_id);
 		},
 		getQuestionHref: function(question) {
-			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+			return "./?/questions/" + this.getQuestionAuthAddressFromQuestion(question) + '/' + question.question_id;
 		},
-		getQuestionAuthAddress: function(question) {
+		getQuestionAuthAddressFromQuestion: function(question) {
 			return question.directory.replace(/users\//, '').replace(/\//g, '');
 		},
-		getPostDate: function(date) {
+		getPostDateFromDate: function(date) {
 			return "― " + moment(date).fromNow();
 		},
 	},
@@ -441,6 +441,11 @@ var QuestionsCertuseridId = {
 			if (!tagNames || !this.questionTitle || !this.questionsList) return [];
 			var that = this;
 			var list = this.questionsList.filter(function(question) {
+				// Don't show itself
+				if (question.question_id == this.referenceid && question.directory.replace(/users\//, '').replace(/\//g, '') == this.questionAuthaddress) {
+					return false;
+				}
+
 				var include = false;
 				question.order = 0;
 				for (var i = 0; i < tagNames.length; i++) {
@@ -506,9 +511,9 @@ var QuestionsCertuseridId = {
 						<hr>\
 						<h2>Related Questions</h2>\
 						<div v-for="question in getRelatedQuestionsList">\
-							<h4 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h4><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
+							<h4 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h4><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDateFromDate(question.date_added)"></span></small>\
 							<div class="tags" style="margin-top: 10px; margin-bottom: 0px; padding-bottom: 0; display: block;">\
-								<a v-for="tag in getTagNames(question.tags)" :href="\'questions/tags/\' + tag" class="tag">{{ tag }}</a>\
+								<a v-for="tag in getTagNames(question.tags)" :href="\'./?/questions/tags/\' + tag" class="tag" v-on:click.prevent="clickTag(tag)">{{ tag }}</a>\
 							</div>\
 							<hr>\
 						</div>\
