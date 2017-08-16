@@ -264,7 +264,7 @@ var Questions = {
 				question.order = 0;
 				for (var i = 0; i < searchInputWords.length; i++) {
 					var word = searchInputWords[i].trim().toLowerCase();
-					if (question.tags && parseTagIds(question.tags.toLowerCase()).includes(word)) {
+					if (question.tags && parseTagIds(question.tags.toLowerCase()).join(',').includes(word)) {
 						question.order += 3;
 						continue;
 					}
