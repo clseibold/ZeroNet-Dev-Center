@@ -45,14 +45,14 @@ This means that if you want to add a new plugin, you just need to copy it into a
 
 In order to start creating our new ZeroNet Plugin, we will need to create a new folder with the name of our plugin: `HelloWorld`.
 
-```
+```bash
 $ mkdir HelloWorld
 $ cd HelloWorld
 ```
 
 Now, we need to create two seperate python files: `__init__.py` and `HelloWorldPlugin.py`.
 
-```
+```bash
 $ touch __init__.py HelloWorldPlugin.py
 ```
 
