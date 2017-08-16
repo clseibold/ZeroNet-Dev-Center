@@ -84,8 +84,8 @@ var Blog = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<blog-list-item v-for="post in blogPosts" :key="post.post_id" :title="post.title" :tags="post.tags" :slug="post.slug" :date-added="post.date_added">\
 						</blog-list-item>\
 					</div>\
@@ -115,8 +115,8 @@ var BlogSlug = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<div v-html="tutorialContent" class="custom-content"></div>\
 						<hr>\
 						<div style="margin-bottom: 20px;">\
@@ -142,8 +142,8 @@ var Tutorials = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<tutorial-list-item v-for="tutorial in tutorialsList" :key="tutorial.id" :title="tutorial.title" :authors="tutorial.author" :tags="tutorial.tags" :slug="tutorial.slug">\
 							{{ tutorial.description }}\
 						</tutorial-list-item>\
@@ -193,8 +193,8 @@ var TutorialsSlug = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<h2>Table Of Contents</h2>\
 						<div v-html="tableofcontents" class="custom-content"></div><br>\
 						<div v-html="tutorialContent" class="custom-content"></div>\
@@ -301,8 +301,8 @@ var Questions = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<div class="field has-addons">\
 							 <p class="control has-icons-left is-expanded">\
 								<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
@@ -312,7 +312,7 @@ var Questions = {
 							</p>\
 						    <div class="control">\
 						    	<!--<button class="button">+</button>-->\
-						    	<route-link to="questions/new" class="button is-primary">+</route-link>\
+						    	<route-link to="questions/new" class="button is-primary">Create</route-link>\
 						    </div>\
 						</div>\
 						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
@@ -354,8 +354,8 @@ var QuestionsNew = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<h2>Create New Question</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<input id="questionTitle" type="text" class="input" placeholder="Question Title">\
@@ -425,8 +425,8 @@ var QuestionsCertuseridId = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<div class="box">\
 							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
@@ -506,8 +506,8 @@ var QuestionsCertuseridIdEdit = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<h2>Edit Question</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<input id="editQuestionTitle" type="text" class="input" placeholder="Question Title" v-bind:value="questionTitle"></input>\
@@ -540,8 +540,8 @@ var QuestionsCertuseridIdAnswer = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<h2>Create New Answer</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<textarea oninput="expandTextarea(this);" id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
@@ -579,8 +579,8 @@ var QuestionsTagsTag = {
 	template: '\
 		<div>\
 			<section class="section">\
-				<div class="columns">\
-					<div class="column is-6 is-offset-3">\
+				<div class="columns is-centered">\
+					<div class="column is-three-quarters-tablet is-half-desktop">\
 						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
 						<hr>\
 						<div v-for="question in questionsList">\

@@ -82,13 +82,18 @@ Vue.component('tutorial-list-item', {
 	computed: {
 		getSlug: function() {
 			return 'tutorials/' + this.slug;
+		},
+		getTagsList: function() {
+			return this.tags.split(',');
 		}
 	},
 	template: '\
 		<div>\
 			<span class="title is-5" style="margin-right: 20px;"><route-link :to="getSlug">{{ title }}</route-link></span><span class="subtitle is-6">{{ authors }}</span><br>\
 			<small style="margin-top: 10px;"><slot></slot></small><br>\
-			<small style="float: right;">{{tags}}</small>\
+			<div class="tags" style="margin-top: 10px;">\
+				<small v-for="tag in getTagsList" class="tag">{{tag}}</small>\
+			</div>\
 			<div style="clear: both;"></div>\
 		<hr></div>'
 });
