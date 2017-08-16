@@ -40,8 +40,10 @@
 
 						<hr>
 						<div v-for="post in blogPosts">
-							<h3>{{ post.title }}</h3>
-							<small>{{ post.slug }}</small>
+							<div style="margin-bottom: 10px;">
+								<span class="title is-5"><a :href="'../?/blog/' + post.slug">{{ post.title }}</a></span><br>
+								<small>{{ post.slug }}</small>
+							</div>
 						</div>
 					</div>
 				</div>
