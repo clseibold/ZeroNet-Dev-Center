@@ -569,7 +569,7 @@
 						app.dateAdded = question.date_added;
 
 						getCommentsWithAuthaddress(id, auth_address, "q");
-						getAnswersList(id, auth_address, f);
+						getAnswersList(id, auth_address, app.solutionid, app.solutionAuthaddress, f);
 					} else {
 						app.tutorialContent = "";
 						app.heroTitle = 'Not Found';
@@ -765,9 +765,25 @@
 
 		// Get list of all answers that reference a question with given id from
 		// a data.json file of a user whose auth_address matches the given auth_address.
-		function getAnswersList(id, auth_address, f = null) {
+		function getAnswersList(id, auth_address, solutionID, solutionAuthaddress, f = null) {
 			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_auth_address="' + auth_address + '" ORDER BY date_added DESC'], (answers) => {
-				app.answersList = answers;
+				// Go through all answers to find solution
+				var solutionIndex = null;
+				for (var i = 0; i < answers.length; i++) {
+					if (answers[i].answer_id == solutionID && answers[i].directory.replace(/users\//, '').replace(/\//, '') == solutionAuthaddress) {
+						app.answersList.push(answers[i]); // Put solution first
+						solutionIndex = i;
+						break; // Don't go through rest of array if we found the solution - there can only be one solution
+					}
+				}
+				// If there is a solution
+				if (solutionIndex != null) {
+					// Remove solution from answers array
+					console.log(answers);
+					answers.splice(solutionIndex, 1); // Removes 1 element starting at the given index
+					console.log(answers);
+				}
+				app.answersList = app.answersList.concat(answers);
 				if (f && typeof f == 'function') f();
 			});
 		}
@@ -889,7 +905,7 @@
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
 							// Refresh answers
-							getAnswersList(app.referenceID, app.questionAuthaddress);
+							getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress);
 
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
