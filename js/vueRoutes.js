@@ -233,14 +233,62 @@ var Questions = {
 			return "― " + moment(date).fromNow();
 		}
 	},
+	computed: {
+		getQuestionsList: function() {
+			var list = this.questionsList;
+			if (this.searchInput == "" || !this.searchInput) return list;
+			var searchInputWords = this.searchInput.split(' ');
+			list = list.filter(function(question) {
+				//console.log(question);
+				question.order = 0;
+				for (var i = 0; i < searchInputWords.length; i++) {
+					var word = searchInputWords[i].trim().toLowerCase();
+					if (question.tags && parseTagIds(question.tags.toLowerCase()).includes(word)) {
+						question.order += 3;
+						continue;
+						//return true;
+					}
+					if (question.title.toLowerCase().includes(word)) {
+						//question.order = 0;
+						question.order += 2;
+						continue;
+						//return true;
+					}
+					if (question.cert_user_id.toLowerCase().includes(word) || question.cert_user_id.replace(/@.*\.bit/, '').toLowerCase().includes(word)) {
+						//question.order = 0;
+						question.order += 1;
+						continue;
+						//return true;
+					}
+					if (question.body.toLowerCase().includes(word)) {
+						//question.order = -1;
+						continue;
+						//return true;
+					}
+					return false;
+				}
+				return true;
+			});
+			list.sort(function(a, b) {
+				return b.order - a.order;
+			});
+			return list;
+		}
+	},
+	data: function() {
+		return {
+			searchInput: ""
+		}
+	},
 	template: '\
 		<div>\
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
+						<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
 						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
 						<hr>\
-						<div v-for="question in questionsList">\
+						<div v-for="question in getQuestionsList">\
 							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
 							<hr>\
 						</div>\
@@ -396,8 +444,8 @@ var QuestionsCertuseridIdEdit = {
 		getQuestion(this.params.id, this.params.certuserid, false, true, fillInCurrentUser);
 	},
 	mounted: function() {
-		console.log("test");
 		this.tagInput = this.getTagNames();
+		fillInCurrentUser();
 	},
 	methods: {
 		editClick: function() {

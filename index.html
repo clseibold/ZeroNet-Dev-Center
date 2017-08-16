@@ -274,9 +274,7 @@
 		function parseTagNames(tags) {
 			var tagNames = tags.split(',');
 			var tagIds = tagNames.map(function(name) {
-				tagNameToId(name);
-				// If not in allTags, return as custom tag
-				return name.trim();
+				return tagNameToId(name);
 			});
 			return tagIds;
 		}
@@ -287,7 +285,7 @@
 					return app.allTags[i].tag_id;
 				}
 			}
-			return tagName;
+			return tagName.trim();
 		}
 
 		function getBlogPosts(f = null, refresh = false) {
