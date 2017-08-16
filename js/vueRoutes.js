@@ -269,7 +269,14 @@ var Questions = {
 						question.order += 2;
 						continue;
 					}
-					if (question.cert_user_id.toLowerCase().includes(word) || question.cert_user_id.replace(/@.*\.bit/, '').toLowerCase().includes(word)) {
+					if (word[0] == "@") {
+						var wordId = word.substring(1, word.length);
+						if (question.cert_user_id.replace(/@.*\.bit/, '').toLowerCase().includes(wordId)) {
+							question.order += 1;
+							continue;
+						}
+					}
+					if (question.cert_user_id.toLowerCase().includes(word)) {
 						question.order += 1;
 						continue;
 					}
@@ -296,12 +303,23 @@ var Questions = {
 			<section class="section">\
 				<div class="columns">\
 					<div class="column is-6 is-offset-3">\
-						<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
-						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
+						<div class="field has-addons">\
+							 <p class="control has-icons-left is-expanded">\
+								<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
+								<span class="icon is-small is-left">\
+						    		<i class="fa fa-search"></i>\
+							    </span>\
+							</p>\
+						    <div class="control">\
+						    	<!--<button class="button">+</button>-->\
+						    	<route-link to="questions/new" class="button is-primary">+</route-link>\
+						    </div>\
+						</div>\
+						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
 						<hr>\
 						<div v-for="question in getQuestionsList">\
 							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a v-on:click.prevent="userIdClick(question.cert_user_id)" style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
-							<div class="tags" style="margin-top: 10px; display: block;">\
+							<div class="tags" style="margin-top: 10px; margin-bottom: 0px; padding-bottom: 0; display: block;">\
 								<a v-for="tag in getTagNames(question.tags)" :href="\'questions/tags/\' + tag" v-on:click.prevent="tagClick(tag)" class="tag">{{ tag }}</a>\
 							</div>\
 							<hr>\
