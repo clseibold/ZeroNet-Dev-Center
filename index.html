@@ -182,6 +182,7 @@
 		VueZeroFrameRouter_Init(app, [
 			{ route: 'tutorials/:slug', component: TutorialsSlug },
 			{ route: 'tutorials', component: Tutorials },
+			{ route: 'questions/tags/:tag', component: QuestionsTagsTag },
 			{ route: 'questions/new', component: QuestionsNew },
 			{ route: 'questions/:certuserid/:id/answer', component: QuestionsCertuseridIdAnswer },
 			{ route: 'questions/:certuserid/:id/edit', component: QuestionsCertuseridIdEdit },
@@ -259,7 +260,7 @@
 			// Make sure allTags is not empty
 			var tagIds = tags.split(',').map(function(t) {
 				var integer = parseInt(t);
-				return isNaN(integer) ? t : integer;
+				return isNaN(integer) ? t.trim() : integer;
 			});
 			var tagNames = tagIds.map(function(id) {
 				if (typeof id == 'string') return id;
@@ -273,13 +274,20 @@
 		function parseTagNames(tags) {
 			var tagNames = tags.split(',');
 			var tagIds = tagNames.map(function(name) {
-				for (var i = 0; i < app.allTags.length; i++) {
-					if (name == app.allTags[i].name) {
-						return app.allTags[i].tag_id;
-					}
-				}
+				tagNameToId(name);
+				// If not in allTags, return as custom tag
+				return name.trim();
 			});
 			return tagIds;
+		}
+
+		function tagNameToId(tagName) {
+			for (var i = 0; i < app.allTags.length; i++) {
+				if (tagName.trim() == app.allTags[i].name) {
+					return app.allTags[i].tag_id;
+				}
+			}
+			return tagName;
 		}
 
 		function getBlogPosts(f = null, refresh = false) {
@@ -586,6 +594,15 @@
 			});
 		}
 
+		// Get list of all questions that have the given tagName in it's tags list
+		function getQuestionsToTag(tagName, f = null) {
+			var tagId = tagNameToId(tagName);
+			zeroframe.cmd('dbQuery', ['SELECT * FROM questions LEFT JOIN json USING (json_id) WHERE tags LIKE \'%' + tagId + '%\' ORDER BY date_added DESC'], (questions) => {
+				app.questionsList = questions;
+				if (f && typeof f == 'function') f();
+			});
+		}
+
 		// Determins in the current user can edit the current question. If it can,
 		// app.showEdit is set to true, which will display the edit button.
 		function questionAllowEdit() {
@@ -673,6 +690,7 @@
 					"question_id": questionID,
 					"title": document.getElementById("questionTitle").value,
 					"body": document.getElementById("questionBody").value,
+					"tags": parseTagNames(document.getElementById("questionTags").value).join(','),
 					"date_added": Date.now()
 				});
 
@@ -734,6 +752,7 @@
 					if (question.question_id == questionID) {
 						question.title = document.getElementById("editQuestionTitle").value;
 						question.body = document.getElementById("editQuestionBody").value;
+						question.tags = parseTagNames(document.getElementById("editQuestionTags").value).join(',');
 						// TODO: Add date_edited column to questions (and answers)
 					}
 				}

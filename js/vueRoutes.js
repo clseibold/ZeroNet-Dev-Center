@@ -258,6 +258,17 @@ var QuestionsNew = {
 	methods: {
 		cancel: function() {
 			Router.navigate('questions');
+		},
+		addTag: function(tagName) {
+			if (this.tagInput.includes(tagName)) return;
+			if (this.tagInput == "") this.tagInput += tagName;
+			else if (this.tagInput[this.tagInput.length - 1] == ',') this.tagInput += tagName;
+			else this.tagInput += ',' + tagName;
+		}
+	},
+	data: function() {
+		return {
+			tagInput: ""
 		}
 	},
 	template: '\
@@ -267,10 +278,15 @@ var QuestionsNew = {
 					<div class="column is-6 is-offset-3">\
 						<h2>Create New Question</h2>\
 						<span style="color: blue;" class="currentuser"></span>:<br>\
-						<input id="questionTitle" type="text" class="input" placeholder="Question Title"></input>\
+						<input id="questionTitle" type="text" class="input" placeholder="Question Title">\
 						<textarea oninput="expandTextarea(this);" class="textarea" rows="3" id="questionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
+						<input id="questionTags" type="text" class="input" placeholder="Question Tags (separated by commas) ..." style="margin-top: 10px; width: 100%;" v-model="tagInput">\
 						<button class="button is-primary" onclick="postQuestion();" style="margin-top: 10px;">Post</button>\
-						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button>\
+						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button><br><br>\
+						<h3>Common Tags</h3>\
+						<div class="tags">\
+							<a v-for="tag in app.allTags" v-on:click="addTag(tag.name)" class="tag">{{tag.name}}</a>\
+						</div>\
 					</div>\
 				</div>\
 			</section>\
@@ -306,6 +322,9 @@ var QuestionsCertuseridId = {
 		},
 		editQuestion: function() {
 			Router.navigate('questions/' + this.questionAuthaddress + '/' + this.referenceId + '/edit');
+		},
+		clickTag: function(tagName) {
+			Router.navigate('questions/tags/' + tagName);
 		}
 	},
 	computed: {
@@ -332,7 +351,7 @@ var QuestionsCertuseridId = {
 							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
 							<div class="tags" v-if="getTagNames.length > 0">\
-								<span v-for="tag in getTagNames" class="tag">{{tag}}</span>\
+								<a v-for="tag in getTagNames" :href="\'./?/\' + tag" v-on:click.prevent="clickTag(tag)" class="tag">{{tag}}</a>\
 							</div>\
 							<nav class="level is-mobile">\
 						        <div class="level-left">\
@@ -363,7 +382,7 @@ var QuestionsCertuseridId = {
 };
 
 var QuestionsCertuseridIdEdit = {
-	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionAuthaddress'],
+	props: ['tutorialContent', 'referenceId', 'questionTitle', 'questionAuthaddress', 'tags'],
 	before: function() {
 		// TODO: BUG, site_info isn't set yet because it happens async.
 		if (!zeroframe.site_info || zeroframe.site_info.auth_address != this.params.certuserid) {
@@ -376,12 +395,32 @@ var QuestionsCertuseridIdEdit = {
 		setupHero(false, "Questions", "");
 		getQuestion(this.params.id, this.params.certuserid, false, true, fillInCurrentUser);
 	},
+	mounted: function() {
+		console.log("test");
+		this.tagInput = this.getTagNames();
+	},
 	methods: {
 		editClick: function() {
 			editQuestion(this.referenceId, this.questionAuthaddress);
 		},
 		cancel: function() {
 			Router.navigate('questions/' + this.questionAuthaddress + "/" + this.referenceId);
+		},
+		getTagNames: function() {
+			if (!this.tags || app.allTags.length == 0) return "";
+			var tagNames = parseTagIds(this.tags).join(',');
+			return tagNames;
+		},
+		addTag: function(tagName) {
+			if (this.tagInput.includes(tagName)) return;
+			if (this.tagInput == "") this.tagInput += tagName;
+			else if (this.tagInput[this.tagInput.length - 1] == ',') this.tagInput += tagName;
+			else this.tagInput += ',' + tagName;
+		}
+	},
+	data: function() {
+		return {
+			tagInput: ""
 		}
 	},
 	template: '\
@@ -393,8 +432,13 @@ var QuestionsCertuseridIdEdit = {
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<input id="editQuestionTitle" type="text" class="input" placeholder="Question Title" v-bind:value="questionTitle"></input>\
 						<textarea onfocus="expandTextarea(this);" oninput="expandTextarea(this);" class="textarea" rows="3" id="editQuestionBody" placeholder="Question Body..." style="margin-top: 10px; width: 100%; padding: 10px;">{{ tutorialContent }}</textarea>\
+						<input id="editQuestionTags" type="text" class="input" placeholder="Question Tags (separated by commas) ..." style="margin-top: 10px; width: 100%;" v-model="tagInput">\
 						<button class="button is-primary" v-on:click="editClick" style="margin-top: 10px;">Edit</button>\
-						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button>\
+						<button class="button is-link" v-on:click="cancel" style="margin-top: 10px;">Cancel</button><br><br>\
+						<h3>Common Tags</h3>\
+						<div class="tags">\
+							<a v-for="tag in app.allTags" v-on:click="addTag(tag.name)" class="tag">{{tag.name}}</a>\
+						</div>\
 					</div>\
 				</div>\
 			</section>\
@@ -422,3 +466,43 @@ var QuestionsCertuseridIdAnswer = {
 			</section>\
 		</div>'
 };
+
+var QuestionsTagsTag = {
+	props: ['questionsList'],
+	init: function() {
+		var that = this;
+		setupHero(false, "Questions", "Tag: " + that.params.tag);
+		getTags(true, function() {
+			getQuestionsToTag(that.params.tag);
+		});
+	},
+	methods: {
+		questionClick: function(question) {
+			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
+		},
+		getQuestionHref: function(question) {
+			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+		},
+		getQuestionAuthAddress: function(question) {
+			return question.directory.replace(/users\//, '').replace(/\//g, '');
+		},
+		getPostDate: function(date) {
+			return "― " + moment(date).fromNow();
+		}
+	},
+	template: '\
+		<div>\
+			<section class="section">\
+				<div class="columns">\
+					<div class="column is-6 is-offset-3">\
+						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
+						<hr>\
+						<div v-for="question in questionsList">\
+							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
+							<hr>\
+						</div>\
+					</div>\
+				</div>\
+			</section>\
+		</div>'
+}
