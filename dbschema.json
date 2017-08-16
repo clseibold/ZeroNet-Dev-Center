@@ -14,6 +14,9 @@
         "blog.json": {
             "to_table": ["blogposts"]
         },
+        "tags.json": {
+            "to_table": ["tags"]
+        },
         "users/.+/data.json": {
             "to_table": [ "comments", "questions", "answers", "answer_votes" ]
         },
@@ -60,6 +63,15 @@
             "indexes": ["CREATE UNIQUE INDEX blog_posts_key ON blogposts (json_id, post_id)", "CREATE INDEX blog_posts_id ON blogposts (post_id)"],
             "schema_changed": 11
         },
+        "tags": {
+            "cols": [
+                ["tag_id", "INTEGER"],
+                ["name", "TEXT"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX tags_key ON tags (json_id, tag_id)"],
+            "schema_changed": 10
+        },
         "comments": {
             "cols": [
                 ["comment_id", "INTEGER"],
@@ -80,11 +92,12 @@
                 ["body", "TEXT"],
                 ["solution_id", "INTEGER"],
                 ["solution_auth_address", "TEXT"],
+                ["tags", "TEXT"],
                 ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX question_key ON questions(json_id, question_id)"],
-            "schema_changed": 13
+            "schema_changed": 14
         },
         "answers": {
             "cols": [

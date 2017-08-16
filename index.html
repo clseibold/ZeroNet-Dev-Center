@@ -24,7 +24,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:solutionid="solutionid" v-bind:solution-authaddress="solutionAuthaddress" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:solutionid="solutionid" v-bind:solution-authaddress="solutionAuthaddress" v-bind:all-comments="allComments" v-bind:tags="tags"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -108,7 +108,9 @@
 				solutionid: null,
 				solutionAuthaddress: "",
 				answersList: [],
-				allAnswersList: []
+				allAnswersList: [],
+				tags: "",
+				allTags: []
 			}
 		}).$mount('#app');
 
@@ -117,6 +119,7 @@
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
 					this.site_info = site_info;
+					getTags(true);
 					fillInCurrentUser();
 					app.currentAuthaddress = this.site_info.auth_address;
 					getUsersComments();
@@ -140,8 +143,10 @@
 						getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
 					}
 					if (message.params.event[0] == "file_done") {
-						checkTutorialsList(true);
-						if (Router.currentRoute == "tutorials/:slug") {
+						getTags(true);
+						if (Router.currentRoute == "tutorials") {
+							checkTutorialsList(true);
+						} else if (Router.currentRoute == "tutorials/:slug") {
 							getComments(app.referenceID, "t");
 						} else if (Router.currentRoute == "questions") {
 							getQuestionsList();
@@ -158,6 +163,7 @@
 							//getBlogPost(app.);
 							getComments(app.referenceID, 'b');
 						} else if (Router.currentRoute == "") {
+							checkTutorialsList(true);
 							getQuestionsList();
 						}
 					}
@@ -233,6 +239,47 @@
 			if (textarea.style["overflow-y"] != "hidden") {
 				textarea.style["overflow-y"] = "hidden";
 			}
+		}
+
+		function getTags(refresh = false, f = null) {
+			if (app.allTags.length == 0 || refresh) {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM tags'], (tags) => {
+					app.allTags = tags;
+					if (f && typeof f == 'function') {
+						f();
+					}
+				});
+			}
+		}
+
+		// Parses tags from string of tag id's delimited by commas
+		// If not an integer, it will use it as a name of a custom tag.
+		// Returns array of tag names
+		function parseTagIds(tags) {
+			// Make sure allTags is not empty
+			var tagIds = tags.split(',').map(function(t) {
+				var integer = parseInt(t);
+				return isNaN(integer) ? t : integer;
+			});
+			var tagNames = tagIds.map(function(id) {
+				if (typeof id == 'string') return id;
+				return app.allTags[id - 1].name;
+			});
+			return tagNames;
+		}
+
+		// Parses tags from string of tag names delimited by commas
+		// Returns arrays of tag ids
+		function parseTagNames(tags) {
+			var tagNames = tags.split(',');
+			var tagIds = tagNames.map(function(name) {
+				for (var i = 0; i < app.allTags.length; i++) {
+					if (name == app.allTags[i].name) {
+						return app.allTags[i].tag_id;
+					}
+				}
+			});
+			return tagIds;
 		}
 
 		function getBlogPosts(f = null, refresh = false) {
@@ -414,7 +461,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Get list of comments from current user
 				var usersComments = app.usersComments.filter((comment) => {
@@ -550,7 +597,6 @@
 		// Set markdown to true if you want app.tutorialContent to be the markdown
 		// instead of the html of the markdown.
 		function getQuestion(id, auth_address, sortAnswers = true, markdown = false, f = null) {
-			console.log(sortAnswers);
 			if (id && auth_address) {
 				var getQuestion = function(questions) {
 					var question = null;
@@ -572,10 +618,10 @@
 						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
 						app.solutionid = question.solution_id;
 						app.solutionAuthaddress = question.solution_auth_address;
+						app.tags = question.tags ? question.tags : "";
 						app.dateAdded = question.date_added;
 
 						getCommentsWithAuthaddress(id, auth_address, "q");
-						console.log(sortAnswers);
 						getAnswersList(id, auth_address, app.solutionid, app.solutionAuthaddress, sortAnswers, f);
 					} else {
 						app.tutorialContent = "";
@@ -609,7 +655,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Get list of questions from current user
 				var usersQuestions = app.questionsList.filter((question) => {
@@ -872,7 +918,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				var alreadyVoted = false;
 				var voteIndex = null;
@@ -952,7 +998,7 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [] }
+					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Get list of answers from current user
 				var usersAnswers = app.allAnswersList.filter((answer) => {

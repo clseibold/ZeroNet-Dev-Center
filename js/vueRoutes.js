@@ -278,7 +278,7 @@ var QuestionsNew = {
 }
 
 var QuestionsCertuseridId = {
-	props: ['currentAuthaddress', 'tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'answersList', 'allComments', 'dateAdded', 'solutionid', 'solutionAuthaddress'],
+	props: ['currentAuthaddress', 'tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'tags', 'answersList', 'allComments', 'dateAdded', 'solutionid', 'solutionAuthaddress'],
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.comments = [];
@@ -312,6 +312,10 @@ var QuestionsCertuseridId = {
 		isEditLinkShown: function() {
 			if (!this.currentAuthaddress) return false;
 			return this.currentAuthaddress == this.questionAuthaddress;
+		},
+		getTagNames: function() {
+			if (!this.tags || app.allTags.length == 0) return [];
+			return parseTagIds(this.tags);
 		}
 	},
 	data: function() {
@@ -327,6 +331,9 @@ var QuestionsCertuseridId = {
 						<div class="box">\
 							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
+							<div class="tags" v-if="getTagNames.length > 0">\
+								<span v-for="tag in getTagNames" class="tag">{{tag}}</span>\
+							</div>\
 							<nav class="level is-mobile">\
 						        <div class="level-left">\
 							        <a class="level-item" v-on:click="toggleCommentBox">\
