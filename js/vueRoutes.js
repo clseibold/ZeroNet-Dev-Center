@@ -8,7 +8,7 @@ var Home = {
 	init: function() {
 		var subtitle = "Tutorials, Questions, Collaboration";
 		var content = generateRouteLinkHTML('tutorials/the_basics', 'The Basics', 'button is-info') +
-						generateRouteLinkHTML('tutorials', 'All Tutorials', '', 'margin-top: 10px; margin-left: 10px;');
+						generateRouteLinkHTML('questions', 'Search Questions', '', 'margin-top: 10px; margin-left: 10px;');
 
 		setupHero(true, "ZeroNet Dev Center", subtitle, content);
 		checkTutorialsList();
@@ -65,10 +65,13 @@ var Home = {
 						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
-						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Recent Questions</span> <small><route-link to="questions/new">Post New Question</route-link></small></div>\
+						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Recent Questions</span></div>\
 						<div v-for="question in getLatestQuestions">\
 							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small></div>\
 						</div>\
+						<hr>\
+						<span><route-link to="questions/new" class="button is-info">Create</route-link></span>\
+						<route-link to="questions" class="button is-link">View All</route-link>\
 					</div>\
 				</div>\
 			</section>\
@@ -536,6 +539,9 @@ var QuestionsCertuseridIdAnswer = {
 		cancel() {
 			Router.navigate('questions/' + app.questionAuthaddress + '/' + app.referenceID);
 		}
+	},
+	mounted: function() {
+		fillInCurrentUser();
 	},
 	template: '\
 		<div>\
