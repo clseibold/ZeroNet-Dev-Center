@@ -520,7 +520,7 @@ var QuestionsCertuseridId = {
 							<div class="tags" style="margin-top: 10px; margin-bottom: 0px; padding-bottom: 0; display: block;">\
 								<a v-for="tag in getTagNames(question.tags)" :href="\'./?/questions/tags/\' + tag" class="tag" v-on:click.prevent="clickTag(tag)">{{ tag }}</a>\
 							</div>\
-							<hr>\
+							<br>\
 						</div>\
 					</div>\
 				</div>\
