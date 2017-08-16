@@ -1,8 +1,8 @@
 ## Introduction
 
-In ZeroNet, plugins can be created to extend the functionality of the client as well as provide api calls to zites. Some of the features that we use are actually plugins that can be downloaded, like `MergerSite` and `Newsfeed`. There currently isn't a plugin store where you can install them. However, it is simple to add, disable, or create plugins. In this tutorial, you will learn how to write a simple plugin that provides an api which can be called directly from a zite.
+In ZeroNet, plugins can be created to extend the functionality of the client as well as provide api calls to sites. Some of the features that we use are actually plugins that can be downloaded, like `MergerSite` and `Newsfeed`. There currently isn't a plugin store where you can install them. However, it is simple to add, disable, or create plugins. In this tutorial, you will learn how to write a simple plugin that provides an api which can be called directly from a site.
 
-> **Note**: I advise you to read [The Basics](http://127.0.0.1:43110/14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt/?/tutorials/the_basics) tutorial first. You should also know to create a zite.
+> **Note**: I advise you to read [The Basics](http://127.0.0.1:43110/14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt/?/tutorials/the_basics) tutorial first. You should also know to create a site.
 
 
 ## ZeroNet Plugins
@@ -65,7 +65,7 @@ import HelloWorldPlugin
 Now we are getting to the interesting part...
 
 
-Lets create a new zeroframe api call that will allow us to comunicate with a zite using the command `helloWorld` which will return a json message that says `Hello World !`.
+Lets create a new zeroframe api call that will allow us to comunicate with a site using the command `helloWorld` which will return a json message that says `Hello World !`.
 
 To do this, we need to create a `UiWebsocketPlugin` class in our `HelloWorldPlugin.py` file.
 
@@ -95,8 +95,8 @@ class UiWebsocketPlugin(object):
 We have added an `actionHelloWorld` method to our class. Notice here that the `action` prefix is mandatory in order to be called through the zeroframe api.
 
 We have two important elements that we are using here:
-1. **to**: represents the zite that called our command.
-2. **response(to, json)**: the method that returns the response to the zite through websocket using json format.
+1. **to**: represents the site that called our command.
+2. **response(to, json)**: the method that returns the response to the site through websocket using json format.
 
 We have finished our plugin. Now, let's test it!
 
@@ -115,13 +115,13 @@ We have finished our plugin. Now, let's test it!
 - SiteStorage
 - UIWebsocket
 
-## Hello World zite
+## Hello World site
 
-In order to test out our new plugin, we need to create a zite. This zite is going to be fairly simple. You can find out how to create a simple zite by following the other tutorials on the Dev Center, as well as on [ZeroBlog](/Blog.ZeroNetwork.bit/?Post:99:ZeroChat+tutorial+new).
+In order to test out our new plugin, we need to create a site. This site is going to be fairly simple. You can find out how to create a simple site by following the other tutorials on the Dev Center, as well as on [ZeroBlog](/Blog.ZeroNetwork.bit/?Post:99:ZeroChat+tutorial+new).
 
-![Create new site](../img/create-new-site.png "Create new site")
+![Create New site](./img/create-new-site.png "Create New Site")
 
-Click on create new site on the ZeroHello page. Once you have done that, open directory where your zite files are stored. You should have these files in your site folder:
+Click on `create new site` on the ZeroHello page. Once you have done that, open directory where your site files are stored. You should have these files in your site folder:
 
 ```
 .
