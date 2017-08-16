@@ -452,6 +452,11 @@ var QuestionsCertuseridIdAnswer = {
 		getAllAnswers();
 		getQuestion(this.params.id, this.params.certuserid, false, false, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
 	},
+	methods: {
+		cancel() {
+			Router.navigate('questions/' + app.questionAuthaddress + '/' + app.referenceID);
+		}
+	},
 	template: '\
 		<div>\
 			<section class="section">\
@@ -461,6 +466,7 @@ var QuestionsCertuseridIdAnswer = {
 						<span style="color: blue;" class="currentuser"></span>:<br>\
 						<textarea oninput="expandTextarea(this);" id="answerBody" class="textarea" rows="3" placeholder="Answer Body..." style="margin-top: 10px; width: 100%; padding: 10px;"></textarea>\
 						<button class="button is-primary" onclick="postAnswer();" style="margin-top: 10px;">Post</button>\
+						<button class="button is-link" v-on:click="cancel()" style="margin-top: 10px;">Cancel</button>\
 					</div>\
 				</div>\
 			</section>\
