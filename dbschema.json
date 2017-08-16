@@ -78,11 +78,13 @@
                 ["question_id", "INTEGER"],
                 ["title", "TEXT"],
                 ["body", "TEXT"],
+                ["solution_id", "INTEGER"],
+                ["solution_auth_address", "TEXT"],
                 ["date_added", "INTEGER"],
                 ["json_id", "INTEGER REFERENCES json (json_id)"]
             ],
             "indexes": ["CREATE UNIQUE INDEX question_key ON questions(json_id, question_id)"],
-            "schema_changed": 12
+            "schema_changed": 13
         },
         "answers": {
             "cols": [

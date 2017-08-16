@@ -161,7 +161,7 @@ Vue.component('tutorial-comment', { // TODO: Change this to just comment
 });
 
 Vue.component('question-answer', {
-	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'comments', 'questionAuthaddress'],
+	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'comments', 'questionid', 'questionAuthaddress', 'solutionid', 'solutionAuthaddress'],
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
@@ -181,11 +181,21 @@ Vue.component('question-answer', {
 			if (!this.currentAuthaddress) return false;
 			return this.currentAuthaddress == this.getAuthAddress;
 		},
+		isMarkSolutionLinkShown: function() {
+			// If creator of question is same as current user
+			if (this.isSolution) return false;
+			if (!this.currentAuthaddress) return false;
+			return this.currentAuthaddress == this.questionAuthaddress;
+		},
 		getTextareaId: function() {
 			return "editAnswerBody" + this.referenceid + "From" + this.getAuthAddress;
 		},
 		getTextArea: function() {
 			return document.getElementById(this.getTextareaId);
+		},
+		isSolution: function() {
+			if (!this.solutionid || !this.solutionAuthaddress) return false;
+			return this.referenceid == this.solutionid && this.getAuthAddress == this.solutionAuthaddress;
 		}
 	},
 	methods: {
@@ -220,7 +230,10 @@ Vue.component('question-answer', {
 			this.editText = "Edit";
 			this.getTextArea.value = this.body;
 			expandTextarea(this.getTextArea);
-		}
+		},
+		markSolution: function() {
+			questionMarkSolution(this.questionid, this.questionAuthaddress, this.referenceid, this.getAuthAddress);
+		},
 	},
 	data: function() {
 		return {
@@ -231,7 +244,7 @@ Vue.component('question-answer', {
 	},
 	template: '\
 		<div class="box" style="padding-top: 20px; padding-bottom: 20px;">\
-			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
+			<span class="tag is-success is-small" v-if="isSolution" style="margin-right: 5px;">Solution</span><span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
 			<div style="margin-top: 3px;" v-html="getBody" class="custom-content" v-show="dontShowEdit()"></div>\
 			<div style="margin-top: 3px;" v-show="showEdit" class="custom-content">\
 				<textarea v-bind:id="getTextareaId" onfocus="expandTextarea(this);" oninput="expandTextarea(this);" class="textarea" rows="3" style="width: 100%; padding: 7px;" style="height: auto;">{{ body }}</textarea>\
@@ -243,6 +256,9 @@ Vue.component('question-answer', {
 			        </a>\
 			        <a class="level-item">\
 			        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+			        </a>\
+			        <a class="level-item" v-show="isMarkSolutionLinkShown" v-on:click.prevent="markSolution">\
+			        	<span class="icon is-small"><i class="fa fa-check"></i></span>\
 			        </a>\
 			        <a class="level-item" v-show="isEditLinkShown" v-on:click.prevent="editAnswer">{{ editText }}</a>\
 			        <a class="level-item" v-show="showCancel()" v-on:click.prevent="cancelEdit">Cancel</a>\

@@ -24,7 +24,7 @@
 			<div v-html="heroContent"></div>
 		</my-hero>
 
-		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:all-comments="allComments"></component>
+		<component v-bind:is="currentView" v-bind:current-authaddress="currentAuthaddress" v-bind:tutorials-list="tutorialsList" v-bind:blog-posts="blogPosts" v-bind:tutorial-content="tutorialContent" v-bind:tableofcontents="tableOfContents" v-bind:tutorial-comments="comments" v-bind:questions-list="questionsList" v-bind:reference-id="referenceID" v-bind:date-added="dateAdded" v-bind:answers-list="answersList" v-bind:question-title="questionTitle" v-bind:question-subtitle="questionSubtitle" v-bind:question-comments="comments" v-bind:question-authaddress="questionAuthaddress" v-bind:solutionid="solutionid" v-bind:solution-authaddress="solutionAuthaddress" v-bind:all-comments="allComments"></component>
 
 		<my-footer></my-footer>
 	</div>
@@ -105,6 +105,8 @@
 				questionTitle: "",
 				questionSubtitle: "",
 				questionAuthaddress: "",
+				solutionid: null,
+				solutionAuthaddress: "",
 				answersList: [],
 				allAnswersList: []
 			}
@@ -140,9 +142,10 @@
 						} else if (Router.currentRoute == "questions") {
 							getQuestionsList();
 						} else if (Router.currentRoute == "questions/:certuserid/:id") {
-							getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
-							getAnswersList(app.referenceID, app.questionAuthaddress);
-							getAllComments();
+							getQuestion(app.referenceID, app.questionAuthaddress);
+							//getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
+							//getAnswersList(app.referenceID, app.questionAuthaddress);
+							//getAllComments();
 						} else if (Router.currentRoute == "blog") {
 							getBlogPosts(null, true);
 						} else if (Router.currentRoute == "blog/:slug") {
@@ -561,6 +564,8 @@
 						app.questionTitle = question.title;
 						app.questionSubtitle = question.cert_user_id;
 						app.questionAuthaddress = question.directory.replace(/users\//, '').replace(/\//g, '');
+						app.solutionid = question.solution_id;
+						app.solutionAuthaddress = question.solution_auth_address;
 						app.dateAdded = question.date_added;
 
 						getCommentsWithAuthaddress(id, auth_address, "q");
@@ -695,6 +700,61 @@
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 							Router.navigate("questions/" + zeroframe.site_info.auth_address + "/" + questionID);
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
+		}
+
+		function questionMarkSolution(questionID, questionAuthaddress, answerID, answerAuthaddress) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// Check that the current user is equal to the question's user.
+			if (app.currentAuthaddress != questionAuthaddress) {
+				console.log("You cannot edit this. This question doesn't belong to you!");
+				zeroframe.cmd("wrapperNotification", ["info", "You cannot mark a solution for this question. This question doesn't belong to you!"]);
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (!data) {
+					console.log("ERROR: No data for the current user. Cannot mark solution for a question that doesn't exist.");
+					return;
+				}
+				data = JSON.parse(data);
+
+				for (var i = 0; i < data.questions.length; i++) {
+					var question = data.questions[i];
+					if (question.question_id == questionID) {
+						question.solution_id = answerID;
+						question.solution_auth_address = answerAuthaddress;
+					}
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						app.solutionid = answerID;
+						app.solutionAuthaddress = answerAuthaddress;
+
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
 						});
 					} else {
 						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
