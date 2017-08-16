@@ -100,6 +100,7 @@
 				tableOfContents: "",
 				comments: [],
 				allComments: [],
+				userComments: [], // TODO: Change this to use allComments instead
 				questionsList: [],
 				questionTitle: "",
 				questionSubtitle: "",
@@ -116,6 +117,7 @@
 					this.site_info = site_info;
 					fillInCurrentUser();
 					app.currentAuthaddress = this.site_info.auth_address;
+					getUsersComments();
 				});
 			}
 
@@ -129,6 +131,7 @@
 					this.site_info = message.params;  // Save site info data to allow access it later
 					app.currentAuthaddress = this.site_info.auth_address;
 					fillInCurrentUser();
+					getUsersComments();
 					if (message.params.event[0] == "file_done") {
 						checkTutorialsList(true);
 						if (Router.currentRoute == "tutorials/:slug") {
@@ -349,9 +352,18 @@
 			});
 		}
 
+		// Get current user's comments from database.
+		// TODO: Change this to use getAllComments instead (and cache the comments and check whether they are already downloaded, etc)?
+		function getUsersComments(f = null) {
+			zeroframe.cmd("dbQuery", ["SELECT * FROM comments LEFT JOIN json USING (json_id) ORDER BY date_added DESC"], (comments) => {
+				app.usersComments = comments;
+				if (f && typeof f == 'function') f();
+			});
+		}
+
 		// Get all comments that reference given id, type, and auth_address of
 		// the user where the json file that contains the referenced post is located.
-		// Usually used when the referenced post is a Question or Answer.
+		// Usually used when the referenced post is a Question. NOTE: Answers use getAllComments isntead!
 		// ReferenceTypes:
 		// t - tutorial
 		// q - question
@@ -395,10 +407,20 @@
 				else
 					data = { "comments": [], "questions": [], "answers": [] }
 
-				// TODO: Handle incrementing of ids
+				// Get list of comments from current user
+				var usersComments = app.usersComments.filter((comment) => {
+					//return comment.cert_user_id == zeroframe.site_info.cert_user_id;
+					return comment.directory.replace(/users\//, '').replace(/\//g, '') == zeroframe.site_info.auth_address;
+				});
+				// Get current user's last comment's id and increment by 1
+				var commentID = 1;
+				if (usersComments.length > 0) {
+					commentID += usersComments[0].comment_id;
+				}
 
 				// Add the new message to data
 				data.comments.push({
+					"comment_id": commentID,
 					"reference_id": referenceID,
 					"reference_type": referenceType,
 					"reference_auth_address": referenceAuthAddress,
@@ -417,7 +439,7 @@
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
-							// Reload Messages
+							// Reload comments
 							if (refreshComments) {
 								if (referenceAuthAddress) {
 									getCommentsWithAuthaddress(app.referenceID, referenceAuthAddress, referenceType);
@@ -438,6 +460,67 @@
 			});
 		}
 
+		// Overwrite answer of given id with new body from given textarea
+		function editComment(commentID, bodyTextarea, commentAuthaddress, referenceType, referenceAuthAddress = null) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// Check that the current user is equal to the question's user.
+			if (app.currentAuthaddress != commentAuthaddress) {
+				console.log("You cannot edit this. This question doesn't belong to you!");
+				zeroframe.cmd("wrapperNotification", ["info", "You cannot edit this. This question doesn't belong to you!"]);
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (!data) {
+					console.log("ERROR: No data for the current user. Cannot edit comment that doesn't exist.");
+					return;
+				}
+				data = JSON.parse(data);
+
+				for (var i = 0; i < data.comments.length; i++) {
+					var comment = data.comments[i];
+					if (comment.comment_id == commentID) {
+						comment.body = bodyTextarea.value;
+						// TODO: Add date_edited column to comments (and questions, and answers)
+					}
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// Refresh Comments
+							if (referenceAuthAddress) {
+								getCommentsWithAuthaddress(app.referenceID, referenceAuthAddress, referenceType);
+							} else {
+								getComments(app.referenceID, referenceType);
+							}
+							getUsersComments(); // WOW! This code is TERRIBLE! TODO: Make this code not terrible!
+							getAllComments();
+
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
+		}
 
 		// Get list of all questions from database.
 		function getQuestionsList(f = null) {
@@ -517,7 +600,8 @@
 
 				// Get list of questions from current user
 				var usersQuestions = app.questionsList.filter((question) => {
-					return question.cert_user_id == zeroframe.site_info.cert_user_id;
+					//return question.cert_user_id == zeroframe.site_info.cert_user_id;
+					return question.directory.replace(/users\//, '').replace(/\//g, '') == zeroframe.site_info.auth_address;
 				});
 				// Get current user's last question's id and increment by 1
 				var questionID = 1;
@@ -660,7 +744,8 @@
 
 				// Get list of answers from current user
 				var usersAnswers = app.allAnswersList.filter((answer) => {
-					return answer.cert_user_id == zeroframe.site_info.cert_user_id;
+					//return answer.cert_user_id == zeroframe.site_info.cert_user_id;
+					return answer.directory.replace(/users\//, '').replace(/\//g, '') == zeroframe.site_info.auth_address;
 				});
 				// Get current user's last answer's id and increment by 1
 				var answerID = 1;
@@ -699,8 +784,8 @@
 			});
 		}
 
-		// Overwrite answer of given id with new body from textarea with id of 'editAnswerBody{id}'
-		function editAnswer(referenceID, bodyTextarea, answerAuthaddress) {
+		// Overwrite answer of given id with new body from given textarea
+		function editAnswer(answerID, bodyTextarea, answerAuthaddress) {
 			// No account selected -> Display error
 			if (!zeroframe.site_info.cert_user_id) {
 				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
@@ -709,7 +794,7 @@
 			}
 
 			// Check that the current user is equal to the question's user.
-			if (app.currentuser != app.answerAuthaddress) {
+			if (app.currentAuthaddress != answerAuthaddress) {
 				console.log("You cannot edit this. This question doesn't belong to you!");
 				zeroframe.cmd("wrapperNotification", ["info", "You cannot edit this. This question doesn't belong to you!"]);
 				return;
@@ -728,9 +813,9 @@
 
 				for (var i = 0; i < data.answers.length; i++) {
 					var answer = data.answers[i];
-					if (answer.answer_id == referenceID) {
+					if (answer.answer_id == answerID) {
 						answer.body = bodyTextarea.value;
-						// TODO: Add date_edited column to answers (and questions)
+						// TODO: Add date_edited column to answers (and questions, and comments)
 					}
 				}
 

@@ -114,6 +114,7 @@
 					this.site_info = site_info;
 					fillInCurrentUser();
 					app.currentAuthaddress = this.site_info.auth_address;
+					getBlogPosts(true);
 				});
 				this.cmd("wrapperNotification", ["info", "This is the DEV version of the zite."]);
 			}

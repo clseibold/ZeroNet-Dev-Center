@@ -93,25 +93,75 @@ Vue.component('tutorial-list-item', {
 		<hr></div>'
 });
 
-Vue.component('tutorial-comment', {
-	props: ['username', 'body', 'date'],
+Vue.component('tutorial-comment', { // TODO: Change this to just comment
+	props: ['currentAuthaddress', 'commentId', 'username', 'directory', 'body', 'date', 'referenceType', 'referenceAuthaddress'],
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
 		},
 		getPostDate: function() {
 			return "― " + moment(this.date).fromNow();
+		},
+		getAuthAddress: function() {
+			return this.directory.replace(/users\//, '').replace(/\//, '');
+		},
+		isEditLinkShown: function() {
+			if (!this.currentAuthaddress) return false;
+			return this.currentAuthaddress == this.getAuthAddress;
+		},
+		getTextareaId: function() {
+			return "editCommentBody" + this.commentId + "From" + this.getAuthAddress;
+		},
+		getTextArea: function() {
+			return document.getElementById(this.getTextareaId);
+		}
+	},
+	methods: {
+		editComment: function() {
+			if (!this.showEdit) { // Clicked Edit
+				this.showEdit = true;
+				this.editText = "Save";
+				// TODO: Instead of expanding on onfocus, do it when the textarea is shown.
+			} else { // Clicked Save
+				//var textarea = document.getElementById(this.getTextareaId);
+				this.showEdit = false;
+				this.editText = "Edit";
+				editComment(this.commentId, this.getTextArea, this.getAuthAddress, this.referenceType, this.referenceAuthaddress);
+			}
+		},
+		dontShowEdit: function() {
+			return !this.showEdit;
+		},
+		showCancel: function() {
+			return this.isEditLinkShown && this.showEdit;
+		},
+		cancelEdit: function() {
+			this.showEdit = false;
+			this.editText = "Edit";
+			this.getTextArea.value = this.body;
+			expandTextarea(this.getTextArea);
+		}
+	},
+	data: function() {
+		return {
+			showEdit: false,
+			editText: 'Edit'
 		}
 	},
 	template: '\
 		<div style="padding-top: 20px; padding-bottom: 20px; border-top: 1px solid #EBEBEB;">\
-			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span><br>\
-			<div style="margin-top: 3px;" v-html="getBody" class="custom-content is-small"></div>\
+			<span style="color: blue;">{{ username }} <small style="color: #6a6a6a;" v-html="getPostDate"></small></span>\
+			<small><a v-show="isEditLinkShown" v-on:click.prevent="editComment">{{ editText }}</a>\
+	        <a v-show="showCancel()" v-on:click.prevent="cancelEdit">Cancel</a></small><br>\
+			<div style="margin-top: 3px;" v-html="getBody" class="custom-content is-small" v-show="dontShowEdit()"></div>\
+			<div style="margin-top: 3px;" v-if="showEdit" class="custom-content">\
+				<textarea v-bind:id="getTextareaId" onfocus="expandTextarea(this);" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; padding: 7px;" style="height: auto;">{{ body }}</textarea>\
+			</div>\
 		</div>'
 });
 
 Vue.component('question-answer', {
-	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'comments'],
+	props: ['currentAuthaddress', 'referenceid', 'username', 'directory', 'body', 'date', 'comments', 'questionAuthaddress'],
 	computed: {
 		getBody: function() {
 			return md.render(this.body);
@@ -132,7 +182,7 @@ Vue.component('question-answer', {
 			return this.currentAuthaddress == this.getAuthAddress;
 		},
 		getTextareaId: function() {
-			return "editAnswerBody" + this.referenceid;
+			return "editAnswerBody" + this.referenceid + "From" + this.getAuthAddress;
 		},
 		getTextArea: function() {
 			return document.getElementById(this.getTextareaId);
@@ -203,7 +253,7 @@ Vue.component('question-answer', {
 				<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 				<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
       		</div>\
-      		<tutorial-comment v-for="comment in getComments" :key="comment.id" :username="comment.cert_user_id" :body="comment.body" :date="comment.date_added">\
+      		<tutorial-comment v-for="comment in getComments" :key="comment.comment_id" :current-authaddress="currentAuthaddress" :comment-id="comment.comment_id" :username="comment.cert_user_id" :body="comment.body" :directory="comment.directory" :date="comment.date_added" reference-type="q" :reference-authaddress="questionAuthaddress">\
 			</tutorial-comment>\
 		</div>'
 });
