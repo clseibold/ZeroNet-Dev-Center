@@ -231,6 +231,25 @@ var Questions = {
 		},
 		getPostDate: function(date) {
 			return "― " + moment(date).fromNow();
+		},
+		tagClick: function(tag) {
+			//Router.navigate('questions/tags/' + tag);
+			if (this.searchInput[this.searchInput.length - 1] != ' ' && this.searchInput.length != 0){
+				this.searchInput += ' ' + tag;
+			} else {
+				this.searchInput += tag;
+			}
+		},
+		userIdClick: function(userId) {
+			if (this.searchInput[this.searchInput.length - 1] != ' ' && this.searchInput.length != 0){
+				this.searchInput += ' ' + userId;
+			} else {
+				this.searchInput += userId;
+			}
+		},
+		getTagNames: function(tags) {
+			if (!tags || app.allTags.length == 0) return [];
+			return parseTagIds(tags);
 		}
 	},
 	computed: {
@@ -281,7 +300,10 @@ var Questions = {
 						<route-link to="questions/new" class="button is-primary">Create New Question</route-link>\
 						<hr>\
 						<div v-for="question in getQuestionsList">\
-							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
+							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a v-on:click.prevent="userIdClick(question.cert_user_id)" style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
+							<div class="tags" style="margin-top: 10px; display: block;">\
+								<a v-for="tag in getTagNames(question.tags)" :href="\'questions/tags/\' + tag" v-on:click.prevent="tagClick(tag)" class="tag">{{ tag }}</a>\
+							</div>\
 							<hr>\
 						</div>\
 					</div>\
