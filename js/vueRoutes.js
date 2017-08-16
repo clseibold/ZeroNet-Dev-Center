@@ -383,8 +383,8 @@ var QuestionsCertuseridId = {
 		app.comments = [];
 		app.answersList = [];
 		app.allComments = [];
+		getQuestionsList();
 		getQuestion(this.params.id, this.params.certuserid, true, false, function() {
-			getQuestionsList();
 			getAllComments(fillInCurrentUser);
 		});
 	},
@@ -438,11 +438,15 @@ var QuestionsCertuseridId = {
 		},
 		getRelatedQuestionsList: function() {
 			var tagNames = this.getCurrentTagNames;
-			if (!tagNames || !this.questionTitle || !this.questionsList) return [];
+			if (!tagNames || !this.questionTitle || !this.referenceId || !this.questionAuthaddress) return [];
+			if (!this.questionsList) {
+				//getQuestionsList();
+				return [];
+			}
 			var that = this;
 			var list = this.questionsList.filter(function(question) {
 				// Don't show itself
-				if (question.question_id == this.referenceid && question.directory.replace(/users\//, '').replace(/\//g, '') == this.questionAuthaddress) {
+				if (question.question_id == that.referenceId && question.directory.replace(/users\//, '').replace(/\//g, '') == that.questionAuthaddress) {
 					return false;
 				}
 
@@ -508,6 +512,7 @@ var QuestionsCertuseridId = {
 						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
 						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :vote-amount="answer.vote_amount" :current-uservoted="answer.current_user_voted" :date="answer.date_added" :comments="allComments" :questionid="referenceId" :question-authaddress="questionAuthaddress" :solutionid="solutionid" :solution-authaddress="solutionAuthaddress">\
 						</question-answer>\
+						<div v-show="answersList.length == 0">There are no answers! <a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Create An Answer</a></div>\
 						<hr>\
 						<h2>Related Questions</h2>\
 						<div v-for="question in getRelatedQuestionsList">\
