@@ -240,14 +240,18 @@
 						document.getElementById("postSlug").value = "";
 						document.getElementById("postBody").value = "";
 
-						// Sign the changed file in our user's directory
-						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => { // TODO: How to correctly sign this?
-							// Reload Blog Posts
-							getBlogPosts(true);
+						// If private key is stored in users.json file
+						if (zeroframe.site_info.privatekey) {
+							// Sign the changed file in the content.json file
+							zeroframe.cmd("siteSign", ["stored", "content.json"], (res) => { // TODO: How to correctly sign this?
+								console.log(res);
+								// Reload Blog Posts
+								getBlogPosts(true);
 
-							// Publish to other users
-							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
-						});
+								// Publish to other users
+								zeroframe.cmd("sitePublish", ["stored", "content.json"]);
+							});
+						}
 					} else {
 						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
 					}

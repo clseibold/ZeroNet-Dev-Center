@@ -253,6 +253,9 @@ var Questions = {
 		getTagNames: function(tags) {
 			if (!tags || app.allTags.length == 0) return [];
 			return parseTagIds(tags);
+		},
+		isQuestionSolved(question) {
+			return question.solution_id != null && question.solution_auth_address;
 		}
 	},
 	computed: {
@@ -264,6 +267,10 @@ var Questions = {
 				question.order = 0;
 				for (var i = 0; i < searchInputWords.length; i++) {
 					var word = searchInputWords[i].trim().toLowerCase();
+					if ("solved".includes(word) && question.solution_id != null && question.solution_auth_address) {
+						question.order += 3;
+						continue;
+					}
 					if (question.tags && parseTagIds(question.tags.toLowerCase()).join(',').includes(word)) {
 						question.order += 3;
 						continue;
@@ -323,6 +330,7 @@ var Questions = {
 						<div v-for="question in getQuestionsList">\
 							<h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a v-on:click.prevent="userIdClick(question.cert_user_id)" style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
 							<div class="tags" style="margin-top: 10px; margin-bottom: 0px; padding-bottom: 0; display: block;">\
+								<a class="tag is-success" v-if="isQuestionSolved(question)" v-on:click.prevent="tagClick(\'solved\')">Solved</a>\
 								<a v-for="tag in getTagNames(question.tags)" :href="\'questions/tags/\' + tag" v-on:click.prevent="tagClick(tag)" class="tag">{{ tag }}</a>\
 							</div>\
 							<hr>\
