@@ -284,7 +284,7 @@ var QuestionsCertuseridId = {
 		app.comments = [];
 		app.answersList = [];
 		app.allComments = [];
-		getQuestion(this.params.id, this.params.certuserid, false, function() {
+		getQuestion(this.params.id, this.params.certuserid, true, false, function() {
 			getAllComments(fillInCurrentUser);
 		});
 	},
@@ -347,7 +347,7 @@ var QuestionsCertuseridId = {
 						</div>\
 						<hr>\
 						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
-						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :date="answer.date_added" :comments="allComments" :questionid="referenceId" :question-authaddress="questionAuthaddress" :solutionid="solutionid" :solution-authaddress="solutionAuthaddress">\
+						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :vote-amount="answer.vote_amount" :current-uservoted="answer.current_user_voted" :date="answer.date_added" :comments="allComments" :questionid="referenceId" :question-authaddress="questionAuthaddress" :solutionid="solutionid" :solution-authaddress="solutionAuthaddress">\
 						</question-answer>\
 					</div>\
 				</div>\
@@ -367,7 +367,7 @@ var QuestionsCertuseridIdEdit = {
 	},
 	init: function() {
 		setupHero(false, "Questions", "");
-		getQuestion(this.params.id, this.params.certuserid, true, fillInCurrentUser);
+		getQuestion(this.params.id, this.params.certuserid, false, true, fillInCurrentUser);
 	},
 	methods: {
 		editClick: function() {
@@ -399,7 +399,7 @@ var QuestionsCertuseridIdAnswer = {
 		setupHero(false, "Questions", "");
 		app.allAnswersList = [];
 		getAllAnswers();
-		getQuestion(this.params.id, this.params.certuserid, false, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
+		getQuestion(this.params.id, this.params.certuserid, false, false, fillInCurrentUser); // NOTE that this will set the app.questionAuthaddress, which is used by the postAnswer() function
 	},
 	template: '\
 		<div>\

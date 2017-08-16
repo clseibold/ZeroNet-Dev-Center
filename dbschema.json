@@ -15,7 +15,7 @@
             "to_table": ["blogposts"]
         },
         "users/.+/data.json": {
-            "to_table": [ "comments", "questions", "answers" ]
+            "to_table": [ "comments", "questions", "answers", "answer_votes" ]
         },
         "users/.+/content.json": {
             "to_json_table": ["cert_user_id"],
@@ -97,6 +97,17 @@
             ],
             "indexes": ["CREATE UNIQUE INDEX answer_key ON answers(json_id, answer_id)"],
             "schema_changed": 18
+        },
+        "answer_votes": {
+            "cols": [
+                ["answer_vote_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+                ["answer_id", "INTEGER"],
+                ["answer_auth_address", "TEXT"],
+                ["vote", "INTEGER"],
+                ["json_id", "INTEGER REFERENCES json (json_id)"]
+            ],
+            "indexes": ["CREATE UNIQUE INDEX answer_votekey ON answer_votes(json_id, answer_vote_id)"],
+            "schema_changed": 10
         }
     }
 }

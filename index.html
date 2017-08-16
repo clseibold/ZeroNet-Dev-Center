@@ -135,6 +135,10 @@
 					app.currentAuthaddress = this.site_info.auth_address;
 					fillInCurrentUser();
 					getUsersComments();
+					if (Router.currentRoute == "questions/:certuserid/:id") {
+						// When user changes, refresh answers list (but don't sort answers)
+						getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
+					}
 					if (message.params.event[0] == "file_done") {
 						checkTutorialsList(true);
 						if (Router.currentRoute == "tutorials/:slug") {
@@ -142,7 +146,8 @@
 						} else if (Router.currentRoute == "questions") {
 							getQuestionsList();
 						} else if (Router.currentRoute == "questions/:certuserid/:id") {
-							getQuestion(app.referenceID, app.questionAuthaddress);
+							getQuestion(app.referenceID, app.questionAuthaddress, false);
+							//getVotesForAnswersList();
 							//getCommentsWithAuthaddress(app.referenceID, app.questionAuthaddress, "q");
 							//getAnswersList(app.referenceID, app.questionAuthaddress);
 							//getAllComments();
@@ -544,7 +549,8 @@
 		// auth_address matches given auth_address
 		// Set markdown to true if you want app.tutorialContent to be the markdown
 		// instead of the html of the markdown.
-		function getQuestion(id, auth_address, markdown = false, f = null) {
+		function getQuestion(id, auth_address, sortAnswers = true, markdown = false, f = null) {
+			console.log(sortAnswers);
 			if (id && auth_address) {
 				var getQuestion = function(questions) {
 					var question = null;
@@ -569,7 +575,8 @@
 						app.dateAdded = question.date_added;
 
 						getCommentsWithAuthaddress(id, auth_address, "q");
-						getAnswersList(id, auth_address, app.solutionid, app.solutionAuthaddress, f);
+						console.log(sortAnswers);
+						getAnswersList(id, auth_address, app.solutionid, app.solutionAuthaddress, sortAnswers, f);
 					} else {
 						app.tutorialContent = "";
 						app.heroTitle = 'Not Found';
@@ -765,26 +772,154 @@
 
 		// Get list of all answers that reference a question with given id from
 		// a data.json file of a user whose auth_address matches the given auth_address.
-		function getAnswersList(id, auth_address, solutionID, solutionAuthaddress, f = null) {
-			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + id + ' AND question_auth_address="' + auth_address + '" ORDER BY date_added DESC'], (answers) => {
-				// Go through all answers to find solution
-				var solutionIndex = null;
-				for (var i = 0; i < answers.length; i++) {
-					if (answers[i].answer_id == solutionID && answers[i].directory.replace(/users\//, '').replace(/\//, '') == solutionAuthaddress) {
-						app.answersList.push(answers[i]); // Put solution first
-						solutionIndex = i;
-						break; // Don't go through rest of array if we found the solution - there can only be one solution
+		function getAnswersList(question_id, question_auth_address, solutionID, solutionAuthaddress, sortAnswers = true, f = null) {
+			zeroframe.cmd('dbQuery', ['SELECT * FROM answers LEFT JOIN json USING (json_id) WHERE question_id=' + question_id + ' AND question_auth_address="' + question_auth_address + '" ORDER BY date_added DESC'], (answers) => {
+				// As long as a solution exists, go through all answers to find the solution from the array
+				//app.answersList = [];
+				var list = [];
+				if (solutionID && solutionAuthaddress) {
+					var solutionIndex = null;
+					for (var i = 0; i < answers.length; i++) {
+						if (answers[i].answer_id == solutionID && answers[i].directory.replace(/users\//, '').replace(/\//, '') == solutionAuthaddress) {
+							list.push(answers[i]); // Put solution first
+							solutionIndex = i;
+							break; // Don't go through rest of array if we found the solution - there can only be one solution
+						}
+					}
+					// If there is a solution
+					if (solutionIndex != null) {
+						// Remove solution from answers array
+						answers.splice(solutionIndex, 1); // Removes 1 element starting at the given index
 					}
 				}
-				// If there is a solution
-				if (solutionIndex != null) {
-					// Remove solution from answers array
-					console.log(answers);
-					answers.splice(solutionIndex, 1); // Removes 1 element starting at the given index
-					console.log(answers);
+
+				list = list.concat(answers);
+				getVotesForAnswersList(list, function(newList) {
+					// Sort list by votes (disregarding the solution)
+					//if (sortAnswers) {
+						newList.sort(function(a, b) { // TODO: Don't resort when not on first zite load
+							if (a.answer_id == solutionID && a.directory.replace(/users\//, '').replace(/\//g, '') == solutionAuthaddress) return false;
+							return b.vote_amount - a.vote_amount;
+						});
+					//} else {
+					//}
+					// TODO: Make where it doesn't sort answers unless on first zite load
+					// which means I need to somehow keep the old sorting, since everytime the
+					// answerslist is updated, everything gets sorted by date (when not sorted by votes)
+					app.answersList = newList;
+					if (f && typeof f == 'function') f();
+				});
+			});
+		}
+
+		// Get the votes for the answers list
+		// This is called every time you get the answers list
+		// AND every time the current user changes
+		function getVotesForAnswersList(answersList, f = null) {
+			for (var i = 0; i < answersList.length; i++) {
+				var answer = answersList[i];
+				var auth_address = answer.directory.replace(/users\//, '').replace(/\//g, '');
+				getVotesForAnswer(answer.answer_id, auth_address, function(vote_amount, currentUserVoted, i) {
+					answersList[i]["vote_amount"] = vote_amount;
+					answersList[i]["current_user_voted"] = currentUserVoted;
+					
+					if (i == answersList.length - 1 && f && typeof f == 'function') f(answersList);
+				}, i);
+			}
+		}
+
+		// Get the votes for the given answer
+		// Calls passed in function, giving it the vote amount and whether the current user has voted
+		function getVotesForAnswer(answer_id, answer_auth_address, f, outer_i = null) {
+			zeroframe.cmd('dbQuery', ['SELECT * FROM answer_votes LEFT JOIN json USING (json_id) WHERE answer_id=' + answer_id + ' AND answer_auth_address="' + answer_auth_address + '"'], (votes) => {
+				var vote_amount = 0;
+				var currentUserVoted = false;
+				for (var i = 0; i < votes.length; i++) {
+					var auth_address = votes[i].directory.replace(/users\//, '').replace(/\//g, '');
+					// Don't let there be two different vote's from same user
+					if (currentUserVoted && app.currentAuthaddress == auth_address) continue;
+
+					if (votes[i].vote > 0) vote_amount++; // For upvotes
+					if (votes[i].vote < 0) vote_amount--; // For downvotes
+					if (!currentUserVoted && app.currentAuthaddress == auth_address) {
+						if (votes[i].vote == 0) {
+							// TODO/NOTE: User has vote in json file, but it is 0, so return false so the voted arrows don't change color
+							currentUserVoted = false;
+							break;
+						} else {
+							currentUserVoted = true;
+						}
+					}
+					// if vote == 0, no vote has happened
 				}
-				app.answersList = app.answersList.concat(answers);
-				if (f && typeof f == 'function') f();
+				if (f && typeof f == 'function') f(vote_amount, currentUserVoted, outer_i);
+			});
+		}
+
+		function voteForAnswer(answer_id, answer_auth_address, downvote = false) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (data)
+					data = JSON.parse(data);
+				else
+					data = { "comments": [], "questions": [], "answers": [] }
+
+				var alreadyVoted = false;
+				var voteIndex = null;
+				for (var i = 0; i < data.answer_votes.length; i++) {
+					if (data.answer_votes[i].answer_id == answer_id && data.answer_votes[i].answer_auth_address == answer_auth_address) {
+						alreadyVoted = true;
+						voteIndex = i;
+						break;
+					}
+				}
+
+				if (alreadyVoted) {
+					if (data.answer_votes[voteIndex].vote < 0 && downvote) {
+						data.answer_votes[voteIndex].vote = 0;
+					} else if (data.answer_votes[voteIndex].vote > 0 && !downvote) {
+						data.answer_votes[voteIndex].vote = 0;
+					} else if (data.answer_votes[voteIndex].vote >= 0 && downvote) {
+						data.answer_votes[voteIndex].vote = -1;
+					} else if (data.answer_votes[voteIndex].vote <= 0 && !downvote) {
+						data.answer_votes[voteIndex].vote = 1;
+					}
+				} else {
+					data.answer_votes.push({
+						"answer_id": answer_id,
+						"answer_auth_address": answer_auth_address,
+						"vote": downvote ? -1 : 1,
+					});
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						// Sign the changed file in our user's directory
+						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+							// Refresh answers
+							getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
+
+							// Publish to other users
+							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+						});
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
 			});
 		}
 
@@ -905,7 +1040,7 @@
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
 							// Refresh answers
-							getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress);
+							getAnswersList(app.referenceID, app.questionAuthaddress, app.solutionid, app.solutionAuthaddress, false);
 
 							// Publish to other users
 							zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
