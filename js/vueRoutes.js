@@ -377,13 +377,14 @@ var QuestionsNew = {
 }
 
 var QuestionsCertuseridId = {
-	props: ['currentAuthaddress', 'tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'tags', 'answersList', 'allComments', 'dateAdded', 'solutionid', 'solutionAuthaddress'],
+	props: ['currentAuthaddress', 'tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'tags', 'answersList', 'allComments', 'dateAdded', 'solutionid', 'solutionAuthaddress', 'questionsList'],
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.comments = [];
 		app.answersList = [];
 		app.allComments = [];
 		getQuestion(this.params.id, this.params.certuserid, true, false, function() {
+			getQuestionsList();
 			getAllComments(fillInCurrentUser);
 		});
 	},
@@ -408,16 +409,60 @@ var QuestionsCertuseridId = {
 		},
 		clickTag: function(tagName) {
 			Router.navigate('questions/tags/' + tagName);
-		}
+		},
+		getTagNames: function(tags) {
+			if (!tags || app.allTags.length == 0) return [];
+			return parseTagIds(tags);
+		},
+		questionClick: function(question) {
+			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
+		},
+		getQuestionHref: function(question) {
+			return "./?/questions/" + this.getQuestionAuthAddress(question) + '/' + question.question_id;
+		},
+		getQuestionAuthAddress: function(question) {
+			return question.directory.replace(/users\//, '').replace(/\//g, '');
+		},
+		getPostDate: function(date) {
+			return "― " + moment(date).fromNow();
+		},
 	},
 	computed: {
 		isEditLinkShown: function() {
 			if (!this.currentAuthaddress) return false;
 			return this.currentAuthaddress == this.questionAuthaddress;
 		},
-		getTagNames: function() {
+		getCurrentTagNames: function() {
 			if (!this.tags || app.allTags.length == 0) return [];
 			return parseTagIds(this.tags);
+		},
+		getRelatedQuestionsList: function() {
+			var tagNames = this.getCurrentTagNames;
+			if (!tagNames || !this.questionTitle || !this.questionsList) return [];
+			var that = this;
+			var list = this.questionsList.filter(function(question) {
+				var include = false;
+				question.order = 0;
+				for (var i = 0; i < tagNames.length; i++) {
+					if (!question.tags) break;
+					if (parseTagIds(question.tags).includes(tagNames[i])) {
+						question.order += 1;
+						include = true;
+					}
+				}
+				var titleSplit = that.questionTitle.toLowerCase().split(' ');
+				for (var i = 0; i < titleSplit.length; i++) {
+					if (question.title.toLowerCase().includes(titleSplit[i])) {
+						question.order += 1;
+						include = true;
+					}
+				}
+				return include;
+			});
+			list.sort(function(a, b) {
+				return b.order - a.order;
+			});
+			return list.slice(0, 4);
 		}
 	},
 	data: function() {
@@ -458,6 +503,15 @@ var QuestionsCertuseridId = {
 						<h2>Answers <small style="margin-left: 5px; font-size: 0.6em;"><a v-bind:href="postAnswerHref()" v-on:click.prevent="postAnswerClick">Post An Answer</a></small></h2>\
 						<question-answer v-for="answer in answersList" :key="answer.id" :current-authaddress="currentAuthaddress" :referenceid="answer.answer_id" :username="answer.cert_user_id" :directory="answer.directory" :body="answer.body" :vote-amount="answer.vote_amount" :current-uservoted="answer.current_user_voted" :date="answer.date_added" :comments="allComments" :questionid="referenceId" :question-authaddress="questionAuthaddress" :solutionid="solutionid" :solution-authaddress="solutionAuthaddress">\
 						</question-answer>\
+						<hr>\
+						<h2>Related Questions</h2>\
+						<div v-for="question in getRelatedQuestionsList">\
+							<h4 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h4><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small>\
+							<div class="tags" style="margin-top: 10px; margin-bottom: 0px; padding-bottom: 0; display: block;">\
+								<a v-for="tag in getTagNames(question.tags)" :href="\'questions/tags/\' + tag" class="tag">{{ tag }}</a>\
+							</div>\
+							<hr>\
+						</div>\
 					</div>\
 				</div>\
 			</section>\
