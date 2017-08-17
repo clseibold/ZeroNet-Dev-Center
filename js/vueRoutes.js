@@ -402,6 +402,7 @@ var QuestionsCertuseridId = {
 		app.questionTitle = "";
 		app.questionSubtitle = "";
 		app.questionAuthaddress = "";
+		app.tutorialContent = "";
 		app.tags = [];
 		app.dateAdded = null;
 		app.comments = [];
