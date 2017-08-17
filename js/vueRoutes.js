@@ -335,6 +335,9 @@ var Questions = {
 							</div>\
 							<hr>\
 						</div>\
+						<div class="notification">\
+							<strong>NOTE:</strong> Do <em>NOT</em> manually delete posts YET. There is a bug that will mess up the comments/answers that referenced that post when a new post is created (because the new post could take the id of the post you deleted if you happened to delete your latest post). There is an <a href="https://github.com/krixano/ZeroNet-Dev-Center/issues/16">issue on GitHub</a> already and this issue will be fixed soon.\
+						</div>\
 					</div>\
 				</div>\
 			</section>\
@@ -377,6 +380,9 @@ var QuestionsNew = {
 						<h3>Common Tags</h3>\
 						<div class="tags">\
 							<a v-for="tag in app.allTags" v-on:click="addTag(tag.name)" class="tag">{{tag.name}}</a>\
+						</div>\
+						<div class="notification">\
+							<strong>NOTE:</strong> Do <em>NOT</em> manually delete posts YET. There is a bug that will mess up the comments/answers that referenced that post when a new post is created (because the new post could take the id of the post you deleted if you happened to delete your latest post). There is an <a href="https://github.com/krixano/ZeroNet-Dev-Center/issues/16">issue on GitHub</a> already and this issue will be fixed soon.\
 						</div>\
 					</div>\
 				</div>\
