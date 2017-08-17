@@ -254,7 +254,7 @@ var Questions = {
 			}
 		},
 		getTagNames: function(tags) {
-			if (!tags || app.allTags.length == 0) return [];
+			if (!tags || app.allTags.length == 0) return null;
 			return parseTagIds(tags);
 		},
 		isQuestionSolved(question) {
@@ -398,6 +398,7 @@ var QuestionsCertuseridId = {
 	init: function() {
 		setupHero(false, "Questions", "");
 		app.referenceId = null;
+		app.questionsList = [];
 		app.questionTitle = "";
 		app.questionSubtitle = "";
 		app.questionAuthaddress = "";
@@ -434,7 +435,7 @@ var QuestionsCertuseridId = {
 			Router.navigate('questions/tags/' + tagName);
 		},
 		getTagNames: function(tags) {
-			if (!tags || app.allTags.length == 0) return [];
+			if (!tags || app.allTags.length == 0) return null;
 			return parseTagIds(tags);
 		},
 		questionClick: function(question) {
@@ -456,15 +457,15 @@ var QuestionsCertuseridId = {
 			return this.currentAuthaddress == this.questionAuthaddress;
 		},
 		getCurrentTagNames: function() {
-			if (!this.tags || app.allTags.length == 0) return [];
+			if (!this.tags || app.allTags.length == 0) return null;
 			return parseTagIds(this.tags);
 		},
 		getRelatedQuestionsList: function() {
 			var tagNames = this.getCurrentTagNames;
-			if (!tagNames || !this.questionTitle || !this.referenceId || !this.questionAuthaddress) return [];
+			if (!tagNames || !this.questionTitle || !this.referenceId || !this.questionAuthaddress) return null;
 			if (!this.questionsList) {
 				//getQuestionsList();
-				return [];
+				return null;
 			}
 			var that = this;
 			var list = this.questionsList.filter(function(question) {
@@ -510,7 +511,7 @@ var QuestionsCertuseridId = {
 						<div class="box">\
 							<div style="margin-bottom: 5px;"><span class="title is-4" style="margin-right: 20px;">{{ questionTitle }}</span> <span class="subtitle is-6">{{ questionSubtitle }} <span v-html="getPostDate()"></span></span></div>\
 							<div class="custom-content" v-html="tutorialContent"></div>\
-							<div class="tags" v-if="getCurrentTagNames.length > 0">\
+							<div class="tags" v-if="getCurrentTagNames && tags">\
 								<a v-for="tag in getCurrentTagNames" :href="\'./?/\' + tag" v-on:click.prevent="clickTag(tag)" class="tag">{{tag}}</a>\
 							</div>\
 							<nav class="level is-mobile">\

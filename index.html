@@ -123,7 +123,6 @@
 					fillInCurrentUser();
 					app.currentAuthaddress = this.site_info.auth_address;
 					getUsersComments();
-					console.log(this.site_info);
 				});
 				this.cmd("wrapperNotification", ["info", "This is the DEV version of the zite."]);
 			}
@@ -258,6 +257,7 @@
 		// If not an integer, it will use it as a name of a custom tag.
 		// Returns array of tag names
 		function parseTagIds(tags) {
+			if (!tags || tags.length == 0) return null;
 			// Make sure allTags is not empty
 			var tagIds = tags.split(',').map(function(t) {
 				var integer = parseInt(t);
@@ -273,6 +273,7 @@
 		// Parses tags from string of tag names delimited by commas
 		// Returns arrays of tag ids
 		function parseTagNames(tags) {
+			if (!tags || tags.length == 0) return null;
 			var tagNames = tags.split(',');
 			var tagIds = tagNames.map(function(name) {
 				return tagNameToId(name);
@@ -290,7 +291,7 @@
 
 		function getBlogPosts(f = null, refresh = false) {
 			if (app.blogPosts.length == 0 || refresh) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM blogposts'], (posts) => {
+				zeroframe.cmd('dbQuery', ['SELECT * FROM blogposts ORDER BY date_added DESC'], (posts) => {
 					app.blogPosts = posts;
 					if (f && typeof f == 'function') f();
 				});
