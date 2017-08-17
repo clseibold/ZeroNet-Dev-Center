@@ -397,6 +397,12 @@ var QuestionsCertuseridId = {
 	props: ['currentAuthaddress', 'tutorialContent', 'referenceId', 'questionTitle', 'questionSubtitle', 'questionComments', 'questionAuthaddress', 'tags', 'answersList', 'allComments', 'dateAdded', 'solutionid', 'solutionAuthaddress', 'questionsList'],
 	init: function() {
 		setupHero(false, "Questions", "");
+		app.referenceId = null;
+		app.questionTitle = "";
+		app.questionSubtitle = "";
+		app.questionAuthaddress = "";
+		app.tags = [];
+		app.dateAdded = null;
 		app.comments = [];
 		app.answersList = [];
 		app.allComments = [];
