@@ -188,7 +188,6 @@ var BlogSlug = {
 	},
 	mounted: function() {
 		zeroframe.cmd("feedListFollow", [], (followList) => {
-			console.log(followList);
 			if (followList["Blogcomments"]) {
 				this.buttonText = "Following";
 			} else {
@@ -407,7 +406,7 @@ var Questions = {
 		},
 		followQuestionAnswers: function() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
-				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id)";
+				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id AND answers.question_auth_address = REPLACE(questions.directory, 'users/', ''))";
 				var params;
 				var newList = followList;
 				if (followList["QuestionAnswers"]) {
@@ -441,7 +440,6 @@ var Questions = {
 		},
 		toggleStrictness: function() {
 			this.isSearchStrict = !this.isSearchStrict;
-			console.log(this.isSearchStrict);
 		}
 	},
 	computed: {
