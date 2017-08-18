@@ -250,13 +250,17 @@
 		}
 
 		function saveUsersKeyValueData(innerdata = null, signAndPublish = true) {
+			if (!app.userKeyValueData) {
+				console.log("Error: No user's keyvalue data!");
+				return;
+			}
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
 			if (!innerdata) {
-				// No account selected -> Display error
-				if (!zeroframe.site_info.cert_user_id) {
-					zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
-					zeroframe.selectUser();
-					return;
-				}
 
 				// This is the data file path
 				var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
