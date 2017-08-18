@@ -125,6 +125,7 @@
         }
     },
     "feeds": {
-        "Blogposts": "SELECT blogposts.post_id AS event_uri, 'post' AS type, blogposts.date_added AS date_added, blogposts.title AS title, blogposts.body AS body, '?/blog/' || blogposts.slug AS url FROM blogposts LEFT JOIN json USING (json_id)"
+        "Blogposts": "SELECT blogposts.post_id AS event_uri, 'post' AS type, blogposts.date_added AS date_added, blogposts.title AS title, blogposts.body AS body, '?/blog/' || blogposts.slug AS url FROM blogposts LEFT JOIN json USING (json_id)",
+        "Blogcomments": "SELECT comments.comment_id AS event_uri, 'comment' AS type, comments.date_added AS date_added, blogposts.title AS title, json.cert_user_id || ': ' || comments.body AS body, '?/blog/' || blogposts.slug AS url FROM comments LEFT JOIN json ON (comments.json_id = json.json_id) LEFT JOIN blogposts ON (comments.reference_id = blogposts.post_id) WHERE reference_type='b'"
     }
 }
