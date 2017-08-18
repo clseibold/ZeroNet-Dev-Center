@@ -550,7 +550,7 @@
 					"body": document.getElementById("comment").value,
 					"date_added": Date.now()
 				});
-				app.userKeyValueData["next_question_id"]++;
+				app.userKeyValueData["next_comment_id"]++;
 				saveUsersKeyValueData(data, false);
 
 				// Encode data array to utf8 json text
@@ -1081,7 +1081,7 @@
 					"body": document.getElementById("answerBody").value,
 					"date_added": Date.now()
 				});
-				app.userKeyValueData["next_question_id"]++;
+				app.userKeyValueData["next_answer_id"]++;
 				saveUsersKeyValueData(data, false);
 
 				// Encode data array to utf8 json text
