@@ -163,6 +163,7 @@ var Blog = {
 						    	<button class="button is-primary" v-on:click="followBlog()">{{ buttonText }}</button>\
 						    </div>\
 						</div>\
+						<hr>\
 						<blog-list-item v-for="post in getBlogPosts" :key="post.post_id" :title="post.title" :tags="post.tags" :slug="post.slug" :date-added="post.date_added">\
 						</blog-list-item>\
 					</div>\
@@ -179,6 +180,16 @@ var BlogSlug = {
 		app.tutorialContent = "";
 		getBlogPost(this.params.slug, fillInCurrentUser);
 	},
+	mounted: function() {
+		zeroframe.cmd("feedListFollow", [], (followList) => {
+			console.log(followList);
+			if (followList["Blogcomments"]) {
+				this.buttonText = "Following";
+			} else {
+				this.buttonText = "Follow";
+			}
+		});
+	},
 	computed: {
 		getCommentAmount: function() {
 			return this.tutorialComments.length;
@@ -187,6 +198,26 @@ var BlogSlug = {
 	methods: {
 		innerPostComment: function() {
 			postComment('b', this.referenceId);
+		},
+		followComments: function() {
+			zeroframe.cmd("feedListFollow", [], (followList) => {
+				var query = "SELECT comments.comment_id AS event_uri, 'comment' AS type, comments.date_added AS date_added, blogposts.title AS title, json.cert_user_id || ': ' || comments.body AS body, '?/blog/' || blogposts.slug AS url FROM comments LEFT JOIN json ON (comments.json_id = json.json_id) LEFT JOIN blogposts ON (comments.reference_id = blogposts.post_id) WHERE reference_type='b'";
+				var params;
+				if (followList["Blogcomments"]) {
+					var newList = followList;
+					delete newList["Blogcomments"];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.buttonText = "Follow";
+				} else {
+					zeroframe.cmd("feedFollow", [{"Blogcomments": [query, params]}]);
+					this.buttonText = "Following";
+				}
+			});
+		}
+	},
+	data: function() {
+		return {
+			buttonText: "Follow"
 		}
 	},
 	template: '\
@@ -197,7 +228,7 @@ var BlogSlug = {
 						<div v-html="tutorialContent" class="custom-content"></div>\
 						<hr>\
 						<div style="margin-bottom: 20px;">\
-							<h2>{{getCommentAmount}} Comments</h2>\
+							<h2>{{getCommentAmount}} Comments</h2><button class="button is-link" style="float: right;" v-on:click="followComments()">{{ buttonText }} Blog Comments</button>\
 							<span style="color: blue;" class="currentuser"></span>:<br>\
 							<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; max-width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 							<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
