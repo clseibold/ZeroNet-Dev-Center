@@ -126,15 +126,16 @@ var Blog = {
 	methods: {
 		followBlog() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
+				var query = "SELECT blogposts.post_id AS event_uri, 'post' AS type, blogposts.date_added AS date_added, blogposts.title AS title, blogposts.body AS body, '?/blog/' || blogposts.slug AS url FROM blogposts LEFT JOIN json USING (json_id)";
+				var params = "";
+				var newList = followList;
 				if (followList["Blogposts"]) {
-					var newList = followList;
 					delete newList["Blogposts"];
 					zeroframe.cmd("feedFollow", [newList]);
 					this.buttonText = "Follow";
 				} else {
-					var query = "SELECT blogposts.post_id AS event_uri, 'post' AS type, blogposts.date_added AS date_added, blogposts.title AS title, blogposts.body AS body, '?/blog/' || blogposts.slug AS url FROM blogposts LEFT JOIN json USING (json_id)";
-					var params = "";
-					zeroframe.cmd("feedFollow", [{"Blogposts": [query, params]}]);
+					newList["Blogposts"] = [query, params];
+					zeroframe.cmd("feedFollow", [newList]);
 					this.buttonText = "Following";
 				}
 			});
@@ -203,13 +204,14 @@ var BlogSlug = {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
 				var query = "SELECT comments.comment_id AS event_uri, 'comment' AS type, comments.date_added AS date_added, blogposts.title AS title, json.cert_user_id || ': ' || comments.body AS body, '?/blog/' || blogposts.slug AS url FROM comments LEFT JOIN json ON (comments.json_id = json.json_id) LEFT JOIN blogposts ON (comments.reference_id = blogposts.post_id) WHERE reference_type='b'";
 				var params;
+				var newList = followList;
 				if (followList["Blogcomments"]) {
-					var newList = followList;
 					delete newList["Blogcomments"];
 					zeroframe.cmd("feedFollow", [newList]);
 					this.buttonText = "Follow";
 				} else {
-					zeroframe.cmd("feedFollow", [{"Blogcomments": [query, params]}]);
+					newList["Blogcomments"] = [query, params];
+					zeroframe.cmd("feedFollow", [newList]);
 					this.buttonText = "Following";
 				}
 			});
