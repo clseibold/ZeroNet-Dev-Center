@@ -84,12 +84,86 @@ var Blog = {
 		setupHero(false, "Blog", "");
 		getBlogPosts();
 	},
+	mounted: function() {
+		zeroframe.cmd("feedListFollow", [], (followList) => {
+			if (followList["Blogposts"]) {
+				this.buttonText = "Following";
+			} else {
+				this.buttonText = "Follow";
+			}
+		});
+	},
+	computed: {
+		getBlogPosts: function() {
+			var list = this.blogPosts;
+			if (this.searchInput == "" || !this.searchInput) return list;
+			var searchInputWords = this.searchInput.split(' ');
+			list = list.filter(function(post) {
+				post.order = 0;
+				for (var i = 0; i < searchInputWords.length; i++) {
+					var word = searchInputWords[i].trim().toLowerCase();
+					if (post.tags && parseTagIds(post.tags.toLowerCase()).join(',').includes(word)) {
+						post.order += 3;
+						continue;
+					}
+					if (post.title.toLowerCase().includes(word)) {
+						post.order += 2;
+						continue;
+					}
+					if (post.body.toLowerCase().includes(word)) {
+						continue;
+					}
+					return false;
+				}
+				return true;
+			});
+			list.sort(function(a, b) {
+				return b.order - a.order;
+			});
+			return list;
+		}
+	},
+	methods: {
+		followBlog() {
+			zeroframe.cmd("feedListFollow", [], (followList) => {
+				if (followList["Blogposts"]) {
+					var newList = followList;
+					delete newList["Blogposts"];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.buttonText = "Follow";
+				} else {
+					var query = "SELECT blogposts.post_id AS event_uri, 'post' AS type, blogposts.date_added AS date_added, blogposts.title AS title, blogposts.body AS body, '?/blog/' || blogposts.slug AS url FROM blogposts LEFT JOIN json USING (json_id)";
+					var params = "";
+					zeroframe.cmd("feedFollow", [{"Blogposts": [query, params]}]);
+					this.buttonText = "Following";
+				}
+			});
+		}
+	},
+	data: function() {
+		return {
+			searchInput: "",
+			buttonText: "Follow"
+		}
+	},
 	template: '\
 		<div>\
 			<section class="section">\
 				<div class="columns is-centered">\
 					<div class="column is-three-quarters-tablet is-half-desktop">\
-						<blog-list-item v-for="post in blogPosts" :key="post.post_id" :title="post.title" :tags="post.tags" :slug="post.slug" :date-added="post.date_added">\
+						<div class="field has-addons">\
+							 <p class="control has-icons-left is-expanded">\
+								<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
+								<span class="icon is-small is-left">\
+						    		<i class="fa fa-search"></i>\
+							    </span>\
+							</p>\
+						    <div class="control">\
+						    	<!--<button class="button">+</button>-->\
+						    	<button class="button is-primary" v-on:click="followBlog()">{{ buttonText }}</button>\
+						    </div>\
+						</div>\
+						<blog-list-item v-for="post in getBlogPosts" :key="post.post_id" :title="post.title" :tags="post.tags" :slug="post.slug" :date-added="post.date_added">\
 						</blog-list-item>\
 					</div>\
 				</div>\

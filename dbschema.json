@@ -123,5 +123,8 @@
             "indexes": ["CREATE UNIQUE INDEX answer_votekey ON answer_votes(json_id, answer_vote_id)"],
             "schema_changed": 10
         }
+    },
+    "feeds": {
+        "Blogposts": "SELECT blogposts.post_id AS event_uri, 'post' AS type, blogposts.date_added AS date_added, blogposts.title AS title, blogposts.body AS body, '?/blog/' || blogposts.slug AS url FROM blogposts LEFT JOIN json USING (json_id)"
     }
 }
