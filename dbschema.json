@@ -18,7 +18,8 @@
             "to_table": ["tags"]
         },
         "users/.+/data.json": {
-            "to_table": [ "comments", "questions", "answers", "answer_votes" ]
+            "to_table": [ "comments", "questions", "answers", "answer_votes" ],
+            "to_keyvalue": [ "next_comment_id", "next_question_id", "next_answer_id" ]
         },
         "users/.+/content.json": {
             "to_json_table": ["cert_user_id"],

@@ -86,6 +86,7 @@
 		var app = new Vue({
 			data: {
 				site_info: null,
+				userKeyValueData: {},
 				currentView: null,
 				currentAuthaddress: '',
 				heroIsMedium: true,
@@ -119,6 +120,7 @@
 			onOpenWebsocket () {
 				this.cmd("siteInfo", {}, (site_info) => {
 					this.site_info = site_info;
+					getUsersKeyValueData();
 					getTags(true);
 					fillInCurrentUser();
 					app.currentAuthaddress = this.site_info.auth_address;
@@ -134,6 +136,7 @@
 			onRequest (cmd, message) {
 				if (cmd == "setSiteInfo") {
 					this.site_info = message.params;  // Save site info data to allow access it later
+					getUsersKeyValueData();
 					app.currentAuthaddress = this.site_info.auth_address;
 					fillInCurrentUser();
 					getUsersComments();
@@ -229,6 +232,66 @@
 					}
 				}
 			}
+		}
+
+		function getUsersKeyValueData() {
+			// Not Logged in
+			if (!zeroframe.site_info.cert_user_id) {
+				return;
+			}
+
+			zeroframe.cmd('dbQuery', ['SELECT key, value FROM keyvalue LEFT JOIN json USING (json_id) WHERE cert_user_id="' + zeroframe.site_info.cert_user_id + '" AND directory="users/' + zeroframe.site_info.auth_address + '"'], (rows) => {
+				app.userKeyValueData = {};
+				for (var i = 0; i < rows.length; i++) {
+					var row = rows[i];
+					app.userKeyValueData[row.key] = row.value ? row.value : 1;
+				}
+			});
+		}
+
+		function saveUsersKeyValueData(signAndPublish = true) {
+			// No account selected -> Display error
+			if (!zeroframe.site_info.cert_user_id) {
+				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+				zeroframe.selectUser();
+				return;
+			}
+
+			// This is the data file path
+			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+				if (!data) {
+					console.log("ERROR: No data for the current user. Cannot edit question that doesn't exist.");
+					return;
+				}
+				data = JSON.parse(data);
+
+				for (var property in app.userKeyValueData) {
+					if (app.userKeyValueData.hasOwnProperty(property)) {
+						data[property] = app.userKeyValueData[property];
+					}
+				}
+
+				// Encode data array to utf8 json text
+				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+				// Write file to disk
+				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+					if (res == "ok") {
+						if (signAndPublish) {
+							// Sign the changed file in our user's directory
+							zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+								// Publish to other users
+								zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+							});
+						}
+					} else {
+						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+					}
+				});
+			});
 		}
 
 		// Called from oninput of textarea, passes in 'this' so the function can
@@ -469,20 +532,9 @@
 				else
 					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
-				// Get list of comments from current user
-				var usersComments = app.usersComments.filter((comment) => {
-					//return comment.cert_user_id == zeroframe.site_info.cert_user_id;
-					return comment.directory.replace(/users\//, '').replace(/\//g, '') == zeroframe.site_info.auth_address;
-				});
-				// Get current user's last comment's id and increment by 1
-				var commentID = 1;
-				if (usersComments.length > 0) {
-					commentID += usersComments[0].comment_id;
-				}
-
 				// Add the new message to data
 				data.comments.push({
-					"comment_id": commentID,
+					"comment_id": app.userKeyValueData["next_comment_id"],
 					"reference_id": referenceID,
 					"reference_type": referenceType,
 					"reference_auth_address": referenceAuthAddress,
@@ -498,6 +550,9 @@
 					if (res == "ok") {
 						// Reset the message input
 						document.getElementById("comment").value = "";
+
+						app.userKeyValueData["next_comment_id"]++;
+						saveUsersKeyValueData(false);
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
@@ -672,20 +727,9 @@
 				else
 					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
-				// Get list of questions from current user
-				var usersQuestions = app.questionsList.filter((question) => {
-					//return question.cert_user_id == zeroframe.site_info.cert_user_id;
-					return question.directory.replace(/users\//, '').replace(/\//g, '') == zeroframe.site_info.auth_address;
-				});
-				// Get current user's last question's id and increment by 1
-				var questionID = 1;
-				if (usersQuestions.length > 0) {
-					questionID += usersQuestions[0].question_id;
-				}
-
 				// Add the new question to data
 				data.questions.push({
-					"question_id": questionID,
+					"question_id": app.userKeyValueData["next_question_id"],
 					"title": document.getElementById("questionTitle").value,
 					"body": document.getElementById("questionBody").value,
 					"tags": parseTagNames(document.getElementById("questionTags").value).join(','),
@@ -701,6 +745,10 @@
 						// Reset the question input
 						document.getElementById("questionTitle").value = "";
 						document.getElementById("questionBody").value = "";
+
+						// If successfully written to file, modify and save user's keyvalues
+						app.userKeyValueData["next_question_id"]++;
+						saveUsersKeyValueData(false);
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
@@ -1017,20 +1065,9 @@
 				else
 					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
-				// Get list of answers from current user
-				var usersAnswers = app.allAnswersList.filter((answer) => {
-					//return answer.cert_user_id == zeroframe.site_info.cert_user_id;
-					return answer.directory.replace(/users\//, '').replace(/\//g, '') == zeroframe.site_info.auth_address;
-				});
-				// Get current user's last answer's id and increment by 1
-				var answerID = 1;
-				if (usersAnswers.length > 0) {
-					answerID += usersAnswers[0].answer_id;
-				}
-
 				// Add the new question to data
 				data.answers.push({
-					"answer_id": answerID,
+					"answer_id": app.userKeyValueData["next_answer_id"],
 					"question_id": app.referenceID,
 					"question_auth_address": app.questionAuthaddress,
 					"body": document.getElementById("answerBody").value,
@@ -1045,6 +1082,9 @@
 					if (res == "ok") {
 						// Reset the question input
 						document.getElementById("answerBody").value = "";
+
+						app.userKeyValueData["next_answer_id"]++;
+						saveUsersKeyValueData(false);
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
