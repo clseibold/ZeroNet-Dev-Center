@@ -100,22 +100,27 @@ var Blog = {
 			var searchInputWords = this.searchInput.split(' ');
 			list = list.filter(function(post) {
 				post.order = 0;
+				var matches = 0;
 				for (var i = 0; i < searchInputWords.length; i++) {
 					var word = searchInputWords[i].trim().toLowerCase();
 					if (post.tags && parseTagIds(post.tags.toLowerCase()).join(',').includes(word)) {
 						post.order += 3;
+						matches++;
 						continue;
 					}
 					if (post.title.toLowerCase().includes(word)) {
 						post.order += 2;
+						matches++;
 						continue;
 					}
 					if (post.body.toLowerCase().includes(word)) {
+						matches++;
 						continue;
 					}
-					return false;
+					post.order--;
 				}
-				return true;
+				if (matches == 0) return false;
+				else return true;
 			});
 			list.sort(function(a, b) {
 				return b.order - a.order;
@@ -375,7 +380,7 @@ var Questions = {
 		},
 		followQuestions() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
-				var query = "SELECT questions.question_id AS event_uri, 'article' AS type, questions.date_added AS date_added, questions.title AS title, 'Question by ' || json.cert_user_id || ': ' || questions.body AS body, '?/questions/' || REPLACE(json.directory, 'users/', '') || '/' || questions.question_id AS url FROM questions LEFT JOIN json ON (questions.json_id = json.json_id)";
+				var query = "SELECT questions.question_id AS event_uri, 'article' AS type, questions.date_added AS date_added, 'Question: ' || questions.title AS title, json.cert_user_id || ': ' || questions.body AS body, '?/questions/' || REPLACE(json.directory, 'users/', '') || '/' || questions.question_id AS url FROM questions LEFT JOIN json ON (questions.json_id = json.json_id)";
 				var params;
 				var newList = followList;
 				if (followList["Questions"]) {
@@ -397,37 +402,45 @@ var Questions = {
 			var searchInputWords = this.searchInput.split(' ');
 			list = list.filter(function(question) {
 				question.order = 0;
+				var matches = 0;
 				for (var i = 0; i < searchInputWords.length; i++) {
 					var word = searchInputWords[i].trim().toLowerCase();
 					if ("solved".includes(word) && question.solution_id != null && question.solution_auth_address) {
 						question.order += 3;
+						matches++;
 						continue;
 					}
 					if (question.tags && parseTagIds(question.tags.toLowerCase()).join(',').includes(word)) {
 						question.order += 3;
+						matches++;
 						continue;
 					}
 					if (question.title.toLowerCase().includes(word)) {
 						question.order += 2;
+						matches++;
 						continue;
 					}
 					if (word[0] == "@") {
 						var wordId = word.substring(1, word.length);
 						if (question.cert_user_id.replace(/@.*\.bit/, '').toLowerCase().includes(wordId)) {
 							question.order += 1;
+							matches++;
 							continue;
 						}
 					}
 					if (question.cert_user_id.toLowerCase().includes(word)) {
 						question.order += 1;
+						matches++;
 						continue;
 					}
 					if (question.body.toLowerCase().includes(word)) {
 						continue;
+						matches++;
 					}
-					return false;
+					question.order--;
 				}
-				return true;
+				if (matches == 0) return false;
+				else return true;
 			});
 			list.sort(function(a, b) {
 				return b.order - a.order;
@@ -458,7 +471,8 @@ var Questions = {
 						    	<route-link to="questions/new" class="button is-primary">Create</route-link>\
 						    </div>\
 						</div>\
-						<a v-on:click.prevent="followQuestions()">{{ followButtonText }}</a>\
+						<a class="button is-link" v-on:click.prevent="followQuestions()">{{ followButtonText }}</a>\
+						<a class="button is-link" v-on:click.prevent="">Filter By Tag</a>\
 						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
 						<hr>\
 						<div v-for="question in getQuestionsList">\
