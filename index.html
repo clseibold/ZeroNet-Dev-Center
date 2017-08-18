@@ -249,49 +249,57 @@
 			});
 		}
 
-		function saveUsersKeyValueData(signAndPublish = true) {
-			// No account selected -> Display error
-			if (!zeroframe.site_info.cert_user_id) {
-				zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
-				zeroframe.selectUser();
-				return;
-			}
-
-			// This is the data file path
-			var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
-			var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
-
-			zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
-				if (!data) {
-					console.log("ERROR: No data for the current user. Cannot edit question that doesn't exist.");
+		function saveUsersKeyValueData(innerdata = null, signAndPublish = true) {
+			if (!innerdata) {
+				// No account selected -> Display error
+				if (!zeroframe.site_info.cert_user_id) {
+					zeroframe.cmd("wrapperNotification", ["info", "Please, select your account."]);
+					zeroframe.selectUser();
 					return;
 				}
-				data = JSON.parse(data);
 
+				// This is the data file path
+				var data_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/data.json";
+				var content_inner_path = "data/users/" + zeroframe.site_info.auth_address + "/content.json";
+
+				zeroframe.cmd("fileGet", {"inner_path": data_inner_path, "required": false}, (data) => {
+					if (!data) {
+						console.log("ERROR: No data for the current user. Cannot edit question that doesn't exist.");
+						return;
+					}
+					data = JSON.parse(data);
+
+					for (var property in app.userKeyValueData) {
+						if (app.userKeyValueData.hasOwnProperty(property)) {
+							data[property] = app.userKeyValueData[property];
+						}
+					}
+
+					// Encode data array to utf8 json text
+					var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
+
+					// Write file to disk
+					zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
+						if (res == "ok") {
+							if (signAndPublish) {
+								// Sign the changed file in our user's directory
+								zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
+									// Publish to other users
+									zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
+								});
+							}
+						} else {
+							zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
+						}
+					});
+				});
+			} else {
 				for (var property in app.userKeyValueData) {
 					if (app.userKeyValueData.hasOwnProperty(property)) {
-						data[property] = app.userKeyValueData[property];
+						innerdata[property] = app.userKeyValueData[property];
 					}
 				}
-
-				// Encode data array to utf8 json text
-				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
-
-				// Write file to disk
-				zeroframe.cmd("fileWrite", [data_inner_path, btoa(json_raw)], (res) => {
-					if (res == "ok") {
-						if (signAndPublish) {
-							// Sign the changed file in our user's directory
-							zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
-								// Publish to other users
-								zeroframe.cmd("sitePublish", {"inner_path": content_inner_path, "sign": false});
-							});
-						}
-					} else {
-						zeroframe.cmd("wrapperNotification", ["error", "File write error: #{res}"]);
-					}
-				});
-			});
+			}
 		}
 
 		// Called from oninput of textarea, passes in 'this' so the function can
@@ -541,6 +549,8 @@
 					"body": document.getElementById("comment").value,
 					"date_added": Date.now()
 				});
+				app.userKeyValueData["next_question_id"]++;
+				saveUsersKeyValueData(data, false);
 
 				// Encode data array to utf8 json text
 				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
@@ -550,9 +560,6 @@
 					if (res == "ok") {
 						// Reset the message input
 						document.getElementById("comment").value = "";
-
-						app.userKeyValueData["next_comment_id"]++;
-						saveUsersKeyValueData(false);
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
@@ -735,6 +742,8 @@
 					"tags": parseTagNames(document.getElementById("questionTags").value).join(','),
 					"date_added": Date.now()
 				});
+				app.userKeyValueData["next_question_id"]++;
+				saveUsersKeyValueData(data, false);
 
 				// Encode data array to utf8 json text
 				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
@@ -747,8 +756,6 @@
 						document.getElementById("questionBody").value = "";
 
 						// If successfully written to file, modify and save user's keyvalues
-						app.userKeyValueData["next_question_id"]++;
-						saveUsersKeyValueData(false);
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
@@ -1073,6 +1080,8 @@
 					"body": document.getElementById("answerBody").value,
 					"date_added": Date.now()
 				});
+				app.userKeyValueData["next_question_id"]++;
+				saveUsersKeyValueData(data, false);
 
 				// Encode data array to utf8 json text
 				var json_raw = unescape(encodeURIComponent(JSON.stringify(data, undefined, '\t')));
@@ -1082,9 +1091,6 @@
 					if (res == "ok") {
 						// Reset the question input
 						document.getElementById("answerBody").value = "";
-
-						app.userKeyValueData["next_answer_id"]++;
-						saveUsersKeyValueData(false);
 
 						// Sign the changed file in our user's directory
 						zeroframe.cmd("siteSign", {"inner_path": content_inner_path}, (res) => {
