@@ -329,6 +329,15 @@ var Questions = {
 		setupHero(false, "Questions", "");
 		getQuestionsList(fillInCurrentUser);
 	},
+	mounted: function() {
+		zeroframe.cmd("feedListFollow", [], (followList) => {
+			if (followList["Questions"]) {
+				this.followButtonText = "Following";
+			} else {
+				this.followButtonText = "Follow";
+			}
+		});
+	},
 	methods: {
 		questionClick: function(question) {
 			Router.navigate('questions/' + this.getQuestionAuthAddress(question) + '/' + question.question_id);
@@ -363,6 +372,22 @@ var Questions = {
 		},
 		isQuestionSolved(question) {
 			return question.solution_id != null && question.solution_auth_address;
+		},
+		followQuestions() {
+			zeroframe.cmd("feedListFollow", [], (followList) => {
+				var query = "SELECT questions.question_id AS event_uri, 'article' AS type, questions.date_added AS date_added, questions.title AS title, 'Question by ' || json.cert_user_id || ': ' || questions.body AS body, '?/questions/' || REPLACE(json.directory, 'users/', '') || '/' || questions.question_id AS url FROM questions LEFT JOIN json ON (questions.json_id = json.json_id)";
+				var params;
+				var newList = followList;
+				if (followList["Questions"]) {
+					delete newList["Questions"];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.followButtonText = "Follow";
+				} else {
+					newList["Questions"] = [query, params];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.followButtonText = "Following";
+				}
+			});
 		}
 	},
 	computed: {
@@ -412,7 +437,8 @@ var Questions = {
 	},
 	data: function() {
 		return {
-			searchInput: ""
+			searchInput: "",
+			followButtonText: "Follow"
 		}
 	},
 	template: '\
@@ -432,6 +458,7 @@ var Questions = {
 						    	<route-link to="questions/new" class="button is-primary">Create</route-link>\
 						    </div>\
 						</div>\
+						<a v-on:click.prevent="followQuestions()">{{ followButtonText }}</a>\
 						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
 						<hr>\
 						<div v-for="question in getQuestionsList">\
