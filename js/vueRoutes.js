@@ -340,8 +340,9 @@ var Questions = {
 				this.allQuestionsFollowed = true;
 			} else if (followList["QuestionAnswers"]) {
 				this.questionAnswersFollowed = true;
+			} else if (followList["Your Questions Answers"]) {
+				this.usersQuestionsFollowed = true;
 			}
-			// TODO
 			this.updateFollowButtonText();
 		});
 	},
@@ -417,6 +418,23 @@ var Questions = {
 					newList["QuestionAnswers"] = [query, params];
 					zeroframe.cmd("feedFollow", [newList]);
 					this.questionAnswersFollowed = true;
+				}
+				this.updateFollowButtonText();
+			});
+		},
+		followUsersQuestions() {
+			zeroframe.cmd("feedListFollow", [], (followList) => {
+				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id) WHERE answers.question_auth_address='" + zeroframe.site_info.auth_address + "'";
+				var params;
+				var newList = followList;
+				if (followList["Your Questions Answers"]) {
+					delete newList["Your Questions Answers"];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.usersQuestionsFollowed = false;
+				} else {
+					newList["Your Questions Answers"] = [query, params];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.usersQuestionsFollowed = true;
 				}
 				this.updateFollowButtonText();
 			});
@@ -527,18 +545,18 @@ var Questions = {
 									Question Answers\
 								  </a>\
 								  <hr class="dropdown-divider">\
-								  <a href="#" class="dropdown-item">\
+								  <a href="#" class="dropdown-item" v-on:click.prevent="followUsersQuestions()">\
 							  		<span class="icon is-small" v-if="usersQuestionsFollowed">\
 							  			<i class="fa fa-check"></i>\
 							  		</span>\
 									Your Questions\
 								  </a>\
-								  <a href="#" class="dropdown-item">\
+								  <!--<a href="#" class="dropdown-item">\
 								  	<span class="icon is-small" v-if="usersAnswersFollowed">\
 							  			<i class="fa fa-check"></i>\
 							  		</span>\
 									Your Answers\
-								  </a>\
+								  </a>-->\
 								</div>\
 							  </div>\
 						</div>\
