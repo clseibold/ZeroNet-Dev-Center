@@ -161,13 +161,13 @@ var Blog = {
 							 <p class="control has-icons-left is-expanded">\
 								<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
 								<span class="icon is-small is-left">\
-						    		<i class="fa fa-search"></i>\
-							    </span>\
+									<i class="fa fa-search"></i>\
+								</span>\
 							</p>\
-						    <div class="control">\
-						    	<!--<button class="button">+</button>-->\
-						    	<button class="button is-primary" v-on:click="followBlog()">{{ buttonText }}</button>\
-						    </div>\
+							<div class="control">\
+								<!--<button class="button">+</button>-->\
+								<button class="button is-primary" v-on:click="followBlog()">{{ buttonText }}</button>\
+							</div>\
 						</div>\
 						<hr>\
 						<blog-list-item v-for="post in getBlogPosts" :key="post.post_id" :title="post.title" :tags="post.tags" :slug="post.slug" :date-added="post.date_added">\
@@ -337,10 +337,12 @@ var Questions = {
 	mounted: function() {
 		zeroframe.cmd("feedListFollow", [], (followList) => {
 			if (followList["Questions"]) {
-				this.followButtonText = "Following";
-			} else {
-				this.followButtonText = "Follow";
+				this.allQuestionsFollowed = true;
+			} else if (followList["QuestionAnswers"]) {
+				this.questionAnswersFollowed = true;
 			}
+			// TODO
+			this.updateFollowButtonText();
 		});
 	},
 	methods: {
@@ -378,7 +380,14 @@ var Questions = {
 		isQuestionSolved(question) {
 			return question.solution_id != null && question.solution_auth_address;
 		},
-		followQuestions() {
+		updateFollowButtonText() {
+			if (this.allQuestionsFollowed || this.questionAnswersFollowed || this.usersQuestionsFollowed || this.usersAnswersFollowed) {
+				this.followButtonText = "Following";
+			} else {
+				this.followButtonText = "Follow";
+			}
+		},
+		followAllQuestions() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
 				var query = "SELECT questions.question_id AS event_uri, 'article' AS type, questions.date_added AS date_added, 'Question: ' || questions.title AS title, json.cert_user_id || ': ' || questions.body AS body, '?/questions/' || REPLACE(json.directory, 'users/', '') || '/' || questions.question_id AS url FROM questions LEFT JOIN json ON (questions.json_id = json.json_id)";
 				var params;
@@ -386,12 +395,30 @@ var Questions = {
 				if (followList["Questions"]) {
 					delete newList["Questions"];
 					zeroframe.cmd("feedFollow", [newList]);
-					this.followButtonText = "Follow";
+					this.allQuestionsFollowed = false;
 				} else {
 					newList["Questions"] = [query, params];
 					zeroframe.cmd("feedFollow", [newList]);
-					this.followButtonText = "Following";
+					this.allQuestionsFollowed = true;
 				}
+				this.updateFollowButtonText();
+			});
+		},
+		followQuestionAnswers() {
+			zeroframe.cmd("feedListFollow", [], (followList) => {
+				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id)";
+				var params;
+				var newList = followList;
+				if (followList["QuestionAnswers"]) {
+					delete newList["QuestionAnswers"];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.questionAnswersFollowed = false;
+				} else {
+					newList["QuestionAnswers"] = [query, params];
+					zeroframe.cmd("feedFollow", [newList]);
+					this.questionAnswersFollowed = true;
+				}
+				this.updateFollowButtonText();
 			});
 		}
 	},
@@ -451,7 +478,11 @@ var Questions = {
 	data: function() {
 		return {
 			searchInput: "",
-			followButtonText: "Follow"
+			followButtonText: "Follow",
+			allQuestionsFollowed: false,
+			questionAnswersFollowed: false,
+			usersQuestionsFollowed: false,
+			usersAnswersFollowed: false,
 		}
 	},
 	template: '\
@@ -463,15 +494,54 @@ var Questions = {
 							 <p class="control has-icons-left is-expanded">\
 								<input type="search" class="input" v-model="searchInput" style="display: inline; margin-bottom: 10px;" placeholder="Search ...">\
 								<span class="icon is-small is-left">\
-						    		<i class="fa fa-search"></i>\
-							    </span>\
+									<i class="fa fa-search"></i>\
+								</span>\
 							</p>\
-						    <div class="control">\
-						    	<!--<button class="button">+</button>-->\
-						    	<route-link to="questions/new" class="button is-primary">Create</route-link>\
-						    </div>\
+							<div class="control">\
+								<!--<button class="button">+</button>-->\
+								<route-link to="questions/new" class="button is-primary">Create</route-link>\
+							</div>\
 						</div>\
-						<a class="button is-link" v-on:click.prevent="followQuestions()">{{ followButtonText }}</a>\
+						<!--<a class="button is-link" v-on:click.prevent="followQuestions()">{{ followButtonText }}</a>-->\
+						<div class="dropdown is-hoverable">\
+						  <div class="dropdown-trigger">\
+							<button class="button is-link" aria-haspopup="true" aria-controls="dropdown-menu">\
+							  <span>{{followButtonText}}</span>\
+							  <span class="icon is-small">\
+								<i class="fa fa-angle-down" aria-hidden="true"></i>\
+							  </span>\
+							</button>\
+						  </div>\
+				  			<div class="dropdown-menu" id="dropdown-menu" role="menu">\
+								<div class="dropdown-content">\
+								  <a href="#" class="dropdown-item" v-on:click.prevent="followAllQuestions()">\
+								  	<span class="icon is-small" v-if="allQuestionsFollowed">\
+							  			<i class="fa fa-check"></i>\
+							  		</span>\
+									Questions\
+								  </a>\
+								  <a class="dropdown-item" v-on:click.prevent="followQuestionAnswers()">\
+								  	<span class="icon is-small" v-if="questionAnswersFollowed">\
+							  			<i class="fa fa-check"></i>\
+							  		</span>\
+									Question Answers\
+								  </a>\
+								  <hr class="dropdown-divider">\
+								  <a href="#" class="dropdown-item">\
+							  		<span class="icon is-small" v-if="usersQuestionsFollowed">\
+							  			<i class="fa fa-check"></i>\
+							  		</span>\
+									Your Questions\
+								  </a>\
+								  <a href="#" class="dropdown-item">\
+								  	<span class="icon is-small" v-if="usersAnswersFollowed">\
+							  			<i class="fa fa-check"></i>\
+							  		</span>\
+									Your Answers\
+								  </a>\
+								</div>\
+							  </div>\
+						</div>\
 						<a class="button is-link" v-on:click.prevent="">Filter By Tag</a>\
 						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
 						<hr>\
@@ -655,21 +725,21 @@ var QuestionsCertuseridId = {
 								<a v-for="tag in getCurrentTagNames" :href="\'./?/\' + tag" v-on:click.prevent="clickTag(tag)" class="tag">{{tag}}</a>\
 							</div>\
 							<nav class="level is-mobile">\
-						        <div class="level-left">\
-							        <a class="level-item" v-on:click="toggleCommentBox">\
-							        	<span class="icon is-small"><i class="fa fa-reply"></i></span>\
-							        </a>\
-							        <a class="level-item">\
-							        	<span class="icon is-small"><i class="fa fa-heart"></i></span>\
-							        </a>\
-							        <a class="level-item" v-if="isEditLinkShown" v-on:click.prevent="editQuestion">Edit</a>\
-						        </div>\
-				      		</nav>\
-				      		<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
+								<div class="level-left">\
+									<a class="level-item" v-on:click="toggleCommentBox">\
+										<span class="icon is-small"><i class="fa fa-reply"></i></span>\
+									</a>\
+									<a class="level-item">\
+										<span class="icon is-small"><i class="fa fa-heart"></i></span>\
+									</a>\
+									<a class="level-item" v-if="isEditLinkShown" v-on:click.prevent="editQuestion">Edit</a>\
+								</div>\
+							</nav>\
+							<div v-if="isCommentBoxShown" style="margin-bottom: 20px; border-top: 1px solid #EBEBEB; padding-top: 20px;">\
 								<textarea id="comment" oninput="expandTextarea(this);" class="textarea is-small" rows="2" style="width: 100%; padding: 7px;" placeholder="Comment..."></textarea>\
 								<button class="button is-primary" v-on:click="innerPostComment" style="margin-top: 10px;">Comment</button>\
-				      		</div>\
-				      		<tutorial-comment v-for="comment in questionComments" :key="comment.comment_id" :current-authaddress="currentAuthaddress" :comment-id="comment.comment_id" :username="comment.cert_user_id" :body="comment.body" :directory="comment.directory" :date="comment.date_added" reference-type="q" :reference-authaddress="questionAuthaddress">\
+							</div>\
+							<tutorial-comment v-for="comment in questionComments" :key="comment.comment_id" :current-authaddress="currentAuthaddress" :comment-id="comment.comment_id" :username="comment.cert_user_id" :body="comment.body" :directory="comment.directory" :date="comment.date_added" reference-type="q" :reference-authaddress="questionAuthaddress">\
 							</tutorial-comment>\
 						</div>\
 						<hr>\
