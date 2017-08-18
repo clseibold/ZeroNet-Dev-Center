@@ -337,9 +337,11 @@ var Questions = {
 		zeroframe.cmd("feedListFollow", [], (followList) => {
 			if (followList["Questions"]) {
 				this.allQuestionsFollowed = true;
-			} else if (followList["QuestionAnswers"]) {
+			}
+			if (followList["QuestionAnswers"]) {
 				this.questionAnswersFollowed = true;
-			} else if (followList["Your Questions Answers"]) {
+			}
+			if (followList["Your Questions Answers"]) {
 				this.usersQuestionsFollowed = true;
 			}
 			this.updateFollowButtonText();
@@ -406,7 +408,7 @@ var Questions = {
 		},
 		followQuestionAnswers: function() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
-				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id AND answers.question_auth_address = REPLACE(questions.directory, 'users/', ''))";
+				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN questions ON (answers.question_id = questions.question_id) LEFT JOIN json ON (questions.json_id = json.json_id) WHERE answers.question_auth_address = REPLACE(json.directory, 'users/', '')";
 				var params;
 				var newList = followList;
 				if (followList["QuestionAnswers"]) {
@@ -417,6 +419,7 @@ var Questions = {
 					newList["QuestionAnswers"] = [query, params];
 					zeroframe.cmd("feedFollow", [newList]);
 					this.questionAnswersFollowed = true;
+					console.log(newList);
 				}
 				this.updateFollowButtonText();
 			});
