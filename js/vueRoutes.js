@@ -378,17 +378,17 @@ var Questions = {
 			if (!tags || app.allTags.length == 0) return null;
 			return parseTagIds(tags);
 		},
-		isQuestionSolved(question) {
+		isQuestionSolved: function(question) {
 			return question.solution_id != null && question.solution_auth_address;
 		},
-		updateFollowButtonText() {
+		updateFollowButtonText: function() {
 			if (this.allQuestionsFollowed || this.questionAnswersFollowed || this.usersQuestionsFollowed || this.usersAnswersFollowed) {
 				this.followButtonText = "Following";
 			} else {
 				this.followButtonText = "Follow";
 			}
 		},
-		followAllQuestions() {
+		followAllQuestions: function() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
 				var query = "SELECT questions.question_id AS event_uri, 'article' AS type, questions.date_added AS date_added, 'Question: ' || questions.title AS title, json.cert_user_id || ': ' || questions.body AS body, '?/questions/' || REPLACE(json.directory, 'users/', '') || '/' || questions.question_id AS url FROM questions LEFT JOIN json ON (questions.json_id = json.json_id)";
 				var params;
@@ -405,7 +405,7 @@ var Questions = {
 				this.updateFollowButtonText();
 			});
 		},
-		followQuestionAnswers() {
+		followQuestionAnswers: function() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
 				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id)";
 				var params;
@@ -422,7 +422,7 @@ var Questions = {
 				this.updateFollowButtonText();
 			});
 		},
-		followUsersQuestions() {
+		followUsersQuestions: function() {
 			zeroframe.cmd("feedListFollow", [], (followList) => {
 				var query = "SELECT answers.answer_id AS event_uri, 'article' AS type, answers.date_added AS date_added, 'Answer on: ' || questions.title AS title, json.cert_user_id || ': ' || answers.body AS body, '?/questions/' || answers.question_auth_address || '/' || answers.question_id AS url FROM answers LEFT JOIN json ON (answers.json_id = json.json_id) LEFT JOIN questions ON (answers.question_id = questions.question_id) WHERE answers.question_auth_address='" + zeroframe.site_info.auth_address + "'";
 				var params;
@@ -438,6 +438,10 @@ var Questions = {
 				}
 				this.updateFollowButtonText();
 			});
+		},
+		toggleStrictness: function() {
+			this.isSearchStrict = !this.isSearchStrict;
+			console.log(this.isSearchStrict);
 		}
 	},
 	computed: {
@@ -445,6 +449,7 @@ var Questions = {
 			var list = this.questionsList;
 			if (this.searchInput == "" || !this.searchInput) return list;
 			var searchInputWords = this.searchInput.split(' ');
+			var that = this;
 			list = list.filter(function(question) {
 				question.order = 0;
 				var matches = 0;
@@ -482,15 +487,28 @@ var Questions = {
 						continue;
 						matches++;
 					}
-					question.order--;
+					if (that.isSearchStrict) {
+						return false;
+					} else {
+						question.order--;
+					}
 				}
-				if (matches == 0) return false;
-				else return true;
+				//console.log(that.isSearchStrict);
+				if (!that.isSearchStrict) {
+					if (matches == 0) return false;
+					else return true;
+				} else {
+					return true;
+				}
 			});
 			list.sort(function(a, b) {
 				return b.order - a.order;
 			});
 			return list;
+		},
+		getStrictText: function() {
+			if (this.isSearchStrict) return "Inclusive";
+			else return "Strict";
 		}
 	},
 	data: function() {
@@ -501,6 +519,8 @@ var Questions = {
 			questionAnswersFollowed: false,
 			usersQuestionsFollowed: false,
 			usersAnswersFollowed: false,
+			isSearchStrict: false,
+			searchList: []
 		}
 	},
 	template: '\
@@ -560,7 +580,7 @@ var Questions = {
 								</div>\
 							  </div>\
 						</div>\
-						<a class="button is-link" v-on:click.prevent="">Filter By Tag</a>\
+						<a class="button is-link" v-on:click.prevent="toggleStrictness()">Use {{ getStrictText }}</a>\
 						<!--<route-link to="questions/new" class="button is-primary">Create New Question</route-link>-->\
 						<hr>\
 						<div v-for="question in getQuestionsList">\
