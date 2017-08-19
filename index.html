@@ -542,17 +542,18 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = { "next_comment_id": 1, "next_question_id": 1, "next_answer_id": 1, "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Add the new message to data
 				data.comments.push({
-					"comment_id": app.userKeyValueData["next_comment_id"],
+					"comment_id": app.userKeyValueData["next_comment_id"] || 1,
 					"reference_id": referenceID,
 					"reference_type": referenceType,
 					"reference_auth_address": referenceAuthAddress,
 					"body": document.getElementById("comment").value,
 					"date_added": Date.now()
 				});
+				if (!app.userKeyValueData["next_comment_id"]) app.userKeyValueData["next_comment_id"] = 1;
 				app.userKeyValueData["next_comment_id"]++;
 				saveUsersKeyValueData(data, false);
 
@@ -736,16 +737,17 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = { "next_comment_id": 1, "next_question_id": 1, "next_answer_id": 1, "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Add the new question to data
 				data.questions.push({
-					"question_id": app.userKeyValueData["next_question_id"],
+					"question_id": app.userKeyValueData["next_question_id"] || 1,
 					"title": document.getElementById("questionTitle").value,
 					"body": document.getElementById("questionBody").value,
 					"tags": parseTagNames(document.getElementById("questionTags").value).join(','),
 					"date_added": Date.now()
 				});
+				if (!app.userKeyValueData["next_question_id"]) app.userKeyValueData["next_question_id"] = 1;
 				app.userKeyValueData["next_question_id"]++;
 				saveUsersKeyValueData(data, false);
 
@@ -1074,16 +1076,17 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = { "next_comment_id": 1, "next_question_id": 1, "next_answer_id": 1, "comments": [], "questions": [], "answers": [], "answer_votes": [] }
 
 				// Add the new question to data
 				data.answers.push({
-					"answer_id": app.userKeyValueData["next_answer_id"],
+					"answer_id": app.userKeyValueData["next_answer_id"] || 1,
 					"question_id": app.referenceID,
 					"question_auth_address": app.questionAuthaddress,
 					"body": document.getElementById("answerBody").value,
 					"date_added": Date.now()
 				});
+				if (!app.userKeyValueData["next_answer_id"]) app.userKeyValueData["next_answer_id"] = 1;
 				app.userKeyValueData["next_answer_id"]++;
 				saveUsersKeyValueData(data, false);
 

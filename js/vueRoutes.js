@@ -449,7 +449,7 @@ var Questions = {
 		getQuestionsList: function() {
 			var list = this.questionsList;
 			if (this.searchInput == "" || !this.searchInput) return list;
-			var searchInputWords = this.searchInput.split(' ');
+			var searchInputWords = this.searchInput.trim().split(' '); // TODO
 			var that = this;
 			list = list.filter(function(question) {
 				question.order = 0;
