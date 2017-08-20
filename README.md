@@ -11,7 +11,6 @@ Our Goal is to provide useful information, tutorials, and help to those who want
 * [Static Zite](https://github.com/krixano/ZeroNet-Dev-Center/pull/25) ( @krixano )
 
 ## Tutorial Ideas
-* Building your first zite (static zite)
 * Database Basics
 * User login
 * Building a basic dynamic zite
