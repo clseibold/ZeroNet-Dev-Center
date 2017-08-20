@@ -11,7 +11,7 @@ var Home = {
 						generateRouteLinkHTML('questions', 'Search Questions', '', 'margin-top: 10px; margin-left: 10px;');
 
 		setupHero(true, "ZeroNet Dev Center", subtitle, content);
-		checkTutorialsList();
+		checkTutorialsList(false, true);
 		getQuestionsList();
 	},
 	computed: {
@@ -251,7 +251,7 @@ var Tutorials = {
 	props: ['tutorialsList'],
 	init: function() {
 		setupHero(false, "Tutorials", "");
-		checkTutorialsList();
+		checkTutorialsList(true, true);
 	},
 	template: '\
 		<div>\
