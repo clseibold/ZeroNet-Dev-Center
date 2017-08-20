@@ -4,13 +4,13 @@ A Development Center for the ZeroNet. Tutorials on ZeroNet Zite Development, Col
 Our Goal is to provide useful information, tutorials, and help to those who want to develop Zites in order to inspire more development on the ZeroNet. This site will *not* teach the basics of front-end web development (this may change in the future). This site only focuses on ZeroNet-specific development, including the ZeroFrame API.
 
 ## Finished Tutorials
-* [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1) ( @AnthyG @krixano )
-
-## Tutorials In Progress
+* [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1) ( @AnthyG, @krixano )
 * [Writing A Plugin](https://github.com/krixano/ZeroNet-Dev-Center/pull/9) ( @rllola )
 
+## Tutorials In Progress
+* [Static Zite](https://github.com/krixano/ZeroNet-Dev-Center/pull/25) ( @krixano )
+
 ## Tutorial Ideas
-* Building your first zite (static zite)
 * Database Basics
 * User login
 * Building a basic dynamic zite
