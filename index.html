@@ -147,7 +147,7 @@
 					if (message.params.event[0] == "file_done") {
 						getTags(true);
 						if (Router.currentRoute == "tutorials") {
-							checkTutorialsList(true);
+							checkTutorialsList(true, true);
 						} else if (Router.currentRoute == "tutorials/:slug") {
 							getComments(app.referenceID, "t");
 						} else if (Router.currentRoute == "questions") {
@@ -165,7 +165,7 @@
 							//getBlogPost(app.);
 							getComments(app.referenceID, 'b');
 						} else if (Router.currentRoute == "") {
-							checkTutorialsList(true);
+							checkTutorialsList(false, true);
 							getQuestionsList();
 						}
 					}
@@ -420,9 +420,11 @@
 
 		// Get's all tutorials from database and caches it in app.tutorialsList
 		// TODO(krixano): Recache tutorial list when tutorials database changes
-		function checkTutorialsList(refresh = false) {
+		function checkTutorialsList(asc = false, refresh = false) {
 			if (app.tutorialsList.length == 0 || refresh) {
-				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials'], (tutorials) => {
+				var order = "DESC"
+				if (asc) order = "ASC";
+				zeroframe.cmd('dbQuery', ['SELECT * FROM tutorials ORDER BY id ' + order], (tutorials) => {
 					app.tutorialsList = tutorials;
 				});
 			}
