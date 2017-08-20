@@ -7,6 +7,12 @@ html, body, section {
 	background: #f8f8f8;
 }
 
+code, .code {
+  tab-size: 4;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+}
+
 /*code, .code {
   padding-left: 7px !important;
   padding-top: 10px !important;
