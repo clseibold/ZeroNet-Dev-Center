@@ -62,11 +62,11 @@ We are now done with the `content.json` file. Next, open up the `index.html` fil
 
 <html>
 <head>
- <title>New ZeroNet site!</title>
- <meta charset="utf-8">
- <meta http-equiv="content-type" content="text/html; charset=utf-8" />
- <base href="" target="_top" id="base">
- <script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+	<title>New ZeroNet site!</title>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<base href="" target="_top" id="base">
+	<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
 </head>
 <body>
 
