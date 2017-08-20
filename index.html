@@ -364,6 +364,18 @@
 			else return tagName.trim();
 		}
 
+		function newUsersData() {
+			return {
+				"next_comment_id": 1,
+				"next_question_id": 1,
+				"next_answer_id": 1,
+				"comments": [],
+				"questions": [],
+				"answers": [],
+				"answer_votes": []
+			};
+		}
+
 		function getBlogPosts(f = null, refresh = false) {
 			if (app.blogPosts.length == 0 || refresh) {
 				zeroframe.cmd('dbQuery', ['SELECT * FROM blogposts ORDER BY date_added DESC'], (posts) => {
@@ -543,7 +555,9 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "next_comment_id": 1, "next_question_id": 1, "next_answer_id": 1, "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = newUsersData();
+
+				if (!data.comments) data.comments = [];
 
 				// Add the new message to data
 				data.comments.push({
@@ -738,7 +752,9 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "next_comment_id": 1, "next_question_id": 1, "next_answer_id": 1, "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = newUsersData();
+
+				if (!data.questions) data.questions = [];
 
 				// Add the new question to data
 				data.questions.push({
@@ -997,7 +1013,9 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = newUsersData();
+
+				if (!data.answer_votes) data.answer_votes = [];
 
 				var alreadyVoted = false;
 				var voteIndex = null;
@@ -1077,7 +1095,9 @@
 				if (data)
 					data = JSON.parse(data);
 				else
-					data = { "next_comment_id": 1, "next_question_id": 1, "next_answer_id": 1, "comments": [], "questions": [], "answers": [], "answer_votes": [] }
+					data = newUsersData();
+
+				if (!data.answers) data.answers = [];
 
 				// Add the new question to data
 				data.answers.push({
