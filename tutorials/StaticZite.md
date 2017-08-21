@@ -24,7 +24,7 @@ The `ignore` field uses a regular expression to match any folders and files agai
 * `.` - any character
 * `*` - zero or more of the character or group that comes before it
 * `+` - *one* or more of the character or group that comes before it.
-* Putting a letter that a special symbol in regexes means it is a required character.
+* Putting a letter that isn't a special symbol in regexes means it is a required character.
 * `(` and `)` - Creates a group, useful for saying you want zero or more of a word (for example: `(and)*` means zero or more `and` words)
 * `|` used in a group to mean *or*. For eample: `(and|or)` means it will match anything that is the word `and` *or* the word `or`.
 * `\.` - the dot character. You are escaping the dot. This also works for `\*`, `\|`, `\\` and any other special symbols.
