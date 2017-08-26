@@ -52,7 +52,7 @@ The final thing we are going to do is add a `viewport` field. This is equivalent
 * For non-mobile-supported zites, you can leave it off.
 
 ### content.json Docs
-You can find more information about the different options in the `content.json` file from the [ZeroNet Docs](/1HP65eGEEMPbyzH3mkaoQ7eCMKd9P8G61W/site_development/content_json/index.html).
+You can find more information about the different options in the `content.json` file from the [ZeroNet Docs](/1Docsfk5uLvuXkL4U13eYDxCm2gzi1fNQq/site_development/content_json/index.html).
 
 ## The Index File
 We are now done with the `content.json` file. Next, open up the `index.html` file. This is what the index file should look like:
@@ -192,9 +192,9 @@ In this case, whenever the site information has been changed, we are calling `se
 ### Requirement of the ZeroFrame Class
 If you want your zite completely static, and not change based on the user logged in, a database, site information, etc. then there might not be a need for you to include the ZeroFrame class - **unless** you are using any of the ZeroFrame API calls.
 
-There are some API calls that are useful even for static zites. For example, notifications, prompts, reading files (e.g. json files), opening a link in a new tab, client-side routing, and more. You can find more information about these and other ZeroFrame API commands in the [ZeroFrame API Docs](/1HP65eGEEMPbyzH3mkaoQ7eCMKd9P8G61W/site_development/zeroframe_api_reference/index.html).
+There are some API calls that are useful even for static zites. For example, notifications, prompts, reading files (e.g. json files), opening a link in a new tab, client-side routing, and more. You can find more information about these and other ZeroFrame API commands in the [ZeroFrame API Docs](/1Docsfk5uLvuXkL4U13eYDxCm2gzi1fNQq/site_development/zeroframe_api_reference/index.html).
 
-> *TIP:* All of the commands listed in the [ZeroFrame API Docs](/1HP65eGEEMPbyzH3mkaoQ7eCMKd9P8G61W/site_development/zeroframe_api_reference/index.html) are always called using the `cmd()` method.
+> *TIP:* All of the commands listed in the [ZeroFrame API Docs](/1Docsfk5uLvuXkL4U13eYDxCm2gzi1fNQq/site_development/zeroframe_api_reference/index.html) are always called using the `cmd()` method.
 
 ## Signing and Publishing Your Zite
 You can start adding to your zite now by modifying the index page, creating new pages, etc. However, after your zite is done, you need to be sure to sign and publish it. *Signing* your zite will do a few things:

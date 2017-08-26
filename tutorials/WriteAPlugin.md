@@ -2,7 +2,7 @@
 
 In ZeroNet, plugins can be created to extend the functionality of the client as well as provide api calls to sites. Some of the features that we use are actually plugins that can be downloaded, like `MergerSite` and `Newsfeed`. There currently isn't a plugin store where you can install them. However, it is simple to add, disable, or create plugins. In this tutorial, you will learn how to write a simple plugin that provides an api which can be called directly from a site.
 
-> **Note**: I advise you to read [The Basics](http://127.0.0.1:43110/14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt/?/tutorials/the_basics) tutorial first. You should also know to create a site.
+> **Note**: I advise you to read [The Basics](/14pM9huTYzJdyQyHRj6v2kfhMe8DrxwpGt/?/tutorials/the_basics) tutorial first. You should also know to create a site.
 
 
 ## ZeroNet Plugins
