@@ -86,9 +86,8 @@ After a peer has the updated files, they then send them to other peers using the
 Note that before a peer download's the changed files, they first verify that the `content.json` file was modified by the zite owner by comparing the file's hash to the decrypted hash from the Digital Signature. And after they have download the updated files, they also verify them with the hashes in the `content.json` file.
 
 ---
-Next Tutorial: [Creating A Static Zite](./?/tutorials/static_zite)
-
+Next Tutorial: [Creating A Static Zite](./?/tutorials/static_zite)<br>
 Additionally: [Tips & Tricks Tutorial](./?/tutorials/tips_tricks)
 
 [^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here](/1Docsfk5uLvuXkL4U13eYDxCm2gzi1fNQq/site_development/zeroframe_api_reference/).
-[^2]: [Here](/blog.zeronetwork.bit/?Post:43:ZeroNet+site+development+tutorial+1) is a pretty good tutorial to follow until we get up a tutorial of our own on this zite.
+[^2]: There's also [this tutorial](/blog.zeronetwork.bit/?Post:43:ZeroNet+site+development+tutorial+1) from ZeroBlog.
