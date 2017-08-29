@@ -6,9 +6,10 @@ Our Goal is to provide useful information, tutorials, and help to those who want
 ## Finished Tutorials
 * [The Basics - Krixano](https://github.com/krixano/ZeroNet-Dev-Center/issues/1) ( @AnthyG, @krixano )
 * [Writing A Plugin](https://github.com/krixano/ZeroNet-Dev-Center/pull/9) ( @rllola )
+* [Static Zite](https://github.com/krixano/ZeroNet-Dev-Center/pull/25) ( @krixano )
 
 ## Tutorials In Progress
-* [Static Zite](https://github.com/krixano/ZeroNet-Dev-Center/pull/25) ( @krixano )
+* [Users In ZeroNet](https://github.com/krixano/ZeroNet-Dev-Center/issues/26)
 
 ## Tutorial Ideas
 * Database Basics
