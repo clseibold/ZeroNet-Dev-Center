@@ -14,3 +14,4 @@ __pycache__/
 # Data dir
 data/
 /content.json
+collab/
