@@ -87,6 +87,7 @@ Note that before a peer download's the changed files, they first verify that the
 
 ---
 Next Tutorial: [Creating A Static Zite](./?/tutorials/static_zite)
+
 Additionally: [Tips & Tricks Tutorial](./?/tutorials/tips_tricks)
 
 [^1]: There is a page on the ZeroNet Read The Docs that gives a reference to the ZeroFrame API [here](/1Docsfk5uLvuXkL4U13eYDxCm2gzi1fNQq/site_development/zeroframe_api_reference/).
