@@ -34,10 +34,13 @@
 
 	<!-- Vue & Router -->
 	<script type="text/javascript" src="js/vue.min.js"></script>
+	
 	<script type="text/javascript" src="js/router.js"></script>
 	<script type="text/javascript" src="js/vue-zeroframe-router.js"></script>
 	<script type="text/javascript" src="js/vueComponents.js"></script>
 	<script type="text/javascript" src="js/vueRoutes.js"></script>
+	<script type="text/javascript" src="collab/collab-routes.js"></script>
+
 	<script type="text/javascript" src="js/vue-async-computed.js"></script>
 
 	<!-- Bulma and Buefy -->
@@ -194,6 +197,8 @@
 			{ route: 'blog', component: Blog },
 			{ route: '', component: Home }
 		]);
+
+		if (initCollabRoutes) initCollabRoutes(app);
 
 		// Change the content in the hero.
 		function setupHero(isMedium, title, subtitle, content = "") {
@@ -637,6 +642,7 @@
 					if (comment.comment_id == commentID) {
 						comment.body = bodyTextarea.value;
 						// TODO: Add date_edited column to comments (and questions, and answers)
+						break;
 					}
 				}
 
@@ -831,6 +837,7 @@
 						question.body = document.getElementById("editQuestionBody").value;
 						question.tags = parseTagNames(document.getElementById("editQuestionTags").value).join(',');
 						// TODO: Add date_edited column to questions (and answers)
+						break;
 					}
 				}
 
@@ -1166,6 +1173,7 @@
 					if (answer.answer_id == answerID) {
 						answer.body = bodyTextarea.value;
 						// TODO: Add date_edited column to answers (and questions, and comments)
+						break;
 					}
 				}
 

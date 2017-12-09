@@ -1,6 +1,6 @@
-Vue.component('route-not-found', {
-	template: '<p v-once>Page Not Found</p>'
-});
+//Vue.component('route-not-found', {
+//	template: '<p v-once>Page Not Found</p>'
+//});
 
 
 var Home = {
@@ -456,7 +456,7 @@ var Questions = {
 				var matches = 0;
 				for (var i = 0; i < searchInputWords.length; i++) {
 					var word = searchInputWords[i].trim().toLowerCase();
-					if ("solved".includes(word) && question.solution_id != null && question.solution_auth_address) {
+					if (word == "solved" && question.solution_id != null && question.solution_auth_address) {
 						question.order += 3;
 						matches++;
 						continue;
@@ -485,8 +485,8 @@ var Questions = {
 						continue;
 					}
 					if (question.body.toLowerCase().includes(word)) {
-						continue;
 						matches++;
+						continue;
 					}
 					if (that.isSearchStrict) {
 						return false;
