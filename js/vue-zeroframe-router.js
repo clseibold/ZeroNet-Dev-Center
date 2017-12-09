@@ -70,3 +70,12 @@ function VueZeroFrameRouter_Init(vueInstance, routes) {
 	}
 	Router.init();
 }
+
+function VueZeroFrameRouter_Add(vueInstance, route) {
+	VueZeroFrameRouter.routes.push(route);
+	Router.add(route.route, !route.component.init ? function() {} : route.component.init, {
+		before: !route.component.before ? function() { return true; } : route.component.before,
+		after: !route.component.after ? function() {} : route.component.after,
+		leave: !route.component.leave ? function() {} : route.component.leave
+	}, route.component);
+}
