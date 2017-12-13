@@ -1,8 +1,8 @@
 ## Introduction
 
-This tutorial provides a basic overview of how Databases and Users in ZeroNet are handled. The goal is for both users and developers to understand them as a fundamental part of all zites on ZeroNet. Not only will this tutorial cover the purpose of Databases and Users in general, but also how each one is handled within each zite, how they connect to each other and how they are fundamental in each other's functioning.
+This tutorial provides a basic overview of how Databases and Users in ZeroNet are handled so that both users and developers will understand them as a fundamental part of all zites on ZeroNet. Not only will this tutorial cover the purpose of Databases and Users in general, but also how each one is handled within each zite, how they connect to each other and how they are fundamental in each other's functioning.
 
-First we will start with Users.
+First we will start with Users, then we will move onto Databases.
 
 ---
 
@@ -40,7 +40,7 @@ Once registration is done, the certificate contents of your new ID will be store
 
 In order to allow users to sign-in and add their own content to a zite, the zite owner must allow certain ID providers. This can be done by setting rules in a `content.json` file on the zite, providing it with the public key and a friendly name (usually a .bit address) of the ID provider.
 
-For ZeroId, the public key is the address of the ZeroId zite. However, since KaffieId's private key is public, the private key, and therefore public key, is *not* the same as the zite's address. This is to ensure nobody can edit the KaffieId website. Thus it is the public key associated with the private key used to create user ID signatures should be used, not the public key of KaffieId's zite.
+For ZeroId, the public key is the address of the ZeroId zite. However, since KaffieId's private key is public, the private key, and therefore public key, is *not* the same as the zite's address. This is to ensure nobody can edit the KaffieId website. For this reason, it is the public key associated with the private key used to create user ID signatures should be used, not the public key of KaffieId's zite.
 
 When a user logs in and posts content to the zite for the first time, a directory, named based on the user's public address, is created. This directory is used to store important files for the user, including any images, audio, video, etc. that the user may post to a zite. A `content.json` file is created within this directory, that stores the user's certificate information (username, portal type, public key, and the signature from the ID provider they signed up with).
 
@@ -52,13 +52,13 @@ The verification process for user IDs is very simple. ZeroNet is able to get the
 
 ## Databases
 
-Now that we have gone over Users, it is time to explain Databases, which have a direct link to Users.
+Now that we have gone over Users, it is time to detail Databases, which have a direct link to Users.
 
 ZeroNet makes use of SQLite3 databases. The usage of databases in ZeroNet are very different from databases used on the clearnet. The main reason being ZeroNet is decentralized. This decentralization also requires that receiving updates from users should not be instant. Not only is there a waiting period of 30 seconds between content publishes, but there is also a waiting period for all of the changes to be spread across all peers of the network. Keeping this in mind, ZeroNet needs a way to ensure that databases are not overwritten when two people publish changes at the same time. In order to do this, ZeroNet creates separate json files for each user that will store all the information that should aggregate into the database. With this, a user only affects his own json file, meaning that these files should never be overwritten by someone else.
 
 ## Dbschema File
 
-All zites that use a database must have a `dbschema.json` file. This is a file that simply details all the tables and columns of the database. It will also tell ZeroNet which json files should be aggregated into which tables inside the database.
+All zites that use a database must have a `dbschema.json` file. This is a json file that simply details all the tables and columns of the database. It will also tell ZeroNet which json files should be aggregated into which tables inside the database.
 
 ## User Permissions
 
