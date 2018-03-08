@@ -208,4 +208,8 @@ If you have peers, you need to send your updated zite's files to other peers so 
 
 In order to publish and sign your zite, drag the `0` button in the top right corner to the left, scroll all the way down to the `This is my site` section. Click `Sign`, then `Publish`. This is also where you can more easily change the zite's title and description.
 
+---
+Previous Tutorial: [The Basics](./?/tutorials/the_basics)
+Next Tutorial: [Users and Databases In ZeroNet](./?/tutorials/users_databases_in_zeronet)
+
 [^1]: To learn how to write a ZeroNet plugin, you can read the [Writing A Plugin tutorial](./?/write-a-plugin).

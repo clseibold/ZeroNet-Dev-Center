@@ -73,3 +73,6 @@ Once this file updates, zites will usually instruct ZeroNet to sign the user dir
 Finally, the zite will publish the changes, which will give to at most 6 peers, the new `content.json` file. These peers will verify the user using the methods described in the first half of this tutorial. Then, they will ask for the other files. Once they have been downloaded, they will verify these files using the hashes provided in the `content.json` file and publish the `content.json` file to more peers until there are no peers left that need the file.
 
 Once a client receives a new `data.json` file, it will add the new information into the database and send a request to the zite. A zite could then respond to this request and reload the contents on the screen with the updated information by requerying the database.
+
+---
+Previous Tutorial: [Users and Databases In ZeroNet](./?/tutorials/users_databases_in_zeronet)
