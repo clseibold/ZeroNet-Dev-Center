@@ -66,7 +66,7 @@ var Home = {
 					</div>\
 					<div class="column">\
 						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Questions</span></div>\
-						You can ask questions regarding ZeroNet Zite Development<br>on the ZeroNet topic on <a href="/ZeroExchange.bit">ZeroExchange</a>\
+						You can ask questions regarding ZeroNet Zite Development<br>on the Development topic on <a href="/ZeroExchange.bit">ZeroExchange</a>\
 					</div>\
 				</div>\
 			</section>\
