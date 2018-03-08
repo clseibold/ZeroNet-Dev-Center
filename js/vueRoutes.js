@@ -65,13 +65,8 @@ var Home = {
 						</tutorial-list-item>\
 					</div>\
 					<div class="column">\
-						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Recent Questions</span></div>\
-						<div v-for="question in getLatestQuestions">\
-							<div style="margin-bottom: 10px;"><h3 style="margin-bottom: 0;"><a v-bind:href="getQuestionHref(question)" v-on:click.prevent="questionClick(question)">{{ question.title }}</a></h3><small style="color: #6a6a6a;">by <a style="color: #A987E5;">{{ question.cert_user_id }}</a> <span v-html="getPostDate(question.date_added)"></span></small></div>\
-						</div>\
-						<hr>\
-						<span><route-link to="questions/new" class="button is-info">Create</route-link></span>\
-						<route-link to="questions" class="button is-link">View All</route-link>\
+						<div style="margin-bottom: 1.5rem;"><span class="title is-4" style="margin-right: 5px;">Questions</span></div>\
+						You can ask questions regarding ZeroNet Zite Development<br>on the ZeroNet topic on <a href="/ZeroExchange.bit">ZeroExchange</a>\
 					</div>\
 				</div>\
 			</section>\
